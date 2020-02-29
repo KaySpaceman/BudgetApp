@@ -5,5 +5,11 @@
   </head>
   <body>
     <h1>Select a bank and upload a bank statement</h1>
+    <div class="upload-section">
+      <form action="upload-action" method="POST" encType="multipart/form-data">
+        <input type="file" name="statement-file">
+        <button type="submit">Send</button>
+      </form>
+    </div>
   </body>
 </html>
