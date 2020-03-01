@@ -1,0 +1,8 @@
+{
+  "development": {
+    "mongoUrl": "mongodb+srv://USERNAME:PASSWORD@budgetapp-63btn.mongodb.net/test?retryWrites=true&w=majority",
+    "mongoUser": "kristers",
+    "mongoPass": "PastePasswordHere",
+    "mongoDB": "BudgetApp"
+  }
+}
