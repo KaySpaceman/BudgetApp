@@ -14,7 +14,7 @@ Config = function () {
         const rawUrl = environmentConfig.mongoUrl;
 
         let url = rawUrl.replace(DB_USER, environmentConfig.mongoUser);
-        url = url.replace(DB_PASS, environmentConfig.mongoPass);
+        url = url.replace(DB_PASS, encodeURI(environmentConfig.mongoPass));
 
         return url;
     };
