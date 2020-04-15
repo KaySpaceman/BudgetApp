@@ -11,10 +11,14 @@ Config = function () {
     global.gConfig = _.merge(defaultConfig, environmentConfig);
 
     this.buildMongoDbUrl = function() {
-        const rawUrl = environmentConfig.mongoUrl;
+        let url = environmentConfig.mongoUrl;
 
-        let url = rawUrl.replace(DB_USER, environmentConfig.mongoUser);
-        url = url.replace(DB_PASS, encodeURI(environmentConfig.mongoPass));
+        if (!environmentConfig.mongoUser && !environmentConfig.mongoPass) {
+            url = url.replace(DB_USER + ':' + DB_PASS + '@', '' );
+        } else {
+            url = url.replace(DB_USER, environmentConfig.mongoUser);
+            url = url.replace(DB_PASS, encodeURI(environmentConfig.mongoPass));
+        }
 
         return url;
     };

@@ -105,3 +105,9 @@ dist
 
 #Mac
 .DS_Store
+
+#JetBrains
+.idea/
+
+#Project specific
+tmp/
