@@ -1,8 +1,0 @@
-{
-  "development": {
-    "mongoUrl": "mongodb://USERNAME:PASSWORD@localhost",
-    "mongoUser": null,
-    "mongoPass": null,
-    "mongoDB": "BudgetApp"
-  }
-}
