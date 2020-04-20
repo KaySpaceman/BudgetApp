@@ -1,21 +1,7 @@
 import csv from 'csv-parser';
 import fs from 'fs';
-import client from './database-provider.mjs';
-
-function saveStatementFile(data) {
-  const statement = data['statement-file'].data;
-  const filePath = `tmp/statement-${Date.now()}.csv`;
-
-  if (!statement) return false;
-
-  return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, statement, 'latin1', (err) => {
-      if (err) reject(err.message);
-
-      resolve(filePath);
-    });
-  });
-}
+import connectDb from './database-provider.mjs';
+import saveStatementFile from './file-service.mjs';
 
 // TODO: Move parsing to new service
 function extractTransactionData(path) {
@@ -48,32 +34,29 @@ function extractTransactionData(path) {
 }
 
 export default function processStatementUpload(data) {
-  const pathPromise = saveStatementFile(data);
+  saveStatementFile(data)
+    .then((path) => {
+      const rowPromise = extractTransactionData(path);
 
-  if (!pathPromise) {
-    return false;
-  }
+      rowPromise.then((rows) => {
+        let rowCount = 0;
 
-  pathPromise.then(path => {
-    const rowPromise = extractTransactionData(path);
+        if (!rows || rows.length === 0) return false;
 
-    rowPromise.then(rows => {
-      let rowCount = 0;
-
-      if (!rows || rows.length === 0) return false;
-
-      // TODO: Move DB operations to new service
-      try {
-        client.then((db => {
+        // TODO: Move DB operations to new service
+        connectDb().then((db) => {
           db.collection(process.env.MONGO_COL_TRANSACTIONS)
             .insertMany(rows)
             .then(() => {
               rowCount = rows.length;
+              console.log(`Imported ${rowCount} transactions to the DB`);
+
+              return rowCount;
+            })
+            .catch((reason) => {
+              console.log(`Failed to import transactions: ${reason}`);
             });
-        }));
-      } catch (err) {
-        console.log(err.message);
-      }
+        });
+      });
     });
-  });
 }
