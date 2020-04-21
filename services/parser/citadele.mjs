@@ -1,7 +1,7 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import _ from 'lodash';
-import generateHash from '../checksum-service.mjs';
+import generateHash from '../utility/checksum.mjs';
 
 // TODO: Add bank selector
 const BANK_CITADELE = 'Citadele';

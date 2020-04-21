@@ -1,5 +1,5 @@
 import express from 'express';
-import processStatementUpload from '../services/upload-service.mjs';
+import processStatementUpload from '../services/processor/statement-upload.mjs';
 
 const router = express.Router();
 

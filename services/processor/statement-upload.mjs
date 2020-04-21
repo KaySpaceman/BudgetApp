@@ -1,6 +1,6 @@
-import connectDb from './database-provider.mjs';
-import saveStatementFile from './file-service.mjs';
-import parseTransactionData from './parsers/citadele.mjs';
+import connectDb from '../database/connector.mjs';
+import saveStatementFile from '../utility/file-manager.mjs';
+import parseTransactionData from '../parser/citadele.mjs';
 
 export default function processStatementUpload(data) {
   saveStatementFile(data)

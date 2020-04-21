@@ -1,5 +1,5 @@
 import mongodb from 'mongodb';
-import buildMongoDbUrl from '../config/config.mjs';
+import buildMongoDbUrl from '../../config/config.mjs';
 
 export default function connectDb() {
   return new Promise((resolve, reject) => {
