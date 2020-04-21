@@ -16,7 +16,7 @@ router.get('/upload', (req, res) => {
 });
 
 router.post('/upload-action', (req, res) => {
-  processStatementUpload(req.files)
+  processStatementUpload(req.files, req.param('bank'))
     .then((count) => {
       res.redirect(format({
         pathname: '/transactions',

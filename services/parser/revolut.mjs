@@ -3,11 +3,15 @@ import csv from 'csv-parser';
 import _ from 'lodash';
 import generateHash from '../utility/checksum.mjs';
 
-const BANK_CITADELE = 'Citadele';
+const BANK_REVOLUT = 'Revolut';
 const ENCODING = 'utf8';
 
 function trimRows(rows) {
-  return rows.splice(2, rows.length - 7);
+  return rows.splice(0, rows.length);
+}
+
+function toDecimal(value) {
+  return parseFloat(value.replace(',', '.'));
 }
 
 export default function parseTransactionData(path) {
@@ -15,19 +19,23 @@ export default function parseTransactionData(path) {
 
   return new Promise((resolve, reject) => {
     fs.createReadStream(path, { encoding: ENCODING })
-      .pipe(csv({ separator: '|' }))
+      .pipe(csv({ separator: ';' }))
       .on('error', (err) => {
         reject(err);
       })
       .on('data', (row) => {
+        const values = Object.values(row);
+        values[2] = toDecimal(values[2]);
+        values[3] = toDecimal(values[3]);
+
         let entry = {
-          Date: new Date(row[0]),
-          Type: row[1],
-          Direction: row[5] > 0 ? 'IN' : 'OUT',
-          In: row[5] > 0 ? row[5] : null,
-          Out: row[5] < 0 ? row[5] : null,
-          Note: row[2],
-          Bank: BANK_CITADELE,
+          Date: new Date(values[0].trim()),
+          Type: values[7],
+          Direction: values[3] > 0 ? 'IN' : 'OUT',
+          In: values[3] > 0 ? values[3] : null,
+          Out: values[2] > 0 ? values[2] : null,
+          Note: values[1],
+          Bank: BANK_REVOLUT,
         };
 
         entry = _.omitBy(entry, _.isNil);
