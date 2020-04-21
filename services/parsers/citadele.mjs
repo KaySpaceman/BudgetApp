@@ -1,11 +1,15 @@
 import fs from 'fs';
 import csv from 'csv-parser';
-import crypto from 'crypto';
 import _ from 'lodash';
+import generateHash from '../checksum-service.mjs';
 
 // TODO: Add bank selector
 const BANK_CITADELE = 'Citadele';
 const ENCODING = 'utf8';
+
+function trimRows(rows) {
+  return rows.splice(2, rows.length - 7);
+}
 
 export default function parseTransactionData(path) {
   const rows = [];
@@ -28,16 +32,12 @@ export default function parseTransactionData(path) {
         };
 
         entry = _.omitBy(entry, _.isNil);
-
-        // TODO: Move to new hash operation service
-        entry.Hash = crypto.createHash('sha256')
-          .update(JSON.stringify(entry), 'utf8')
-          .digest('hex');
+        entry.Hash = generateHash(entry);
 
         rows.push(entry);
       })
       .on('end', () => {
-        resolve(rows.splice(2, rows.length - 7));
+        resolve(trimRows(rows));
       });
   });
 }
