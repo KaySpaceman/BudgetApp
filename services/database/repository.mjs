@@ -29,3 +29,20 @@ export default function saveTransactions(data) {
       });
   });
 }
+
+export function getTransactions(page = 0, limit = 100) {
+  return new Promise((resolve) => {
+    connectDb()
+      .then((db) => {
+        const collection = db.collection(process.env.MONGO_COL_TRANSACTIONS);
+
+        const result = collection.find({})
+          .skip(page > 0 ? ((page - 1) * limit) : 0)
+          .limit(limit)
+          .sort({ Date: -1 })
+          .toArray();
+
+        resolve(result);
+      });
+  });
+}

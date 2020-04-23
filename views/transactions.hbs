@@ -4,9 +4,27 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
-<h1>This is a list of your transactions</h1>
+<h1>This is a list of imported transactions</h1>
+
+{{#if count}}
+    <p>Imported {{count}} new transactions</p>
+{{else}}
+    <p>No new transactions were imported</p>
+{{/if}}
+
 <div class="transaction-list">
     <form action="transaction" method="POST" encType="multipart/form-data">
+        {{#each items}}
+            <div class="transaction-{{this.id}}">
+                <span>Date: {{this.Date}}</span>
+                <span>Direction: {{this.Direction}}</span>
+                {{#if this.In}}
+                    <span>Ammount: {{this.In}}</span>
+                {{else}}
+                    <span>Ammount: {{this.Out}}</span>
+                {{/if}}
+            </div>
+        {{/each}}
     </form>
 </div>
 </body>

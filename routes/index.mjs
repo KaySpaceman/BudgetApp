@@ -1,6 +1,7 @@
 import express from 'express';
 import { format } from 'url';
 import processStatementUpload from '../services/processor/statement-upload.mjs';
+import { getTransactions } from '../services/database/repository.mjs';
 
 const router = express.Router();
 
@@ -33,7 +34,9 @@ router.post('/upload-action', (req, res) => {
 });
 
 router.get('/transactions', (req, res) => {
-  res.render('transactions', { title: `Transaction List ${req.query.count}` });
+  getTransactions().then((items) => {
+    res.render('transactions', { count: req.query.count, items });
+  });
 });
 
 export default router;
