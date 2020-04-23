@@ -2,6 +2,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import _ from 'lodash';
 import generateHash from '../utility/checksum.mjs';
+import validateTransactions from '../utility/validator.mjs';
 
 const BANK_REVOLUT = 'Revolut';
 const ENCODING = 'utf8';
@@ -44,7 +45,7 @@ export default function parseTransactionData(path) {
         rows.push(entry);
       })
       .on('end', () => {
-        resolve(trimRows(rows));
+        resolve(validateTransactions(trimRows(rows)));
       });
   });
 }
