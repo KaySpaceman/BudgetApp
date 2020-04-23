@@ -11,6 +11,9 @@ import { fileURLToPath } from 'url';
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -1,6 +1,6 @@
 import express from 'express';
-import processStatementUpload from '../services/processor/statement-upload.mjs';
 import { format } from 'url';
+import processStatementUpload from '../services/processor/statement-upload.mjs';
 
 const router = express.Router();
 
@@ -9,10 +9,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/upload', (req, res) => {
-  res.sendFile('upload-screen.html', {
-    title: 'Statement Upload',
-    root: 'public',
-  });
+  res.render('upload-screen', { title: 'Statement Upload' });
 });
 
 router.post('/upload-action', (req, res) => {
@@ -36,10 +33,7 @@ router.post('/upload-action', (req, res) => {
 });
 
 router.get('/transactions', (req, res) => {
-  res.sendFile('transactions.html', {
-    title: `Transaction List ${req.query.count}`,
-    root: 'public',
-  });
+  res.render('transactions', { title: `Transaction List ${req.query.count}` });
 });
 
 export default router;
