@@ -11,6 +11,12 @@ function trimRows(rows) {
   return rows.splice(2, rows.length - 7);
 }
 
+function buildDate(source) {
+  const split = source.split('.');
+
+  return new Date(`20${split[2]}`, split[1], split[0]);
+}
+
 export default function parseTransactionData(path) {
   const rows = [];
 
@@ -22,7 +28,7 @@ export default function parseTransactionData(path) {
       })
       .on('data', (row) => {
         let entry = {
-          Date: new Date(row[0]),
+          Date: buildDate(row[0]),
           Type: row[1],
           Direction: row[5] > 0 ? 'IN' : 'OUT',
           In: row[5] > 0 ? row[5] : null,
