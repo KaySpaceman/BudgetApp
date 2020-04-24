@@ -6,12 +6,14 @@ import nodeSassMiddleware from 'node-sass-middleware';
 import expressFileupload from 'express-fileupload';
 import indexRouter from './routes/index.mjs';
 import usersRouter from './routes/users.mjs';
+import hbs from 'hbs';
 import { fileURLToPath } from 'url';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 app.set('views', path.join(__dirname, 'views'));
+hbs.registerPartials(__dirname + '/views/partials', (err) => {});
 app.set('view engine', 'hbs');
 
 app.use(morgan('dev'));

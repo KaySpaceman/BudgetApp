@@ -15,14 +15,15 @@
 <div class="transaction-list">
     <form action="transaction" method="POST" encType="multipart/form-data">
         {{#each items}}
-            <div class="transaction-{{this.id}}">
-                <span>Date: {{this.Date}}</span>
-                <span>Direction: {{this.Direction}}</span>
-                {{#if this.In}}
-                    <span>Ammount: {{this.In}}</span>
+            <div class="transaction-{{id}}">
+                <span>Date: {{Date}}</span>
+                <span>Direction: {{Direction}}</span>
+                {{#if In}}
+                    <span>Ammount: {{In}}</span>
                 {{else}}
-                    <span>Ammount: {{this.Out}}</span>
+                    <span>Ammount: {{Out}}</span>
                 {{/if}}
+                {{> category_select categories=../categories}}
             </div>
         {{/each}}
     </form>

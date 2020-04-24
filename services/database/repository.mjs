@@ -46,3 +46,15 @@ export function getTransactions(page = 0, limit = 100) {
       });
   });
 }
+
+export function getCategories() {
+  return new Promise((resolve) => {
+    connectDb()
+      .then((db) => {
+        const collection = db.collection(process.env.MONGO_COL_CATEGORIES);
+
+        resolve(collection.find({})
+          .toArray());
+      });
+  });
+}
