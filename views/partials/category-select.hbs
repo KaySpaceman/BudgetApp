@@ -1,5 +1,7 @@
 <select name="{{transaction}}">
     {{#each categories}}
-        <option value="{{Code}}">{{Name}}</option>
+        <option {{#isEqual Code ../current}}selected{{/isEqual}} value="{{Code}}">
+            {{Name}}
+        </option>
     {{/each}}
 </select>
