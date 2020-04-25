@@ -13,9 +13,13 @@
 {{/if}}
 
 <div class="transaction-list">
-    <form action="transaction" method="POST" encType="multipart/form-data">
+    <form action="transactions/categorize" method="POST" encType="multipart/form-data">
+        <div class="controls">
+            <button type="submit">Save</button>
+        </div>
+        <fieldset name="categories">
         {{#each items}}
-            <div class="transaction-{{id}}">
+            <div class="transaction">
                 <span>Date: {{Date}}</span>
                 <span>Direction: {{Direction}}</span>
                 {{#if In}}
@@ -23,9 +27,10 @@
                 {{else}}
                     <span>Ammount: {{Out}}</span>
                 {{/if}}
-                {{> category_select categories=../categories}}
+                {{> category_select categories=../categories current=Category transaction=_id}}
             </div>
         {{/each}}
+        </fieldset>
     </form>
 </div>
 </body>

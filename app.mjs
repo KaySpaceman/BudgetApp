@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import nodeSassMiddleware from 'node-sass-middleware';
 import expressFileupload from 'express-fileupload';
 import indexRouter from './routes/index.mjs';
-import usersRouter from './routes/users.mjs';
+import usersRouter from './routes/transactions.mjs';
 import hbs from 'hbs';
 import { fileURLToPath } from 'url';
 
@@ -32,6 +32,6 @@ app.listen(process.env.PORT);
 
 // Routers
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/transactions', usersRouter);
 
 export default app;

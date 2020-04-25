@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Mongo from 'mongodb';
 import connectDb from './connector.mjs';
 
 export default function saveTransactions(data) {
@@ -16,6 +17,34 @@ export default function saveTransactions(data) {
             ));
 
           Promise.all(insertPromises)
+            .then((newEntries) => {
+              resolve(
+                newEntries.reduce(
+                  (count, current) => count + !_.isNil(current.result.upserted), 0,
+                ),
+              );
+            });
+        } catch (error) {
+          reject(error);
+        }
+      });
+  });
+}
+
+export function updateTransactions(data) {
+  return new Promise((resolve, reject) => {
+    connectDb()
+      .then((db) => {
+        const collection = db.collection(process.env.MONGO_COL_TRANSACTIONS);
+
+        try {
+          const updatePromises = Object.entries(data)
+            .map(([identifier, value]) => collection.updateOne(
+              { _id: Mongo.ObjectID(identifier) },
+              { $set: { Category: value } },
+            ));
+
+          Promise.all(updatePromises)
             .then((newEntries) => {
               resolve(
                 newEntries.reduce(

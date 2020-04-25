@@ -1,6 +1,6 @@
 import express from 'express';
 import { format } from 'url';
-import processStatementUpload from '../services/processor/statement-upload.mjs';
+import processStatementUpload from '../services/processor/statement.mjs';
 import { getTransactions, getCategories } from '../services/database/repository.mjs';
 
 const router = express.Router();
