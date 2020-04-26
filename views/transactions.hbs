@@ -23,7 +23,7 @@
         <fieldset name="categories">
             {{#each items}}
                 <div class="transaction">
-                    <span>Date: {{Date}}</span>
+                    <span>{{#formatDate Date}}{{/formatDate}}</span>
                     <span>Direction: {{Direction}}</span>
                     {{#if In}}
                         <span>Ammount: {{In}}</span>
@@ -34,6 +34,9 @@
                 </div>
             {{/each}}
         </fieldset>
+        <script>
+            $('.category-select').select2();
+        </script>
     </form>
 </div>
 </body>

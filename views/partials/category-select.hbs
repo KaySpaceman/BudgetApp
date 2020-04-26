@@ -1,10 +1,32 @@
-<select id="tra-cat-{{transaction}}" name="{{transaction}}">
-    {{#each categories}}
-        <option {{#isEqual Code ../current}}selected{{/isEqual}} value="{{Code}}">
-            {{Name}}
-        </option>
-    {{/each}}
-</select>
-<script>
-    $('#tra-cat-{{transaction}}').select2({});
-</script>
+<div class="category-wrapper" id="category-wrapper-{{transaction}}">
+    <div id="select-wrapper-{{transaction}}" class="select-wrapper {{#if current}}hide{{/if}}">
+        <select id="cat-sel-{{transaction}}" class="category-select" name="{{transaction}}"
+                {{#if current}}disabled{{/if}}>
+            {{#each categories}}
+                <option {{#isEqual Code ../current}}selected{{/isEqual}} value="{{Code}}">
+                    {{Name}}
+                </option>
+            {{/each}}
+        </select>
+        <script>
+            function toggleCategories(target) {
+                const button = $(target);
+                const wrapper = $(`#select-wrapper-${button.data('transaction')}`);
+                const select = wrapper.children('.category-select').first();
+
+                wrapper.toggleClass('hide');
+                button.toggleClass('hide');
+
+                if (select.prop('disabled')) {
+                    select.prop('disabled', false);
+                } else {
+                    select.prop('disabled', true);
+                }
+            }
+        </script>
+    </div>
+    <button type="button" class="select-toggle {{#unless current}}hide{{/unless}}" data-transaction="{{transaction}}"
+            onClick="toggleCategories(this)">
+        Edit
+    </button>
+</div>
