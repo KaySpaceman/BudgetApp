@@ -1,5 +1,5 @@
 import saveTransactions from '../database/repository.mjs';
-import saveStatementFile from '../utility/file-manager.mjs';
+import saveStatementFile from '../utility/files.mjs';
 import parseTransactionData from '../parser/parser.mjs';
 
 export default function processStatementUpload(data, bank) {
