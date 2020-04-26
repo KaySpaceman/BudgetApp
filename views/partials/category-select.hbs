@@ -1,7 +1,10 @@
-<select name="{{transaction}}">
+<select id="tra-cat-{{transaction}}" name="{{transaction}}">
     {{#each categories}}
         <option {{#isEqual Code ../current}}selected{{/isEqual}} value="{{Code}}">
             {{Name}}
         </option>
     {{/each}}
 </select>
+<script>
+    $('#tra-cat-{{transaction}}').select2({});
+</script>

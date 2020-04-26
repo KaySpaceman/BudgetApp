@@ -1,7 +1,10 @@
 <html>
 <head>
     <title>Transaction List</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 </head>
 <body>
 <h1>This is a list of imported transactions</h1>
@@ -18,18 +21,18 @@
             <button type="submit">Save</button>
         </div>
         <fieldset name="categories">
-        {{#each items}}
-            <div class="transaction">
-                <span>Date: {{Date}}</span>
-                <span>Direction: {{Direction}}</span>
-                {{#if In}}
-                    <span>Ammount: {{In}}</span>
-                {{else}}
-                    <span>Ammount: {{Out}}</span>
-                {{/if}}
-                {{> category_select categories=../categories current=Category transaction=_id}}
-            </div>
-        {{/each}}
+            {{#each items}}
+                <div class="transaction">
+                    <span>Date: {{Date}}</span>
+                    <span>Direction: {{Direction}}</span>
+                    {{#if In}}
+                        <span>Ammount: {{In}}</span>
+                    {{else}}
+                        <span>Ammount: {{Out}}</span>
+                    {{/if}}
+                    {{> category_select categories=../categories current=Category transaction=_id}}
+                </div>
+            {{/each}}
         </fieldset>
     </form>
 </div>
