@@ -8,16 +8,13 @@ import indexRouter from './routes/index.mjs';
 import usersRouter from './routes/transactions.mjs';
 import hbs from 'hbs';
 import { fileURLToPath } from 'url';
+import hbsConfig from './services/utility/hbsConfig.mjs';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+hbsConfig(__dirname);
 app.set('views', path.join(__dirname, 'views'));
-hbs.registerPartials(__dirname + '/views/partials', (err) => {
-});
-hbs.registerHelper('isEqual', (arg1, arg2, options) => {
-  return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
-});
 app.set('view engine', 'hbs');
 
 app.use(morgan('dev'));
