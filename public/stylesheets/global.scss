@@ -27,8 +27,12 @@ a {
 .button {
   background-color: $color-white;
   border-radius: 6px;
+  border: solid 1px $color-cadet-blue;
   box-shadow: 0 4px 0 $color-ghost-white;
   color: $color-liberty;
+  display: block;
+  text-align: center;
+  text-decoration: none;
   padding: 6px 10px;
   font-weight: 700;
 

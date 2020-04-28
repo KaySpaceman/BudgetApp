@@ -5,7 +5,8 @@ import cookieParser from 'cookie-parser';
 import nodeSassMiddleware from 'node-sass-middleware';
 import expressFileupload from 'express-fileupload';
 import indexRouter from './routes/index.mjs';
-import usersRouter from './routes/transactions.mjs';
+import transactionRouter from './routes/transactions.mjs';
+import chartRouter from './routes/charts.mjs';
 import hbs from 'hbs';
 import { fileURLToPath } from 'url';
 import hbsConfig from './services/utility/hbsConfig.mjs';
@@ -33,6 +34,7 @@ app.listen(process.env.PORT);
 
 // Routers
 app.use('/', indexRouter);
-app.use('/transactions', usersRouter);
+app.use('/transactions', transactionRouter);
+app.use('/charts', chartRouter);
 
 export default app;
