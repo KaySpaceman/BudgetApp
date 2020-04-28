@@ -59,7 +59,7 @@ export function updateTransactions(data) {
   });
 }
 
-export function getTransactions(page = 0, limit = 100) {
+export function getTransactions(page = 0, limit = 10) {
   return new Promise((resolve) => {
     connectDb()
       .then((db) => {

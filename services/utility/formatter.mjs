@@ -1,3 +1,3 @@
 export default function formatDate(date) {
-  return new Date(date).toLocaleDateString();
+  return new Date(date).toLocaleDateString('en-GB');
 }

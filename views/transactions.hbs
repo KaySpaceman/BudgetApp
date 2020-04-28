@@ -10,32 +10,43 @@
 <h1>This is a list of imported transactions</h1>
 
 {{#if count}}
-    <p>Imported {{count}} new transactions</p>
+    <p class="notification">Imported {{count}} new transactions</p>
 {{else}}
-    <p>No new transactions were imported</p>
+    <p class="notification">No new transactions were imported</p>
 {{/if}}
 
 <div class="transaction-list">
-    <form action="transactions/categorize" method="POST" encType="multipart/form-data">
+    <form action="categorize" method="POST" encType="multipart/form-data">
         <div class="controls">
-            <button type="submit">Save</button>
+            <button class="button button-large" type="submit">Save</button>
+            <button class="button button-large" type="button">Export</button>
         </div>
-        <fieldset name="categories">
+        <fieldset name="categories" class="transaction-table">
+                <div class="header">
+                    <span>Date</span>
+                    <span>Reason</span>
+                    <span>Type</span>
+                    <span>Amount</span>
+                    <span>Category</span>
+                </div>
             {{#each items}}
-                <div class="transaction">
+                <div class="transaction {{#unless Category}}un-categorized{{/unless}}">
                     <span>{{#formatDate Date}}{{/formatDate}}</span>
-                    <span>Direction: {{Direction}}</span>
+                    <span>{{Note}}</span>
+                    <span>{{Direction}}</span>
                     {{#if In}}
-                        <span>Ammount: {{In}}</span>
+                        <span>{{In}}</span>
                     {{else}}
-                        <span>Ammount: {{Out}}</span>
+                        <span>{{Out}}</span>
                     {{/if}}
                     {{> category_select categories=../categories current=Category transaction=_id}}
                 </div>
             {{/each}}
         </fieldset>
         <script>
-            $('.category-select').select2();
+            $('.category-select').select2({
+                width: '100%'
+            });
         </script>
     </form>
 </div>

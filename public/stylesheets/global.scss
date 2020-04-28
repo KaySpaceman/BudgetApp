@@ -1,6 +1,11 @@
 body {
+  background-color: $color-ghost-white;
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px $font-proxima-nova;
+}
+
+h1 {
+  font-size: 2.5em;
 }
 
 a {
@@ -9,4 +14,30 @@ a {
 
 .hide {
   display: none;
+}
+
+.notification {
+  background-color: $color-blue-jeans;
+  border-radius: 15px;
+  color: $color-white;
+  padding: 10px;
+  width: 400px;
+}
+
+.button {
+  background-color: $color-white;
+  border-radius: 6px;
+  box-shadow: 0 4px 0 $color-ghost-white;
+  color: $color-liberty;
+  padding: 6px 10px;
+  font-weight: 700;
+
+  &.button-large {
+    border-radius: 10px;
+    padding: 10px 20px;
+  }
+
+  &.inactive {
+    color: $color-cadet-blue;
+  }
 }
