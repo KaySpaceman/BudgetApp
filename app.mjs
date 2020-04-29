@@ -7,13 +7,16 @@ import expressFileupload from 'express-fileupload';
 import indexRouter from './routes/index.mjs';
 import transactionRouter from './routes/transactions.mjs';
 import chartRouter from './routes/charts.mjs';
+import categoryRouter from './routes/categories.mjs';
 import hbs from 'hbs';
+import connectDb from './services/database/connector.mjs';
 import { fileURLToPath } from 'url';
 import hbsConfig from './services/utility/hbsConfig.mjs';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+connectDb();
 hbsConfig(__dirname);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -36,5 +39,6 @@ app.listen(process.env.PORT);
 app.use('/', indexRouter);
 app.use('/transactions', transactionRouter);
 app.use('/charts', chartRouter);
+app.use('/categories', categoryRouter);
 
 export default app;

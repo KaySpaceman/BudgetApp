@@ -16,20 +16,21 @@
 {{/if}}
 
 <div class="transaction-list">
-    <form action="categorize" method="POST" encType="multipart/form-data">
+    <form action="/transactions/categorize" method="POST" encType="multipart/form-data">
         <div class="controls">
             <button class="button button-large" type="submit">Save</button>
             <a href="charts" class="button button-large">Charts</a>
+            <a href="categories" class="button button-large">Categories</a>
             <button class="button button-large" type="button">Export</button>
         </div>
         <fieldset name="categories" class="transaction-table">
-                <div class="header">
-                    <span>Date</span>
-                    <span>Reason</span>
-                    <span>Type</span>
-                    <span>Amount</span>
-                    <span>Category</span>
-                </div>
+            <div class="header">
+                <span>Date</span>
+                <span>Reason</span>
+                <span>Type</span>
+                <span>Amount</span>
+                <span>Category</span>
+            </div>
             {{#each items}}
                 <div class="transaction {{#unless Category}}un-categorized{{/unless}}">
                     <span>{{#formatDate Date}}{{/formatDate}}</span>
@@ -45,9 +46,10 @@
             {{/each}}
         </fieldset>
         <script>
-            $('.category-select').select2({
-                width: '100%'
-            });
+            $('.category-select')
+                    .select2({
+                        width: '100%',
+                    });
         </script>
     </form>
 </div>

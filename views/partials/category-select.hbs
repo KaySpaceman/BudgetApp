@@ -3,7 +3,7 @@
         <select id="cat-sel-{{transaction}}" class="category-select" name="{{transaction}}"
                 {{#if current}}disabled{{/if}}>
             {{#each categories}}
-                <option {{#isEqual Code ../current}}selected{{/isEqual}} value="{{Code}}">
+                <option {{#isEqual _id ../current}}selected{{/isEqual}} value="{{_id}}">
                     {{Name}}
                 </option>
             {{/each}}
@@ -12,7 +12,8 @@
             function toggleCategories(target) {
                 const button = $(target);
                 const wrapper = $(`#select-wrapper-${button.data('transaction')}`);
-                const select = wrapper.children('.category-select').first();
+                const select = wrapper.children('.category-select')
+                        .first();
 
                 wrapper.toggleClass('hide');
                 button.toggleClass('hide');
