@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Data Charts</title>
+    <title>Transaction Categories</title>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
@@ -10,7 +10,31 @@
 
 <div class="category-wrapper">
     <h1>Transaction Categories</h1>
-    {{topLevel}}
+    <div class="cat-tree">
+        <ul class="level-0">
+            {{> category_tree items=topLevel level=0}}
+        </ul>
+    </div>
+    <div class="cat-create-form-wrapper">
+        <form action="categories/new" class="cat-create-form">
+            <h3 class="cat-new-heading">Add a new category</h3>
+
+            <label class="cat-label" for="cat-new-name">Name</label>
+            <input id=cat-new-name type="text" name="name">
+
+            <label class="cat-label" for="cat-sel-new">Parent</label>
+            {{> category_select categories=flatList transaction='new'}}
+            <span class="cat-parent-notice">Leave empty for root category</span>
+
+            <button class="cat-new-submit" type="submit">Add</button>
+        </form>
+        <script>
+            $('.category-select')
+                    .select2({
+                        width: '100%',
+                    });
+        </script>
+    </div>
 </div>
 </body>
 </html>

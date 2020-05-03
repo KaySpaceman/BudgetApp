@@ -8,4 +8,5 @@ export default function configure(__dirname) {
     'isEqual',
     (arg1, arg2, options) => ((arg1 === arg2) ? options.fn(this) : options.inverse(this)),
   );
+  hbs.registerHelper('inc', (value) => parseInt(value, 10) + 1);
 }

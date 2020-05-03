@@ -1,14 +1,14 @@
 import express from 'express';
-import { getCategoryTree } from '../services/database/repository.mjs';
-import { getCategories } from '../services/database/repository.mjs';
+import { getCategoryTree, getCategories } from '../services/database/repository.mjs';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  getCategoryTree()
-    .then((topLevel) => {
+  Promise.all([getCategoryTree(), getCategories()])
+    .then((result) => {
       res.render('categories', {
-        topLevel,
+        topLevel: result[0],
+        flatList: result[1],
       });
     });
 });

@@ -1,4 +1,4 @@
-models/Transaction.mjs import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 const transactionSchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
