@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+models/Transaction.mjs import mongoose from 'mongoose';
 
-const Transaction = new mongoose.Schema({
+const transactionSchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
   Date,
   Type: String,
@@ -11,4 +11,4 @@ const Transaction = new mongoose.Schema({
   Category: mongoose.ObjectId,
 });
 
-export default mongoose.model('Transaction', Transaction, 'Transactions');
+export default mongoose.model('Transaction', transactionSchema, 'Transactions');

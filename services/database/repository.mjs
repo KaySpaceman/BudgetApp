@@ -66,11 +66,11 @@ export function getCategories() {
 
 export function getCategoryTree() {
   return new Promise((resolve) => {
-    connectDb()
-      .then((db) => {
-        const collection = db.collection(process.env.MONGO_COL_CATEGORIES);
-
-        resolve(collection.find({ Path: /^,true,/ }));
-      });
+    Category.regenerateTree()
+      .then(() => Category.find({ Parent: null })
+        .exec()
+        .then((topLevel) => {
+          resolve(topLevel);
+        }));
   });
 }
