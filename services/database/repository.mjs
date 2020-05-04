@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import mongoose from 'mongoose';
 import connectDb from './connector.mjs';
 import Transaction from '../../models/Transaction.mjs';
 import Category from '../../models/Category.mjs';
@@ -64,13 +65,37 @@ export function getCategories() {
     .exec();
 }
 
+export function createCategory(name, parent = null) {
+  return new Category({
+    _id: new mongoose.Types.ObjectId(),
+    Name: name,
+    Parent: parent,
+  }).save();
+}
+
+export function regenerateTree() {
+  return Category.regenerateTree();
+}
+
 export function getCategoryTree() {
   return new Promise((resolve) => {
-    Category.regenerateTree()
-      .then(() => Category.find({ Parent: null })
-        .exec()
-        .then((topLevel) => {
+    Category.find({ Parent: null })
+      .exec()
+      .then((topLevel) => {
+        const haveTrees = topLevel.filter(
+          (cat) => Array.isArray(cat.Children) && cat.Children.length > 0,
+        );
+
+        if (!Array.isArray(haveTrees) || haveTrees.length < 1) {
+          regenerateTree()
+            .then(() => Category.find({ Parent: null })
+              .exec()
+              .then((newTopLevel) => {
+                resolve(newTopLevel);
+              }));
+        } else {
           resolve(topLevel);
-        }));
+        }
+      });
   });
 }

@@ -1,7 +1,6 @@
 import express from 'express';
 import { format } from 'url';
 import processStatementUpload from '../services/processor/statement.mjs';
-import { getTransactions, getCategories } from '../services/database/repository.mjs';
 
 const router = express.Router();
 
@@ -30,17 +29,6 @@ router.post('/upload-action', (req, res) => {
           error: reason,
         },
       }));
-    });
-});
-
-router.get('/transactions', (req, res) => {
-  Promise.all([getTransactions(), getCategories()])
-    .then((result) => {
-      res.render('transactions', {
-        count: req.query.count,
-        items: result[0],
-        categories: result[1],
-      });
     });
 });
 

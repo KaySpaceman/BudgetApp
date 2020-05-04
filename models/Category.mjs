@@ -30,6 +30,8 @@ categorySchema.statics.findChildren = function (flatArray, parent = { _id: null 
     });
   }
 
+  if (parent.save) parent.save();
+
   return tree;
 };
 
@@ -40,10 +42,6 @@ categorySchema.statics.regenerateTree = function () {
       .then((flatArray) => {
         const tree = this.model('Category')
           .findChildren(flatArray);
-
-        tree.forEach((topCategory) => {
-          topCategory.save();
-        });
 
         resolve(tree);
       });
