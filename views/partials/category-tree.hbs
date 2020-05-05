@@ -3,9 +3,8 @@
         <span class="cat-name">{{Name}}</span>
         <button class="cat-delete" data-id="{{_id}}">Delete</button>
         {{#if Children}}
-            {{inc level}}
-            <ul class="level-{{level}}">
-                {{> category_tree items=Children level=level }}
+            <ul class="level-{{../level}}">
+                {{> category_tree items=Children level=(inc ../level)}}
             </ul>
         {{/if}}
     </li>
