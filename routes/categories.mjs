@@ -4,6 +4,7 @@ import {
   getCategories,
   createCategory,
   regenerateTree,
+  deleteCategory,
 } from '../services/database/repository.mjs';
 
 const router = express.Router();
@@ -32,6 +33,15 @@ router.post('/new', (req, res) => {
           res.redirect('/categories');
         });
     });
+});
+
+router.post('/delete', (req, res) => {
+  const categoryId = req.param('Id');
+
+  if (!categoryId) res.redirect('/categories');
+
+  deleteCategory(categoryId)
+    .then(() => res.redirect('/categories'));
 });
 
 export default router;

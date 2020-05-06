@@ -1,9 +1,9 @@
 {{#each items}}
-    <li>
+    <li class="cat-tree-branch">
         <span class="cat-name">{{Name}}</span>
         <button class="cat-delete" data-id="{{_id}}">Delete</button>
         {{#if Children}}
-            <ul class="level-{{../level}}">
+            <ul class="cat-tree-subtree level-{{../level}}">
                 {{> category_tree items=Children level=(inc ../level)}}
             </ul>
         {{/if}}

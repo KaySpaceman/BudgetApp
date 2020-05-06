@@ -1,4 +1,4 @@
-/* eslint-disable no-underscore-dangle, no-param-reassign, func-names */
+/* eslint-disable no-underscore-dangle, no-param-reassign, func-names, array-callback-return */
 import mongoose from 'mongoose';
 import _ from 'lodash';
 
@@ -8,6 +8,20 @@ const categorySchema = new mongoose.Schema({
   Parent: mongoose.ObjectId,
   Children: Array,
 });
+
+categorySchema.statics.findChildIds = function (childrenArray, prevVal = []) {
+  return childrenArray.reduce((acc, cur) => {
+    if (cur._id) {
+      acc.push(cur._id);
+    }
+
+    if (Array.isArray(cur.Children)) {
+      acc.concat(this.findChildIds(cur.Children, acc));
+    }
+
+    return acc;
+  }, prevVal);
+};
 
 categorySchema.statics.findChildren = function (flatArray, parent = { _id: null }, tree = []) {
   const children = flatArray.filter((child) => {

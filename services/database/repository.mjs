@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import _ from 'lodash';
 import mongoose from 'mongoose';
 import connectDb from './connector.mjs';
@@ -98,4 +99,31 @@ export function getCategoryTree() {
         }
       });
   });
+}
+
+export async function deleteCategory(categoryId) {
+  const cleanup = [];
+  const categoryIds = await Category.findById(categoryId)
+    .exec()
+    .then((category) => {
+      const childIds = Category.findChildIds(category.Children);
+
+      childIds.push(category._id);
+
+      return childIds;
+    });
+
+  cleanup.push(
+    Transaction.where({ Category: { $in: categoryIds } })
+      .update({ $unset: { Category: '' } })
+      .exec(),
+  );
+
+  cleanup.push(
+    Category.deleteMany({ _id: { $in: categoryIds } })
+      .exec()
+      .then(() => Category.regenerateTree()),
+  );
+
+  return Promise.all(cleanup);
 }

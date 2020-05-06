@@ -11,7 +11,7 @@
 <div class="category-wrapper">
     <h1>Transaction Categories</h1>
     <div class="cat-tree">
-        <ul class="level-0">
+        <ul class="cat-tree-subtree level-0">
             {{> category_tree items=topLevel level=1}}
         </ul>
     </div>
@@ -29,10 +29,30 @@
             <button class="cat-new-submit" type="submit">Add</button>
         </form>
         <script>
-            $('.category-select')
-                    .select2({
-                        width: '100%',
+            $(document)
+                    .ready(() => {
+                        $('.category-select')
+                                .select2({
+                                    width: '100%',
+                                });
+                        $('.cat-delete')
+                                .on('click', deleteCategory);
                     });
+
+            function deleteCategory(event) {
+                const button = $(event.target);
+                const branch = button.closest('.cat-tree-branch')
+                        .first();
+                const categoryId = button.data('id');
+
+                if (!categoryId) return;
+
+                $.post('/categories/delete', { Id: categoryId }, () => {
+                    branch.remove();
+                }).fail(() => {
+                  alert('Failed to delete category!');
+                });
+            }
         </script>
     </div>
 </div>
