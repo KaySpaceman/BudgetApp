@@ -23,7 +23,7 @@
             <input id=cat-new-name type="text" name="name">
 
             <label class="cat-label" for="cat-sel-new">Parent</label>
-            {{> category_select categories=flatList transaction='new'}}
+            {{> category_select categories=flatList identifier='new'}}
             <span class="cat-parent-notice">Leave empty for root category</span>
 
             <button class="cat-new-submit" type="submit">Add</button>

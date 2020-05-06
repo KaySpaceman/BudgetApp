@@ -1,6 +1,6 @@
-<div class="category-wrapper" id="category-wrapper-{{transaction}}">
-    <div id="select-wrapper-{{transaction}}" class="select-wrapper {{#if current}}hide{{/if}}">
-        <select id="cat-sel-{{transaction}}" class="category-select" name="{{transaction}}"
+<div class="category-wrapper" id="category-wrapper-{{identifier}}">
+    <div id="select-wrapper-{{identifier}}" class="select-wrapper {{#if current}}hide{{/if}}">
+        <select id="cat-sel-{{identifier}}" class="category-select" name="{{identifier}}"
                 {{#if current}}disabled{{/if}}>
             {{#each categories}}
                 <option {{#isEqual _id ../current}}selected{{/isEqual}} value="{{_id}}">
@@ -28,7 +28,7 @@
     </div>
     <span class="current-category {{#unless current}}hide{{/unless}}">{{current}}</span>
     <button type="button" class="button button-small {{#unless current}}hide{{/unless}}"
-            data-transaction="{{transaction}}" onClick="toggleCategories(this)">
+            data-transaction="{{identifier}}" onClick="toggleCategories(this)">
         Edit
     </button>
 </div>
