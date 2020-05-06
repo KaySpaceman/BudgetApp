@@ -66,16 +66,24 @@ export function getCategories() {
     .exec();
 }
 
-export function createCategory(name, parent = null) {
-  return new Category({
-    _id: new mongoose.Types.ObjectId(),
-    Name: name,
-    Parent: parent,
-  }).save();
-}
-
 export function regenerateTree() {
   return Category.regenerateTree();
+}
+
+export async function createCategory(name, parent = null) {
+  const newCategory = new Category({
+    _id: new mongoose.Types.ObjectId(),
+    Name: name,
+  });
+
+  if (parent) {
+    newCategory.Parent = parent;
+  }
+
+  const savedCategory = await newCategory.save();
+  await regenerateTree();
+
+  return savedCategory;
 }
 
 export function getCategoryTree() {
@@ -106,7 +114,9 @@ export async function deleteCategory(categoryId) {
   const categoryIds = await Category.findById(categoryId)
     .exec()
     .then((category) => {
-      const childIds = Category.findChildIds(category.Children);
+      if (!category) return [];
+
+      const childIds = Category.findDescendantIds(category.Children);
 
       childIds.push(category._id);
 
@@ -122,7 +132,7 @@ export async function deleteCategory(categoryId) {
   cleanup.push(
     Category.deleteMany({ _id: { $in: categoryIds } })
       .exec()
-      .then(() => Category.regenerateTree()),
+      .then(async () => regenerateTree()),
   );
 
   return Promise.all(cleanup);

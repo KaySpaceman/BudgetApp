@@ -9,56 +9,66 @@ const categorySchema = new mongoose.Schema({
   Children: Array,
 });
 
-categorySchema.statics.findChildIds = function (childrenArray, prevVal = []) {
+categorySchema.statics.findDescendantIds = function (childrenArray, prevVal = []) {
   return childrenArray.reduce((acc, cur) => {
     if (cur._id) {
       acc.push(cur._id);
     }
 
     if (Array.isArray(cur.Children)) {
-      acc.concat(this.findChildIds(cur.Children, acc));
+      acc.concat(this.findDescendantIds(cur.Children, acc));
     }
 
     return acc;
   }, prevVal);
 };
 
-categorySchema.statics.findChildren = function (flatArray, parent = { _id: null }, tree = []) {
-  const children = flatArray.filter((child) => {
-    if (child.Parent === parent._id) return true;
+categorySchema.statics.findChildren = function (flatArray, parent = { _id: null }) {
+  return flatArray.filter((child) => {
+    if ((child.Parent === parent._id) || (!child.Parent && parent._id === null)) return true;
 
     if (!child.Parent || !parent._id) return false;
 
     return child.Parent.toString() === parent._id.toString();
   });
-
-  if (!_.isEmpty(children)) {
-    if (parent._id === null) {
-      tree = children;
-    } else {
-      parent.Children = children;
-    }
-
-    children.forEach((child) => {
-      this.findChildren(flatArray, child);
-    });
-  }
-
-  if (parent.save) parent.save();
-
-  return tree;
 };
 
-categorySchema.statics.regenerateTree = function () {
+categorySchema.statics.updateChildren = async function (
+  flatArray, parent = { _id: null }, newFlatArray = [],
+) {
   return new Promise((resolve) => {
-    this.find({})
-      .exec()
-      .then((flatArray) => {
-        const tree = this.model('Category')
-          .findChildren(flatArray);
+    const children = this.findChildren(flatArray, parent);
 
-        resolve(tree);
+    if (!_.isEmpty(children)) {
+      parent.Children = children;
+
+      children.forEach((child) => {
+        newFlatArray.concat(this.updateChildren(flatArray, child, newFlatArray));
       });
+    } else {
+      parent.Children = [];
+    }
+
+    if (parent.Parent && parent.save) {
+      parent.save();
+      newFlatArray.push(parent);
+    }
+
+    resolve(newFlatArray);
+  });
+};
+
+categorySchema.statics.regenerateTree = async function () {
+  const flatArray = await this.find({})
+    .exec();
+  const topLevel = await this.find({ Parent: null })
+    .exec();
+
+  const updatedFlatArray = await this.updateChildren(flatArray);
+
+  topLevel.forEach((category) => {
+    category.Children = this.findChildren(updatedFlatArray, category);
+    category.save();
   });
 };
 
