@@ -1,11 +1,11 @@
 import express from 'express';
-import { getCategories, getTransactions } from '../services/database/repository.mjs';
+import { getCategoryTree, getTransactions } from '../services/database/repository.mjs';
 import updateCategories from '../services/processor/transaction.mjs';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  Promise.all([getTransactions(), getCategories()])
+  Promise.all([getTransactions(), getCategoryTree()])
     .then((result) => {
       res.render('transactions', {
         count: req.query.count,

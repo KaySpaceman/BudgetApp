@@ -1,0 +1,11 @@
+{{#each items}}
+    {{#if Children}}
+        <optgroup class="cat-optgroup level-{{../level}}" label="{{Name}}" data-test="aaaff">
+            {{> category_select_options items=Children current=../current level=(inc ../level)}}
+        </optgroup>
+    {{else}}
+        <option class="cat-option level-{{../level}}" {{#isEqual _id ../current}}selected{{/isEqual}} value="{{_id}}">
+            {{Name}}
+        </option>
+    {{/if}}
+{{/each}}

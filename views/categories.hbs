@@ -29,15 +29,10 @@
             <button class="cat-new-submit" type="submit">Add</button>
         </form>
         <script>
-            $(document)
-                    .ready(() => {
-                        $('.category-select')
-                                .select2({
-                                    width: '100%',
-                                });
-                        $('.cat-delete')
-                                .on('click', deleteCategory);
-                    });
+            $(document).ready(() => {
+              $('.cat-delete')
+                      .on('click', deleteCategory);
+            });
 
             function deleteCategory(event) {
                 const button = $(event.target);

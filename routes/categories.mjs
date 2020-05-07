@@ -1,24 +1,24 @@
 import express from 'express';
 import {
   getCategoryTree,
-  getCategories,
   createCategory,
-  regenerateTree,
   deleteCategory,
 } from '../services/database/repository.mjs';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  Promise.all([getCategoryTree(), getCategories()])
-    .then((result) => {
-      result[1].unshift({
+  getCategoryTree()
+    .then((tree) => {
+      const flatList = tree.map((x) => x);
+      flatList.unshift({
         _id: null,
         Name: 'Root',
       });
+
       res.render('categories', {
-        topLevel: result[0],
-        flatList: result[1],
+        topLevel: tree,
+        flatList,
       });
     });
 });

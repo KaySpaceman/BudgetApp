@@ -2,13 +2,30 @@
     <div id="select-wrapper-{{identifier}}" class="select-wrapper {{#if current}}hide{{/if}}">
         <select id="cat-sel-{{identifier}}" class="category-select" name="{{identifier}}"
                 {{#if current}}disabled{{/if}}>
-            {{#each categories}}
-                <option {{#isEqual _id ../current}}selected{{/isEqual}} value="{{_id}}">
-                    {{Name}}
-                </option>
-            {{/each}}
+            {{> category_select_options items=categories current=current level=0}}
         </select>
         <script>
+            $(document).ready(() => {
+              $('.category-select')
+                      .select2({
+                          width: '100%',
+                          templateResult: function (data) {
+                              if (!data.element) {
+                                  return data.text;
+                              }
+
+                              const element = $(data.element);
+                              const wrapper = $('<span></span>');
+
+                              wrapper.addClass(element[0].className);
+                              wrapper.text(data.text);
+
+                              return wrapper;
+                          }
+                      });
+            });
+
+
             function toggleCategories(target) {
                 const button = $(target);
                 const wrapper = $(`#select-wrapper-${button.data('transaction')}`);
