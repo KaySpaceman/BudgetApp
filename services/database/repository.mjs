@@ -53,11 +53,18 @@ export function updateTransactions(data) {
   });
 }
 
-export function getTransactions(page = 0, limit = 10) {
-  return Transaction.find({})
-    .skip(page > 0 ? ((page - 1) * limit) : 0)
+export function getTransactions(page = 0, limit = 100) {
+  return Transaction.aggregate([
+    { $set: { HasCategory: { $and: ['$Category'] } } },
+    {
+      $sort: {
+        HasCategory: 1,
+        Date: -1,
+      },
+    },
+  ])
     .limit(limit)
-    .sort({ Date: -1 })
+    .skip(page > 0 ? ((page - 1) * limit) : 0)
     .exec();
 }
 

@@ -17,8 +17,8 @@ router.get('/', (req, res) => {
 
 router.post('/categorize', (req, res) => {
   updateCategories(req.body)
-    .then((count) => {
-      res.send(String(count));
+    .then((updateCount) => {
+      res.redirect('/transactions');
     });
 });
 
