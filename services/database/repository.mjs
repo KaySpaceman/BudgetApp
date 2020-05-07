@@ -5,6 +5,8 @@ import connectDb from './connector.mjs';
 import Transaction from '../../models/Transaction.mjs';
 import Category from '../../models/Category.mjs';
 
+// TODO: Move functions to separate repositories
+
 export default function saveTransactions(data) {
   return new Promise((resolve, reject) => {
     connectDb()
@@ -118,7 +120,7 @@ export function getCategoryTree() {
 
 export async function deleteCategory(categoryId) {
   const cleanup = [];
-  const categoryIds = await Category.findById(categoryId)
+  let categoryIds = await Category.findById(categoryId)
     .exec()
     .then((category) => {
       if (!category) return [];
@@ -129,6 +131,15 @@ export async function deleteCategory(categoryId) {
 
       return childIds;
     });
+
+  const systemCategoryIds = await Category.find({ IsSystem: true })
+    .select('_id')
+    .exec()
+    .then((systemCategories) => systemCategories.map((cat) => cat._id.toString()));
+
+  categoryIds = categoryIds.filter(
+    (id) => !systemCategoryIds.includes(id.toString()),
+  );
 
   cleanup.push(
     Transaction.where({ Category: { $in: categoryIds } })

@@ -7,6 +7,7 @@ const categorySchema = new mongoose.Schema({
   Name: String,
   Parent: mongoose.ObjectId,
   Children: Array,
+  IsSystem: Boolean,
 });
 
 categorySchema.statics.findDescendantIds = function (childrenArray, prevVal = []) {
