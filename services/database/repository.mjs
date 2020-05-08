@@ -75,6 +75,46 @@ export function getCategories() {
     .exec();
 }
 
+export function getSystemCategoryIds(asString = true) {
+  return Category.find({ IsSystem: true })
+    .select('_id')
+    .exec()
+    .then((systemCategories) => {
+      if (asString) {
+        return systemCategories.map((cat) => cat._id.toString());
+      }
+
+      return systemCategories.map((cat) => cat._id);
+    });
+}
+
+export async function getOutgoingByDate() {
+  const systemCategories = await getSystemCategoryIds(false);
+
+  return Transaction.aggregate([
+    {
+      $match: {
+        Category: { $nin: systemCategories },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$Date' } },
+        value: { $sum: '$Out' },
+      },
+    },
+    { $sort: { _id: -1 } },
+    {
+      $project: {
+        _id: 0,
+        date: '$_id',
+        value: '$value',
+      },
+    },
+  ])
+    .exec();
+}
+
 export function regenerateTree() {
   return Category.regenerateTree();
 }
@@ -132,10 +172,7 @@ export async function deleteCategory(categoryId) {
       return childIds;
     });
 
-  const systemCategoryIds = await Category.find({ IsSystem: true })
-    .select('_id')
-    .exec()
-    .then((systemCategories) => systemCategories.map((cat) => cat._id.toString()));
+  const systemCategoryIds = await getSystemCategoryIds();
 
   categoryIds = categoryIds.filter(
     (id) => !systemCategoryIds.includes(id.toString()),

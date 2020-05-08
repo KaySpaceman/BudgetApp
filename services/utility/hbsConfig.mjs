@@ -9,4 +9,5 @@ export default function configure(__dirname) {
     (arg1, arg2, options) => ((arg1 === arg2) ? options.fn(this) : options.inverse(this)),
   );
   hbs.registerHelper('inc', (value) => parseInt(value, 10) + 1);
+  hbs.registerHelper('json', (context) => JSON.stringify(context));
 }
