@@ -5,7 +5,7 @@ import _ from 'lodash';
 const categorySchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
   Name: String,
-  Parent: mongoose.ObjectId,
+  Parent: { type: mongoose.ObjectId, ref: 'Category' },
   Children: Array,
   IsSystem: Boolean,
 });
@@ -70,6 +70,23 @@ categorySchema.statics.regenerateTree = async function () {
   topLevel.forEach((category) => {
     category.Children = this.findChildren(updatedFlatArray, category);
     category.save();
+  });
+};
+
+categorySchema.statics.assignTotalsToCategories = function (categories, totals) {
+  return categories.map((category) => {
+    const categoryId = category._id.toString();
+    const dataPoint = { name: category.Name };
+
+    if (totals[categoryId]) {
+      dataPoint.value = totals[categoryId];
+    }
+
+    if (category.Children && category.Children.length > 0) {
+      dataPoint.children = this.assignTotalsToCategories(category.Children, totals);
+    }
+
+    return dataPoint;
   });
 };
 

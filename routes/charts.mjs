@@ -1,14 +1,16 @@
 import express from 'express';
-import { getOutgoingByDate } from '../services/database/repository.mjs';
+import { getOutgoingByDate, getOutgoingByCategory } from '../services/database/repository.mjs';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  getOutgoingByDate().then((data) => {
-    res.render('charts', {
-      monthlySpending: data,
+  Promise.all([getOutgoingByDate(), getOutgoingByCategory()])
+    .then((result) => {
+      res.render('charts', {
+        monthlySpending: result[0],
+        categorizedSpending: result[1],
+      });
     });
-  });
 });
 
 export default router;

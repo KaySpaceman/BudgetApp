@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import connectDb from './connector.mjs';
 import Transaction from '../../models/Transaction.mjs';
 import Category from '../../models/Category.mjs';
+import { objArrToObj } from '../utility/formatter.mjs';
 
 // TODO: Move functions to separate repositories
 
@@ -99,7 +100,12 @@ export async function getOutgoingByDate() {
     },
     {
       $group: {
-        _id: { $dateToString: { format: '%Y-%m-%d', date: '$Date' } },
+        _id: {
+          $dateToString: {
+            format: '%Y-%m-%d',
+            date: '$Date',
+          },
+        },
         value: { $sum: '$Out' },
       },
     },
@@ -113,6 +119,49 @@ export async function getOutgoingByDate() {
     },
   ])
     .exec();
+}
+
+export async function getOutgoingByCategory() {
+  const systemCategories = await getSystemCategoryIds(false);
+
+  const promiseGroupedTotals = Transaction.aggregate([
+    {
+      $match: {
+        Category: { $nin: systemCategories },
+      },
+    },
+    {
+      $group: {
+        _id: '$Category',
+        value: { $sum: '$Out' },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        value: '$value',
+      },
+    },
+  ])
+    .exec();
+
+  const promiseTopCategories = Category.aggregate([
+    {
+      $match: { Parent: null },
+    },
+    {
+      $project: {
+        _id: 1,
+        Name: 1,
+        Children: 1,
+      },
+    },
+  ])
+    .exec();
+
+  Promise.all([promiseGroupedTotals, promiseTopCategories])
+    .then(([totals, topCategories]) => Category.assignTotalsToCategories(topCategories,
+      objArrToObj(totals, '_id', 'value')));
 }
 
 export function regenerateTree() {
