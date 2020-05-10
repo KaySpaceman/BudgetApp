@@ -9,6 +9,7 @@ import transactionRouter from './routes/transactions.mjs';
 import chartRouter from './routes/charts.mjs';
 import categoryRouter from './routes/categories.mjs';
 import hbs from 'hbs';
+import expressVue from 'express-vue';
 import connectDb from './services/database/connector.mjs';
 import { fileURLToPath } from 'url';
 import hbsConfig from './services/utility/hbsConfig.mjs';
@@ -34,6 +35,17 @@ app.use(nodeSassMiddleware({
 app.use(expressFileupload({}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.listen(process.env.PORT);
+
+//ExpressVue Setup
+const vueOptions = {
+  rootPath: path.join(__dirname, 'vue-routes'),
+  head: {
+    styles: [{ style: '/stylesheets/style.css' }],
+  },
+};
+
+const expressVueMiddleware = expressVue.init(vueOptions);
+app.use(expressVueMiddleware);
 
 // Routers
 app.use('/', indexRouter);

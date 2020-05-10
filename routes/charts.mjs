@@ -13,4 +13,8 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/vue', (req, res) => {
+  res.renderVue('App.vue', {}, {});
+});
+
 export default router;
