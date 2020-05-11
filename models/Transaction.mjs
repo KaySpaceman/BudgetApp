@@ -6,6 +6,7 @@ const transactionSchema = new mongoose.Schema({
   Type: String,
   Direction: String,
   Note: String,
+  Amount: Number,
   Bank: String,
   Hash: String,
   Category: { type: mongoose.ObjectId, ref: 'Category' },

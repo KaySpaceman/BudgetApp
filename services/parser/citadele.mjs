@@ -31,8 +31,7 @@ export default function parseTransactionData(path) {
           Date: buildDate(row[0]),
           Type: row[1],
           Direction: row[5] > 0 ? 'IN' : 'OUT',
-          In: row[5] > 0 ? row[5] : null,
-          Out: row[5] < 0 ? row[5] : null,
+          Amount: Number(row[5]),
           Note: row[2],
           Bank: BANK_CITADELE,
         };

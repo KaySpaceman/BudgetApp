@@ -36,11 +36,7 @@
                     <span>{{#formatDate Date}}{{/formatDate}}</span>
                     <span>{{Note}}</span>
                     <span>{{Direction}}</span>
-                    {{#if In}}
-                        <span>{{In}}</span>
-                    {{else}}
-                        <span>{{Out}}</span>
-                    {{/if}}
+                    <span>{{Amount}}</span>
                     {{> category_select categories=../categories current=Category identifier=_id}}
                 </div>
             {{/each}}

@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import _ from 'lodash';
 import mongoose from 'mongoose';
-import connectDb from './connector.mjs';
 import Transaction from '../../models/Transaction.mjs';
 import Category from '../../models/Category.mjs';
 import { objArrToObj } from '../utility/formatter.mjs';
@@ -10,30 +9,26 @@ import { objArrToObj } from '../utility/formatter.mjs';
 
 export default function saveTransactions(data) {
   return new Promise((resolve, reject) => {
-    connectDb()
-      .then((db) => {
-        const collection = db.collection(process.env.MONGO_COL_TRANSACTIONS);
+    try {
+      const insertPromises = Object.values(data)
+        .map((entry) => Transaction.update(
+          { Hash: entry.Hash },
+          { $setOnInsert: entry },
+          { upsert: true },
+        )
+          .exec());
 
-        try {
-          const insertPromises = Object.values(data)
-            .map((entry) => collection.update(
-              { Hash: entry.Hash },
-              { $setOnInsert: entry },
-              { upsert: true },
-            ));
-
-          Promise.all(insertPromises)
-            .then((newEntries) => {
-              resolve(
-                newEntries.reduce(
-                  (count, current) => count + !_.isNil(current.result.upserted), 0,
-                ),
-              );
-            });
-        } catch (error) {
-          reject(error);
-        }
-      });
+      Promise.all(insertPromises)
+        .then((newEntries) => {
+          resolve(
+            newEntries.reduce(
+              (count, current) => count + !_.isNil(current.upserted), 0,
+            ),
+          );
+        });
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -56,7 +51,7 @@ export function updateTransactions(data) {
   });
 }
 
-export function getTransactions(page = 0, limit = 100) {
+export function getTransactions(page = 0, limit = 40) {
   return Transaction.aggregate([
     { $set: { HasCategory: { $and: ['$Category'] } } },
     {
@@ -96,6 +91,7 @@ export async function getOutgoingByDate() {
     {
       $match: {
         Category: { $nin: systemCategories },
+        Direction: { $eq: 'OUT' },
       },
     },
     {
@@ -106,7 +102,7 @@ export async function getOutgoingByDate() {
             date: '$Date',
           },
         },
-        value: { $sum: '$Out' },
+        value: { $sum: { $abs: '$Amount' } },
       },
     },
     { $sort: { _id: -1 } },
@@ -129,12 +125,13 @@ export async function getOutgoingByCategory() {
     {
       $match: {
         Category: { $nin: systemCategories },
+        Direction: { $eq: 'OUT' },
       },
     },
     {
       $group: {
         _id: '$Category',
-        value: { $sum: '$Out' },
+        value: { $sum: { $abs: '$Amount' } },
       },
     },
     {

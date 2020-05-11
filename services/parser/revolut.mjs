@@ -33,8 +33,7 @@ export default function parseTransactionData(path) {
           Date: new Date(values[0].trim()),
           Type: values[7],
           Direction: values[3] > 0 ? 'IN' : 'OUT',
-          In: values[3] > 0 ? values[3] : null,
-          Out: values[2] > 0 ? values[2] : null,
+          Amount: values[3] ? values[3] : values[2],
           Note: values[1],
           Bank: BANK_REVOLUT,
         };

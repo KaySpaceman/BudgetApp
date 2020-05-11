@@ -3,7 +3,7 @@
         <select id="cat-sel-{{identifier}}" class="category-select" name="{{identifier}}"
                 {{#if current}}disabled{{/if}}>
             <option value="" disabled hidden {{#unless current}}selected{{/unless}}>Select a category</option>
-            {{> category_select_options items=categories current=current level=0}}
+            {{> category_select_options items=categories current=current level=0 flat=flat}}
         </select>
         <script>
             $(document).ready(() => {
