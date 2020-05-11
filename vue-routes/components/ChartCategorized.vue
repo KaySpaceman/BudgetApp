@@ -1,6 +1,6 @@
 <template>
-    <div class="hello">
-        <h1>{{ msg }}</h1>
+    <div class="chart chart-categorized">
+        {{chartData}}
     </div>
 </template>
 
@@ -8,11 +8,11 @@
   export default {
     data: () => {
       return {
-        name: 'HelloWorld',
+        name: 'ChartCategorized'
       };
     },
     props: {
-      msg: String,
+      chartData: Object,
     },
   };
 </script>

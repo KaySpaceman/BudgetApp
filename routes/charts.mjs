@@ -6,15 +6,13 @@ const router = express.Router();
 router.get('/', (req, res) => {
   Promise.all([getOutgoingByDate(), getOutgoingByCategory()])
     .then((result) => {
-      res.render('charts', {
+      const monthly = result[0];
+
+      res.renderVue('Charts.vue', {
         monthlySpending: result[0],
         categorizedSpending: result[1],
-      });
+      }, {});
     });
-});
-
-router.get('/vue', (req, res) => {
-  res.renderVue('App.vue', {}, {});
 });
 
 export default router;
