@@ -25,9 +25,8 @@
         .domain(this.chartData.map((dataPoint) => dataPoint.date))
         .padding(0.2);
 
-      // TODO: Dynamically calculate domain
       const axisY = d3.scaleLinear()
-        .domain([0, 800])
+        .domain([0, d3.max(this.chartData.map((dataPoint) => dataPoint.value))])
         .range([this.chartConfig.height, 0]);
 
       svg.append('g')
