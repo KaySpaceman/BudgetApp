@@ -25,6 +25,7 @@
         .domain(this.chartData.map((dataPoint) => dataPoint.date))
         .padding(0.2);
 
+      // TODO: Dynamically calculate domain
       const axisY = d3.scaleLinear()
         .domain([0, 800])
         .range([this.chartConfig.height, 0]);

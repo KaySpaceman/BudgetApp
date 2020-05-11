@@ -5,12 +5,10 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
   Promise.all([getOutgoingByDate(), getOutgoingByCategory()])
-    .then((result) => {
-      const monthly = result[0];
-
+    .then(([monthlySpending, categorizedSpending]) => {
       res.renderVue('Charts.vue', {
-        monthlySpending: result[0],
-        categorizedSpending: result[1],
+        monthlySpending,
+        categorizedSpending,
       }, {});
     });
 });

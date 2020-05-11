@@ -91,7 +91,7 @@ export function getSystemCategoryIds(asString = true) {
 
 export async function getOutgoingByDate() {
   const systemCategories = await getSystemCategoryIds(false);
-
+  // TODO: Add group by quarter/month/week
   return Transaction.aggregate([
     {
       $match: {
@@ -124,6 +124,8 @@ export async function getOutgoingByDate() {
 export async function getOutgoingByCategory() {
   const systemCategories = await getSystemCategoryIds(false);
 
+  // TODO: Wrap in total object
+  // TODO: Add quarter/month/week grouping
   const promiseGroupedTotals = Transaction.aggregate([
     {
       $match: {
@@ -159,9 +161,18 @@ export async function getOutgoingByCategory() {
   ])
     .exec();
 
-  Promise.all([promiseGroupedTotals, promiseTopCategories])
-    .then(([totals, topCategories]) => Category.assignTotalsToCategories(topCategories,
-      objArrToObj(totals, '_id', 'value')));
+  return Promise.all([promiseGroupedTotals, promiseTopCategories])
+    .then(async ([totals, topCategories]) => {
+      const children = await Category.assignTotalsToCategories(
+        topCategories,
+        objArrToObj(totals, '_id', 'value'),
+      );
+
+      return {
+        name: 'totals',
+        children,
+      };
+    });
 }
 
 export function regenerateTree() {
