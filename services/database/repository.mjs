@@ -124,7 +124,6 @@ export async function getOutgoingByDate() {
 export async function getOutgoingByCategory() {
   const systemCategories = await getSystemCategoryIds(false);
 
-  // TODO: Wrap in total object
   // TODO: Add quarter/month/week grouping
   const promiseGroupedTotals = Transaction.aggregate([
     {
@@ -169,7 +168,7 @@ export async function getOutgoingByCategory() {
       );
 
       return {
-        name: 'totals',
+        name: 'Total',
         children,
       };
     });
