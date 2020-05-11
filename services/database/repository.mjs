@@ -84,9 +84,28 @@ export function getSystemCategoryIds(asString = true) {
     });
 }
 
-export async function getOutgoingByDate() {
+export async function getOutgoingByDate(interval = 'month') {
   const systemCategories = await getSystemCategoryIds(false);
-  // TODO: Add group by quarter/month/week
+  let dateString = '%Y-%m';
+
+  switch (interval) {
+    case 'day':
+      dateString = '%Y-%m-%d';
+      break;
+    case 'month':
+      dateString = '%Y-%m';
+      break;
+    case 'quarter':
+      // TODO: Implement grouping by quarter
+      dateString = '%Y-%m';
+      break;
+    case 'year':
+      dateString = '%Y';
+      break;
+    default:
+      dateString = '%Y-%m';
+  }
+
   return Transaction.aggregate([
     {
       $match: {
@@ -98,14 +117,14 @@ export async function getOutgoingByDate() {
       $group: {
         _id: {
           $dateToString: {
-            format: '%Y-%m-%d',
+            format: dateString,
             date: '$Date',
           },
         },
         value: { $sum: { $abs: '$Amount' } },
       },
     },
-    { $sort: { _id: -1 } },
+    { $sort: { _id: 1 } },
     {
       $project: {
         _id: 0,
