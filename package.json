@@ -1,5 +1,8 @@
 {
   "name": "budgetapp",
+  "description": "Web application for managing your personal budget",
+  "author": "Kristers Lielups <kristers.lielups@gmail.com>",
+  "repository" : {"type": "git", "url": "git@github.com:KaySpaceman/BudgetApp.git"},
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -8,7 +11,6 @@
   "dependencies": {
     "cookie-parser": "^1.4.5",
     "csv-parser": "^2.3.2",
-    "d3": "^5.16.0",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
@@ -32,3 +34,8 @@
     "eslint-plugin-react-hooks": "^2.5.1"
   }
 }
+
+
+
+
+
