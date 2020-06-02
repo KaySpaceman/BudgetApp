@@ -1,14 +1,12 @@
 <template>
     <div class="category-tree-wrapper">
-        <template v-for="item in items">
-            <li class="cat-tree-branch">
-                <span class="cat-name" v-text="item.Name"></span>
-                <button class="cat-delete" data-id="item._id">Delete</button>
-                <ul class="cat-tree-subtree" v-if="item.Children">
-                    <CategoryTree :items="item.Children" :level="level + 1"/>
-                </ul>
-            </li>
-        </template>
+        <li class="cat-tree-branch" v-for="(item, index) in items">
+            <span class="cat-name" v-text="item.Name"></span>
+            <button class="cat-delete" @click="deleteCategory(item.IdString, index)">Delete</button>
+            <ul class="cat-tree-subtree" v-if="item.Children">
+                <CategoryTree :items="item.Children" :level="level + 1"/>
+            </ul>
+        </li>
     </div>
 </template>
 
@@ -16,10 +14,17 @@
   export default {
     name: 'CategoryTree',
     data: () => {
-      return {};
+      return {
+        deleteCategory: function(categoryId, index) {
+          $.post('/categories/delete', { Id: categoryId }, () => {
+            Vue.delete(this.items, index);
+          }).fail(() => {
+            alert('Failed to delete category!');
+          });
+        }
+      };
     },
     props: {
-      categories: Array,
       items: [Array, Object],
       level: Number,
     },
