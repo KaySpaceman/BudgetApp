@@ -15,3 +15,20 @@ export function objArrToObj(arr, key, value) {
 
   return fullObj;
 }
+
+export function flattenArray(rawArr = [], property = null) {
+  if (!property) {
+    return rawArr.reduce(
+      (acc, arr) => acc.concat(Array.isArray(arr) ? flattenArray(arr) : arr),
+      [],
+    );
+  }
+
+  return rawArr.reduce(
+    (acc, arr) => {
+      acc.push(arr);
+      return acc.concat(Array.isArray(arr[property]) ? flattenArray(arr[property], property) : []);
+    },
+    [],
+  );
+}

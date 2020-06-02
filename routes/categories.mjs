@@ -5,23 +5,30 @@ import {
   createCategory,
   deleteCategory,
 } from '../services/database/repository.mjs';
+import { flattenArray } from '../services/utility/formatter.mjs';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   const rawTree = await getCategoryTree();
-  const parsedTree = rawTree.map((x) => x._doc);
-  const flatList = parsedTree.map((x) => x);
+  const categoryTree = rawTree.map((x) => x._doc);
+  const flatCategories = categoryTree.reduce(
+    (acc, cur) => {
+      acc.push(cur);
+      return acc.concat(flattenArray(cur.Children, 'Children'));
+    },
+    [],
+  );
 
-  flatList.unshift({
+  flatCategories.unshift({
     _id: null,
     IdString: '',
     Name: 'Root',
   });
 
   res.renderVue('Categories.vue', {
-    topLevel: parsedTree,
-    flatList,
+    categoryTree,
+    flatCategories,
   }, {
     head: {
       title: 'Transaction Categories',
@@ -31,7 +38,6 @@ router.get('/', async (req, res) => {
       scripts: [
         { src: 'https://code.jquery.com/jquery-3.5.0.min.js' },
         { src: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js' },
-        { src: 'https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.umd.min.js' },
       ],
     },
   });

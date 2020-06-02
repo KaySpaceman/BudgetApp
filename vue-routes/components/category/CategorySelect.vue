@@ -2,8 +2,11 @@
     <div :id="'category-wrapper-' + identifier" class="category-wrapper">
         <label class="cat-label" :for="'cat-sel-' + identifier" v-text="label" v-if="label"></label>
         <div :id="'select-wrapper-'+ identifier" class="select-wrapper" v-if="!current">
-            <treeselect name="create" :searchable="true" :options="categories" v-model="current"
-                        :normalizer="normalizeCategories"/>
+            <select :id="'cat-sel-' + identifier" class="category-select" :name="identifier" :disabled="current">
+                <option value="" disabled hidden :selected="!current">Select a category</option>
+                <VueOption v-for="item in categories" :item="item" :current="current"
+                           :disabled="onlyLastLevel ? (!!item.Children) : false"/>
+            </select>
         </div>
         <button type="button" class="button button-small" :data-transaction="identifier" v-else>
             Edit
@@ -12,35 +15,41 @@
 </template>
 
 <script>
-  // import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+  import VueOption from './VueOption.vue';
 
   export default {
     name: 'CategorySelect',
     data: () => {
-      return {
-        normalizeCategories: (category) => {
-          return {
-            id: category.IdString,
-            label: category.Name,
-            children: category.Children,
-          }
-        },
-      };
+      return {};
     },
     props: {
       categories: [Array, Object],
       identifier: String,
-      flat: Boolean,
+      onlyLastLevel: Boolean,
       current: String,
       label: String,
     },
-    created: function () {
+    mounted: function () {
+      $('.category-select')
+        .select2({
+          width: '100%',
+          templateResult: function (data) {
+            if (!data.element) {
+              return data.text;
+            }
 
-      debugger;
-      this.component('treeselect', VueTreeselect.Treeselect)
-    }
-    // components: {
-      // 'TreeSelect': VueTreeselect.Treeselect,
-    // },
+            const element = $(data.element);
+            const wrapper = $('<span></span>');
+
+            wrapper.addClass(element[0].className);
+            wrapper.text(data.text);
+
+            return wrapper;
+          },
+        });
+    },
+    components: {
+      VueOption,
+    },
   };
 </script>

@@ -3,7 +3,7 @@
         <h1>Transaction Categories</h1>
         <div class="cat-tree">
             <ul class="cat-tree-subtree level-0">
-                <CategoryTree :items="topLevel" :level="1"/>
+                <CategoryTree :items="categoryTree" :level="1"/>
             </ul>
         </div>
         <div class="cat-create-form-wrapper">
@@ -13,7 +13,8 @@
                 <label class="cat-label" for="cat-new-name">Name</label>
                 <input id=cat-new-name type="text" name="name">
 
-                <CategorySelect :categories="flatList" :identifier="'create'" :flat="true" :label="Parent"/>
+                <CategorySelect :categories="flatCategories" :identifier="'create'" :onlyLastLevel="false"
+                                :label="Parent"/>
                 <span class="cat-parent-notice">Leave empty for root category</span>
 
                 <button class="cat-new-submit" type="submit">Add</button>
@@ -29,8 +30,8 @@
   export default {
     data: () => {
       return {
-        flatList: [],
-        topLevel: [],
+        categoryTree: [],
+        flatCategories: [],
       };
     },
     components: {

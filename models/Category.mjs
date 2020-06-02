@@ -8,6 +8,7 @@ const categorySchema = new mongoose.Schema({
   Name: String,
   Parent: { type: mongoose.ObjectId, ref: 'Category' },
   Children: Array,
+  Level: Number,
   IsSystem: Boolean,
 });
 
@@ -36,7 +37,7 @@ categorySchema.statics.findChildren = function (flatArray, parent = { _id: null 
 };
 
 categorySchema.statics.updateChildren = async function (
-  flatArray, parent = { _id: null }, newFlatArray = [],
+  flatArray, parent = { _id: null }, newFlatArray = [], level = 0,
 ) {
   return new Promise((resolve) => {
     const children = this.findChildren(flatArray, parent);
@@ -45,7 +46,7 @@ categorySchema.statics.updateChildren = async function (
       parent.Children = children;
 
       children.forEach((child) => {
-        newFlatArray.concat(this.updateChildren(flatArray, child, newFlatArray));
+        newFlatArray.concat(this.updateChildren(flatArray, child, newFlatArray, level + 1));
       });
     } else {
       parent.set('Children', undefined);
@@ -53,6 +54,7 @@ categorySchema.statics.updateChildren = async function (
 
     if (parent.Parent && parent.save) {
       parent.IdString = parent._id.toString();
+      parent.Level = level;
       parent.save();
       newFlatArray.push(parent);
     }
