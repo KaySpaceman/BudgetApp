@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import express from 'express';
 import {
   getCategoryTree,
@@ -7,20 +8,33 @@ import {
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  getCategoryTree()
-    .then((tree) => {
-      const flatList = tree.map((x) => x);
-      flatList.unshift({
-        _id: null,
-        Name: 'Root',
-      });
+router.get('/', async (req, res) => {
+  const rawTree = await getCategoryTree();
+  const parsedTree = rawTree.map((x) => x._doc);
+  const flatList = parsedTree.map((x) => x);
 
-      res.render('categories', {
-        topLevel: tree,
-        flatList,
-      });
-    });
+  flatList.unshift({
+    _id: null,
+    IdString: '',
+    Name: 'Root',
+  });
+
+  res.renderVue('Categories.vue', {
+    topLevel: parsedTree,
+    flatList,
+  }, {
+    head: {
+      title: 'Transaction Categories',
+      styles: [
+        { style: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css' },
+      ],
+      scripts: [
+        { src: 'https://code.jquery.com/jquery-3.5.0.min.js' },
+        { src: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js' },
+        { src: 'https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.umd.min.js' },
+      ],
+    },
+  });
 });
 
 router.post('/new', (req, res) => {
@@ -30,7 +44,7 @@ router.post('/new', (req, res) => {
     res.redirect('/');
   }
 
-  createCategory(name, req.param('new'))
+  createCategory(name, req.param('create'))
     .then(() => res.redirect('/categories'));
 });
 

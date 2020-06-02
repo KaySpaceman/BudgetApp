@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 const categorySchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
+  IdString: String,
   Name: String,
   Parent: { type: mongoose.ObjectId, ref: 'Category' },
   Children: Array,
@@ -47,10 +48,11 @@ categorySchema.statics.updateChildren = async function (
         newFlatArray.concat(this.updateChildren(flatArray, child, newFlatArray));
       });
     } else {
-      parent.Children = [];
+      parent.set('Children', undefined);
     }
 
     if (parent.Parent && parent.save) {
+      parent.IdString = parent._id.toString();
       parent.save();
       newFlatArray.push(parent);
     }

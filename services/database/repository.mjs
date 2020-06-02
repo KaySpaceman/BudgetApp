@@ -200,6 +200,8 @@ export async function createCategory(name, parent = null) {
     Name: name,
   });
 
+  newCategory.IdString = newCategory._id.toString();
+
   if (parent) {
     newCategory.Parent = parent;
   }

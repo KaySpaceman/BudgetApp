@@ -12,9 +12,9 @@
   import ChartCategorized from './components/ChartCategorized.vue';
 
   export default {
+    name: 'Charts',
     data: () => {
       return {
-        name: 'Charts',
         monthlySpending: {},
         categorizedSpending: {},
         totalsChartConfig: {

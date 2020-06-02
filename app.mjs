@@ -41,7 +41,6 @@ const vueOptions = {
   rootPath: path.join(__dirname, 'vue-routes'),
   head: {
     styles: [{ style: '/stylesheets/style.css' }],
-    scripts: [{ src: 'https://d3js.org/d3.v5.min.js' }]
   },
 };
 
