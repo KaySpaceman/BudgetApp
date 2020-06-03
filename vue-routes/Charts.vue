@@ -8,8 +8,8 @@
 </template>
 
 <script>
-  import ChartTotal from './components/ChartTotal.vue';
-  import ChartCategorized from './components/ChartCategorized.vue';
+  import ChartTotal from './components/chart/ChartTotal.vue';
+  import ChartCategorized from './components/chart/ChartCategorized.vue';
 
   export default {
     name: 'Charts',

@@ -53,13 +53,38 @@ export function updateTransactions(data) {
 
 export function getTransactions(page = 0, limit = 40) {
   return Transaction.aggregate([
-    { $set: { HasCategory: { $and: ['$Category'] } } },
+    {
+      $set: {
+        HasCategory: { $and: ['$Category'] },
+        IdString: { $convert: { input: '$_id', to: 'string' } },
+        CategoryIdString: { $convert: { input: '$Category', to: 'string' } },
+        DateString: { $dateToString: { format: '%d/%m/%Y', date: '$Date' } },
+        CategoryName: [],
+      },
+    },
     {
       $sort: {
         HasCategory: 1,
         Date: -1,
       },
     },
+    {
+      $lookup:
+        {
+          from: 'Categories',
+          localField: 'Category',
+          foreignField: '_id',
+          as: 'CategoryName',
+        },
+    },
+    {
+      $unwind:
+        {
+          path: '$CategoryName',
+          preserveNullAndEmptyArrays: true,
+        },
+    },
+    { $set: { CategoryName: '$CategoryName.Name' } },
   ])
     .limit(limit)
     .skip(page > 0 ? ((page - 1) * limit) : 0)

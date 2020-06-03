@@ -1,6 +1,6 @@
 <template>
     <option :class="'cat-option level-' + item.Level" :value="item.IdString" v-text="item.Name"
-            :disabled="disabled" :selected="current === item._id"/>
+            :disabled="disabled" :selected="current === item.IdString"/>
 </template>
 
 <script>

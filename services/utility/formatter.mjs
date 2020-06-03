@@ -1,7 +1,3 @@
-export default function formatDate(date) {
-  return new Date(date).toLocaleDateString('en-GB');
-}
-
 export function objArrToObj(arr, key, value) {
   const fullObj = {};
 
@@ -31,4 +27,16 @@ export function flattenArray(rawArr = [], property = null) {
     },
     [],
   );
+}
+
+export function flattenCategories(categoryTree = []) {
+  // eslint-disable-next-line no-underscore-dangle
+  return categoryTree.map((x) => x._doc)
+    .reduce(
+      (acc, cur) => {
+        acc.push(cur);
+        return acc.concat(flattenArray(cur.Children, 'Children'));
+      },
+      [],
+    );
 }

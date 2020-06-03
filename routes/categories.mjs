@@ -5,20 +5,14 @@ import {
   createCategory,
   deleteCategory,
 } from '../services/database/repository.mjs';
-import { flattenArray } from '../services/utility/formatter.mjs';
+import { flattenCategories } from '../services/utility/formatter.mjs';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   const rawTree = await getCategoryTree();
   const categoryTree = rawTree.map((x) => x._doc);
-  const flatCategories = categoryTree.reduce(
-    (acc, cur) => {
-      acc.push(cur);
-      return acc.concat(flattenArray(cur.Children, 'Children'));
-    },
-    [],
-  );
+  const flatCategories = flattenCategories(rawTree);
 
   flatCategories.unshift({
     _id: null,
