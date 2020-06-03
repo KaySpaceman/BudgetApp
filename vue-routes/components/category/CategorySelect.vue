@@ -5,7 +5,7 @@
             <select :id="'cat-sel-' + identifier" class="category-select" :name="identifier"
                     :disabled="!!current && !selectIsShown">
                 <option value="" disabled hidden :selected="!current">Select a category</option>
-                <VueOption v-for="item in categories" :item="item" :current="current"
+                <CategoryOption v-for="item in categories" :item="item" :current="current"
                            :disabled="onlyLastLevel ? categoryHasChildren(item) : false"/>
             </select>
         </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import VueOption from './VueOption.vue';
+  import CategoryOption from './CategoryOption.vue';
 
   export default {
     name: 'CategorySelect',
@@ -73,7 +73,7 @@
       this.initializeSelect();
     },
     components: {
-      VueOption,
+      CategoryOption,
     },
   };
 </script>

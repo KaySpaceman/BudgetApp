@@ -5,11 +5,39 @@ import processStatementUpload from '../services/processor/statement.mjs';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.render('index', { title: 'Budget App' });
+  res.renderVue('Index.vue', {}, {
+    head: {
+      title: 'Budget App',
+    },
+  });
 });
 
 router.get('/upload', (req, res) => {
-  res.render('upload-screen', { title: 'Statement Upload' });
+  const availableBanks = [
+    {
+      id: 'citadele',
+      Name: 'Citadele',
+    },
+    {
+      id: 'revolut',
+      Name: 'Revolut',
+    },
+  ];
+
+  res.renderVue('StatementUpload.vue', {
+    availableBanks,
+  }, {
+    head: {
+      title: 'Bank statement upload',
+      styles: [
+        { style: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css' },
+      ],
+      scripts: [
+        { src: 'https://code.jquery.com/jquery-3.5.0.min.js' },
+        { src: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js' },
+      ],
+    },
+  });
 });
 
 router.post('/upload-action', (req, res) => {

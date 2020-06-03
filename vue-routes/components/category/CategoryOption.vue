@@ -5,7 +5,7 @@
 
 <script>
   export default {
-    name: 'VueOption',
+    name: 'CategoryOption',
     data: () => {
       return {};
     },
