@@ -1,6 +1,7 @@
 <template>
     <div id="app">
-        <div class="charts-container">
+        <Navigation/>
+        <div id="page-content" class="charts-container">
             <ChartTotal :chart-data="monthlySpending" :chartConfig="totalsChartConfig"/>
             <ChartCategorized :chart-data="categorizedSpending" :chartConfig="categorizedChartConfig"/>
         </div>
@@ -10,6 +11,7 @@
 <script>
   import ChartTotal from './components/chart/ChartTotal.vue';
   import ChartCategorized from './components/chart/ChartCategorized.vue';
+  import Navigation from './components/Navigation.vue';
 
   export default {
     name: 'Charts',
@@ -32,6 +34,7 @@
       };
     },
     components: {
+      Navigation,
       ChartTotal,
       ChartCategorized,
     },

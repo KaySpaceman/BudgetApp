@@ -1,26 +1,30 @@
 <template>
-    <div class="transaction-list">
-        <form action="/transactions/categorize" method="POST" encType="multipart/form-data">
-            <div class="controls">
-                <button class="button button-large" type="submit">Save</button>
-            </div>
-            <fieldset name="categories" class="transaction-table">
-                <div class="header">
-                    <span>Date</span>
-                    <span>Reason</span>
-                    <span>Type</span>
-                    <span>Amount</span>
-                    <span>Category</span>
+    <div id="app">
+        <Navigation/>
+        <div id="page-content" class="transaction-list">
+            <form action="/transactions/categorize" method="POST" encType="multipart/form-data">
+                <div class="controls">
+                    <button class="button button-large" type="submit">Save</button>
                 </div>
-                <Transaction v-for="item in transactions" :key="item.IdString" :item="item"
-                             :flatCategories="flatCategories"/>
-            </fieldset>
-        </form>
+                <fieldset name="categories" class="transaction-table">
+                    <div class="header">
+                        <span>Date</span>
+                        <span>Reason</span>
+                        <span>Type</span>
+                        <span>Amount</span>
+                        <span>Category</span>
+                    </div>
+                    <Transaction v-for="item in transactions" :key="item.IdString" :item="item"
+                                 :flatCategories="flatCategories"/>
+                </fieldset>
+            </form>
+        </div>
     </div>
 </template>
 
 <script>
   import Transaction from './components/transaction/Transaction.vue';
+  import Navigation from './components/Navigation.vue';
 
   export default {
     name: 'Transactions',
@@ -32,6 +36,7 @@
       };
     },
     components: {
+      Navigation,
       Transaction,
     },
   };
