@@ -1,8 +1,7 @@
 <template>
     <div class="chart-container chart-bars">
-        <h1 class="chart-heading">{{chartConfig.heading}}</h1>
-        <svg id="svg-totals" class="chart chart-bars">
-        </svg>
+        <h1 class="chart-heading" v-text="chartConfig.heading"/>
+        <svg id="svg-totals" class="chart chart-bars"/>
     </div>
 </template>
 

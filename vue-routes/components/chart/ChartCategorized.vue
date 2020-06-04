@@ -1,12 +1,16 @@
 <template>
     <div class="chart chart-categorized">
-        <h1 class="chart-heading">{{chartConfig.heading}}</h1>
-        <svg id="svg-categorized" class="chart chart-sunburst">
-        </svg>
+        <h1 class="chart-heading" v-text="chartConfig.heading"/>
+        <svg id="svg-categorized" class="chart chart-sunburst"/>
+        <div class="controls">
+            <TimeIntervalSelect :items="availableIntervals" :interval="interval" v-model="interval"/>
+        </div>
     </div>
 </template>
 
 <script>
+  import TimeIntervalSelect from './TimeIntervalSelect.vue';
+
   export default {
     data: () => {
       return {
@@ -28,6 +32,13 @@
         format: function (data) {
           return d3.format(',d')(data);
         },
+        availableIntervals: {
+          'monthly': 'Monthly',
+          'quarterly': 'Quarterly',
+          'semiannual': 'Semiannual',
+          'annual': 'Annual',
+        },
+        interval: 'quarterly',
       };
     },
     mounted: function () {
@@ -64,7 +75,7 @@
         .text(d => `${d.ancestors()
           .map(d => d.data.name)
           .reverse()
-          .join("/")}\n${this.format(d.value)}`);
+          .join('/')}\n${this.format(d.value)}`);
 
       svg.append('g')
         .attr('pointer-events', 'none')
@@ -87,6 +98,9 @@
     props: {
       chartData: Object,
       chartConfig: Object,
+    },
+    components: {
+      TimeIntervalSelect,
     },
   };
 </script>
