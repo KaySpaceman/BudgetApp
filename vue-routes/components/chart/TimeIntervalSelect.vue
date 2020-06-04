@@ -6,7 +6,6 @@
             <option v-for="(name, value) in items" class="interval-option" :value="value" v-text="name"
                     :selected="value === interval"/>
         </select>
-        <button class="button button-small">Apply</button>
     </div>
 </template>
 

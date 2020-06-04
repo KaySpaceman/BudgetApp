@@ -3,7 +3,8 @@
         <Navigation/>
         <div id="page-content" class="charts-container">
             <ChartTotal :chart-data="monthlySpending" :chartConfig="totalsChartConfig"/>
-            <ChartCategorized :chart-data="categorizedSpending" :chartConfig="categorizedChartConfig"/>
+            <ChartCategorized :chart-data="categorizedSpending" :chartConfig="categorizedChartConfig"
+                              v-on:update-data="updateCategorizedData"/>
         </div>
     </div>
 </template>
@@ -32,6 +33,11 @@
           heading: 'Spending per category',
         },
       };
+    },
+    methods: {
+      updateCategorizedData: function (data) {
+        this.categorizedSpending = data;
+      },
     },
     components: {
       Navigation,

@@ -120,10 +120,6 @@ export async function getOutgoingByDate(interval = 'month') {
     case 'month':
       dateString = '%Y-%m';
       break;
-    case 'quarter':
-      // TODO: Implement grouping by quarter
-      dateString = '%Y-%m';
-      break;
     case 'year':
       dateString = '%Y';
       break;
@@ -161,15 +157,33 @@ export async function getOutgoingByDate(interval = 'month') {
     .exec();
 }
 
-export async function getOutgoingByCategory() {
+export async function getOutgoingByCategory(timePeriod = 'quarterly') {
   const systemCategories = await getSystemCategoryIds(false);
+  const dateFilter = new Date();
 
-  // TODO: Add quarter/month/week grouping
+  switch (timePeriod) {
+    case 'monthly':
+      dateFilter.setMonth(dateFilter.getMonth() - 1);
+      break;
+    case 'quarterly':
+      dateFilter.setMonth(dateFilter.getMonth() - 3);
+      break;
+    case 'semiannual':
+      dateFilter.setMonth(dateFilter.getMonth() - 6);
+      break;
+    case 'annual':
+      dateFilter.setMonth(dateFilter.getMonth() - 12);
+      break;
+    default:
+      dateFilter.setMonth(dateFilter.getMonth() - 3);
+  }
+
   const promiseGroupedTotals = Transaction.aggregate([
     {
       $match: {
         Category: { $nin: systemCategories },
         Direction: { $eq: 'OUT' },
+        Date: { $gte: dateFilter },
       },
     },
     {
@@ -201,18 +215,16 @@ export async function getOutgoingByCategory() {
   ])
     .exec();
 
-  return Promise.all([promiseGroupedTotals, promiseTopCategories])
-    .then(async ([totals, topCategories]) => {
-      const children = await Category.assignTotalsToCategories(
-        topCategories,
-        objArrToObj(totals, '_id', 'value'),
-      );
+  const [totals, topCategories] = await Promise.all([promiseGroupedTotals, promiseTopCategories]);
+  const children = await Category.assignTotalsToCategories(
+    topCategories,
+    objArrToObj(totals, '_id', 'value'),
+  );
 
-      return {
-        name: 'Total',
-        children,
-      };
-    });
+  return {
+    name: 'Total',
+    children,
+  };
 }
 
 export function regenerateTree() {

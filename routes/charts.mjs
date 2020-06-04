@@ -26,4 +26,11 @@ router.get('/', async (req, res) => {
   });
 });
 
+router.post('/data/categorized', async (req, res) => {
+  const data = await getOutgoingByCategory(req.body.timeInterval);
+
+  res.setHeader('Content-Type', 'application/json');
+  res.send(data);
+});
+
 export default router;
