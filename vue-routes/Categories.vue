@@ -11,14 +11,11 @@
             <div class="cat-create-form-wrapper">
                 <form action="categories/new" class="cat-create-form" method="POST">
                     <h3 class="cat-new-heading">Add a new category</h3>
-
                     <label class="cat-label" for="cat-new-name">Name</label>
                     <input id=cat-new-name type="text" name="name">
-
                     <CategorySelect :categories="flatCategories" :identifier="'create'" :onlyLastLevel="false"
                                     :label="Parent"/>
                     <span class="cat-parent-notice">Leave empty for root category</span>
-
                     <button class="cat-new-submit" type="submit">Add</button>
                 </form>
             </div>

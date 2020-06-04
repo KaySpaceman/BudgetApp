@@ -1,6 +1,6 @@
 <template>
     <div :id="'category-wrapper-' + identifier" class="category-wrapper">
-        <label class="cat-label" :for="'cat-sel-' + identifier" v-text="label" v-if="label"></label>
+        <label class="cat-label" :for="'cat-sel-' + identifier" v-text="label" v-if="label"/>
         <div :id="'select-wrapper-'+ identifier" class="select-wrapper" v-if="!current || selectIsShown">
             <select :id="'cat-sel-' + identifier" class="category-select" :name="identifier"
                     :disabled="!!current && !selectIsShown">
