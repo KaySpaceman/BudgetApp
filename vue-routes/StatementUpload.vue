@@ -4,9 +4,7 @@
         <div id="page-content" class="upload-section">
             <form action="upload-action" method="POST" encType="multipart/form-data">
                 <input type="file" name="statement-file">
-                <select id="statement-bank-select" name="bank">
-                    <BankOption v-for="bank in availableBanks" :item="bank"/>
-                </select>
+                <BankSelect :items="availableBanks"/>
                 <button type="submit">Send</button>
             </form>
         </div>
@@ -15,7 +13,7 @@
 
 <script>
   import Navigation from './components/Navigation.vue';
-  import BankOption from './components/transaction/BankOption.vue';
+  import BankSelect from './components/transaction/BankSelect.vue';
 
   export default {
     name: 'StatementUpload',
@@ -25,12 +23,8 @@
       };
     },
     components: {
-      BankOption,
+      BankSelect,
       Navigation,
-    },
-    mounted: function () {
-      $('#statement-bank-select')
-        .select2();
     },
   };
 </script>
