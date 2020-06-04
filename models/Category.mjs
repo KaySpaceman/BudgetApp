@@ -15,7 +15,7 @@ const categorySchema = new mongoose.Schema({
   toJSON: { virtuals: true },
 });
 
-categorySchema.virtual('IdString').get(function() {
+categorySchema.virtual('IdString').get(function () {
   return this._id.toString();
 });
 

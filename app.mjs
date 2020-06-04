@@ -30,11 +30,14 @@ app.use(expressFileupload({}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.listen(process.env.PORT);
 
-//ExpressVue Setup
 const vueOptions = {
   rootPath: path.join(__dirname, 'vue-routes'),
   head: {
     styles: [{ style: '/stylesheets/style.css' }],
+    scripts: [
+      { src: 'https://code.jquery.com/jquery-3.5.0.min.js' },
+      { src: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js' },
+    ],
   },
 };
 

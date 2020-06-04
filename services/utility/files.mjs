@@ -6,9 +6,9 @@ export default function saveStatementFile(data) {
 
   if (!statement) return false;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     fs.writeFile(filePath, statement, 'latin1', (err) => {
-      if (err) reject(err.message);
+      if (err) throw new Error(`Couldn't save uploaded file: ${err.message}`);
 
       resolve(filePath);
     });

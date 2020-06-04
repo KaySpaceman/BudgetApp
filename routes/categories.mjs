@@ -30,7 +30,6 @@ router.get('/', async (req, res) => {
         { style: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css' },
       ],
       scripts: [
-        { src: 'https://code.jquery.com/jquery-3.5.0.min.js' },
         { src: 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js' },
       ],
     },
@@ -38,7 +37,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/new', (req, res) => {
-  const name = req.param('name');
+  const { name } = req.body;
 
   if (!name) {
     res.redirect('/');
@@ -49,11 +48,11 @@ router.post('/new', (req, res) => {
 });
 
 router.post('/delete', (req, res) => {
-  const categoryId = req.param('Id');
+  const { Id } = req.body;
 
-  if (!categoryId) res.redirect('/categories');
+  if (!Id) res.redirect('/categories');
 
-  deleteCategory(categoryId)
+  deleteCategory(Id)
     .then(() => res.redirect('/categories'));
 });
 

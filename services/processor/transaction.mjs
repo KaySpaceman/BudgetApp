@@ -1,13 +1,9 @@
 import { updateTransactions } from '../database/repository.mjs';
 
-export default function updateCategories(update) {
-  return new Promise((resolve, reject) => {
-    updateTransactions(update)
-      .then((count) => {
-        resolve(count);
-      })
-      .catch((reason) => {
-        reject(reason);
-      });
-  });
+export default async function updateCategories(update) {
+  return updateTransactions(update)
+    .then((count) => count)
+    .catch((reason) => {
+      throw new Error(`Couldn't update transactions: ${reason}`);
+    });
 }

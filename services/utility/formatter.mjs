@@ -23,6 +23,7 @@ export function flattenArray(rawArr = [], property = null) {
   return rawArr.reduce(
     (acc, arr) => {
       acc.push(arr);
+
       return acc.concat(Array.isArray(arr[property]) ? flattenArray(arr[property], property) : []);
     },
     [],
@@ -35,6 +36,7 @@ export function flattenCategories(categoryTree = []) {
     .reduce(
       (acc, cur) => {
         acc.push(cur);
+
         return acc.concat(flattenArray(cur.Children, 'Children'));
       },
       [],

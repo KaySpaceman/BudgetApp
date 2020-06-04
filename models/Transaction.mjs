@@ -16,11 +16,11 @@ const transactionSchema = new mongoose.Schema({
   toJSON: { virtuals: true },
 });
 
-transactionSchema.virtual('IdString').get(function() {
+transactionSchema.virtual('IdString').get(function () {
   return this._id.toString();
 });
 
-transactionSchema.virtual('CategoryIdString').get(function() {
+transactionSchema.virtual('CategoryIdString').get(function () {
   return this.Category.toString();
 });
 
