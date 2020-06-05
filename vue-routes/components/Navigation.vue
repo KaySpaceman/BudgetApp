@@ -1,10 +1,22 @@
 <template>
     <div class="navigation">
-        <div class="controls">
-            <a href="/upload" class="button button-large">Upload</a>
-            <a href="/transactions" class="button button-large">Transactions</a>
-            <a href="/categories" class="button button-large">Categories</a>
-            <a href="/charts" class="button button-large">Charts</a>
+        <div class="menu">
+            <span class="menu-item">
+                <i class="material-icons md-36 menu-icon">cloud_upload</i>
+                <a href="/upload" class="menu-link">Upload</a>
+            </span>
+            <span class="menu-item">
+                <i class="material-icons md-36 menu-icon">payment</i>
+                <a href="/transactions" class="menu-link">Transactions</a>
+            </span>
+            <span class="menu-item">
+                <i class="material-icons md-36 menu-icon">category</i>
+                <a href="/categories" class="menu-link">Categories</a>
+            </span>
+            <span class="menu-item">
+                <i class="material-icons md-36 menu-icon">show_chart</i>
+                <a href="/charts" class="menu-link">Charts</a>
+            </span>
         </div>
     </div>
 </template>

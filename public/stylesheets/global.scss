@@ -1,6 +1,5 @@
 body {
-  background-color: $color-ghost-white;
-  padding: 50px;
+  background-color: $color-cultured;
   font: 14px $font-proxima-nova;
 }
 
@@ -9,39 +8,6 @@ h1 {
 }
 
 a {
-  color: #00B7FF;
+  color: $color-cool-grey;
 }
 
-.hide {
-  display: none !important;
-}
-
-.notification {
-  background-color: $color-blue-jeans;
-  border-radius: 15px;
-  color: $color-white;
-  padding: 10px;
-  width: 400px;
-}
-
-.button {
-  background-color: $color-white;
-  border-radius: 6px;
-  border: solid 1px $color-cadet-blue;
-  box-shadow: 0 4px 0 $color-ghost-white;
-  color: $color-liberty;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  padding: 6px 10px;
-  font-weight: 700;
-
-  &.button-large {
-    border-radius: 10px;
-    padding: 10px 20px;
-  }
-
-  &.inactive {
-    color: $color-cadet-blue;
-  }
-}

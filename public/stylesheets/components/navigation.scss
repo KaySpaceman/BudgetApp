@@ -1,0 +1,48 @@
+.navigation {
+  background-color: $color-white;
+  padding-top: 80px;
+  flex-basis: 200px;
+  max-width: 250px;
+  min-width: 200px;
+
+  .menu {
+    display: flex;
+    flex-direction: column;
+
+    .menu-item {
+      display: flex;
+      margin: 10px 0;
+      padding: 10px 10px 10px 30px;
+      text-align: left;
+      flex-wrap: nowrap;
+      width: 100%;
+
+      &:hover {
+        background: linear-gradient(90deg, $color-cultured 10%, transparent 50%);
+        border-left: solid 3px $color-cerulean-blue;
+        margin-left: -3px;
+
+        .menu-link {
+          color: $color-royal-blue-dark;
+          font-weight: 700;
+        }
+
+        .menu-icon {
+          color: $color-cerulean-blue;
+        }
+      }
+    }
+
+    .menu-link {
+      text-decoration: none;
+      color: $color-cool-grey;
+      display: block;
+      font-weight: 600;
+      margin: 5px;
+    }
+
+    .menu-icon {
+      color: $color-cool-grey;
+    }
+  }
+}

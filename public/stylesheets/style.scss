@@ -1,4 +1,6 @@
 @import 'variables';
 @import 'global';
-@import 'partials/category-select';
-@import 'transaction-list';
+@import 'layout';
+//@import 'pages/transactions';
+@import 'components/option-indentation';
+@import 'components/navigation';
