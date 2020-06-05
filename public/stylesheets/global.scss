@@ -1,6 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   background-color: $color-cultured;
   font: 14px $font-proxima-nova;
+  margin: 0;
 }
 
 h1 {

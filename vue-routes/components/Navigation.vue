@@ -1,5 +1,8 @@
 <template>
     <div class="navigation">
+        <div class="logo-container">
+            <img class="logo" src="/images/logo.svg" />
+        </div>
         <div class="menu">
             <span class="menu-item">
                 <i class="material-icons md-36 menu-icon">cloud_upload</i>

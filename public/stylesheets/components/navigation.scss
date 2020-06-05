@@ -1,9 +1,9 @@
 .navigation {
   background-color: $color-white;
-  padding-top: 80px;
   flex-basis: 200px;
   max-width: 250px;
   min-width: 200px;
+  height: 100vh;
 
   .menu {
     display: flex;
