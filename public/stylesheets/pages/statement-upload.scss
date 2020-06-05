@@ -1,0 +1,69 @@
+.statement-upload-page {
+  .page-header {
+    border-bottom: solid $color-cool-grey .5px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+
+    .page-title {
+      font-size: 2.2em;
+    }
+  }
+
+  .button {
+    background-color: $color-cerulean-blue;
+    border-radius: 8px;
+    cursor: pointer;
+    color: $color-white;
+    padding: 10px 20px;
+    font-weight: 700;
+  }
+
+  .statement-form {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    .bank-select-wrapper {
+      margin: 15px;
+
+      .bank-label {
+        font-weight: 700;
+      }
+
+      .select2-container {
+        margin: 10px;
+        overflow: visible;
+        border: $color-cerulean-blue 2px solid;
+        border-radius: 8px;
+        font-weight: 700;
+      }
+    }
+
+    .button-submit {
+      max-width: 100px;
+      margin: 15px;
+    }
+  }
+
+  .file-upload-input {
+    color: transparent;
+    display: block;
+    margin: 15px;
+    height: 35px;
+    width: 140px;
+
+    &::-webkit-file-upload-button {
+      visibility: hidden;
+    }
+
+    &::before {
+      @extend .button;
+      content: 'Upload statement';
+      display: inline-block;
+    }
+
+    &:hover::before {
+      border-color: black;
+    }
+  }
+}

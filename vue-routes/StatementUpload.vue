@@ -1,11 +1,14 @@
 <template>
     <div id="app">
         <Navigation/>
-        <div id="page-content" class="upload-section">
-            <form action="upload-action" method="POST" encType="multipart/form-data">
-                <input type="file" name="statement-file">
+        <div id="page-content" class="statement-upload-page">
+            <div class="page-header">
+                <h1 class="page-title">Statement Upload</h1>
+            </div>
+            <form class="statement-form" action="upload-action" method="POST" encType="multipart/form-data">
                 <BankSelect :items="availableBanks"/>
-                <button type="submit">Send</button>
+                <input id="statement-file" class="file-upload-input" type="file" name="statement-file">
+                <button class="button button-submit" type="submit">Send</button>
             </form>
         </div>
     </div>

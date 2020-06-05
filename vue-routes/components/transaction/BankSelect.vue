@@ -1,7 +1,10 @@
 <template>
-    <select id="statement-bank-select" name="bank">
-        <option v-for="item in items" class="bank-option" :value="item.id" v-text="item.Name"/>
-    </select>
+    <div class="bank-select-wrapper">
+        <label class="bank-label" for="statement-bank-select">Bank</label>
+        <select id="statement-bank-select" class="bank-select" name="bank">
+            <option v-for="item in items" class="bank-option" :value="item.id" v-text="item.Name"/>
+        </select>
+    </div>
 </template>
 
 <script>
