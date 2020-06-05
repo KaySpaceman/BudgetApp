@@ -1,7 +1,9 @@
 <template>
     <div class="navigation">
         <div class="logo-container">
-            <img class="logo" src="/images/logo.svg" />
+            <a class="home-link" href="/">
+                <img class="logo" src="/images/logo.svg" />
+            </a>
         </div>
         <div class="menu">
             <span class="menu-item">
