@@ -2,17 +2,20 @@
     <div id="app">
         <Navigation/>
         <div id="page-content" class="transaction-list">
-            <form action="/transactions/categorize" method="POST" encType="multipart/form-data">
+            <div class="page-header">
+                <h1 class="page-title">Transactions</h1>
                 <div class="controls">
-                    <button class="button button-large" type="submit">Save</button>
+                    <button class="button button-submit" type="submit" form="transaction-form">Save</button>
                 </div>
+            </div>
+            <form id="transaction-form" action="/transactions/categorize" method="POST" encType="multipart/form-data">
                 <fieldset name="categories" class="transaction-table">
                     <div class="header">
-                        <span>Date</span>
-                        <span>Reason</span>
-                        <span>Type</span>
-                        <span>Amount</span>
-                        <span>Category</span>
+                        <span class="column">Date</span>
+                        <span class="column wide">Reason</span>
+                        <span class="column narrow">Type</span>
+                        <span class="column narrow">Amount</span>
+                        <span class="column">Category</span>
                     </div>
                     <Transaction v-for="item in transactions" :key="item.IdString" :item="item"
                                  :flatCategories="flatCategories"/>

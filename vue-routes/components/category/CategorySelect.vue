@@ -11,7 +11,7 @@
         </div>
         <template v-else>
             <span class="category-current" v-text="currentName"/>
-            <button type="button" class="button button-small" @click="showSelect(identifier)">
+            <button type="button" class="button button-tiny" @click="showSelect(identifier)">
                 Edit
             </button>
         </template>
@@ -43,7 +43,7 @@
 
           $(selector)
             .select2({
-              width: '100%',
+              width: '200px',
               templateResult: function (data) {
                 if (!data.element) {
                   return data.text;

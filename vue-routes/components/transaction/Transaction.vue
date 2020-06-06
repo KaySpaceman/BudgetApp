@@ -1,10 +1,10 @@
 <template>
     <div class="transaction" :class="{ 'un-categorized': !item.Category }">
-        <span v-text="item.DateString"/>
-        <span v-text="item.Note"/>
-        <span v-text="item.Direction"/>
-        <span v-text="item.Amount"/>
-        <CategorySelect :categories="flatCategories" :identifier="item.IdString" :current="item.CategoryIdString"
+        <span class="column" v-text="item.DateString"/>
+        <span class="column wide" v-text="item.Note"/>
+        <span class="column narrow" v-text="item.Direction"/>
+        <span class="column narrow" v-text="item.Amount"/>
+        <CategorySelect class="column" :categories="flatCategories" :identifier="item.IdString" :current="item.CategoryIdString"
                         :onlyLastLevel="true" :currentName="item.CategoryName"/>
     </div>
 </template>

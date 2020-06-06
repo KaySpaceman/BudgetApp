@@ -1,62 +1,58 @@
 .transaction-list {
-  background-color: $color-white;
-  border-radius: 30px;
-  padding: 15px;
+  .page-header {
+    border-bottom: solid $color-cool-grey .5px;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+
+    .page-title {
+      font-size: 2.2em;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+
+      .button {
+        background-color: $color-cerulean-blue;
+        border-radius: 8px;
+        cursor: pointer;
+        color: $color-white;
+        padding: 10px 20px;
+        font-weight: 700;
+      }
+    }
+  }
 
   .transaction-table {
     display: flex;
     flex-direction: column;
     border: none;
-  }
 
-  .controls {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    padding: 10px 20px;
-
-    .button {
-      display: block;
-      margin: 0 10px;
-      width: 90px;
-    }
-  }
-
-  .transaction,
-  .header {
-    border-bottom: 1px solid $color-cadet-blue;
-    display: flex;
-    flex-direction: row;
-    padding: 10px 0;
-
-    &.un-categorized {
-      background-color: $color-web-orange;
-    }
-
-    > span {
-      display: block;
-    }
-
-    > span,
-    > div {
+    .header {
+      font-weight: 800;
+      border-bottom: 1px solid $color-royal-blue-dark;
       display: flex;
-      flex-basis: 20%;
-      flex-direction: column;
-      flex-grow: 1;
-      justify-content: center;
-      padding: 0 10px;
-      text-align: center;
-    }
+      align-items: center;
+      padding: 10px 0;
 
-    .select2-container {
-      border-color: $color-ghost-white;
-    }
-  }
+      .column {
+        flex-basis: 20%;
+        flex-grow: 1;
+        padding: 0 10px;
+        text-align: center;
+        display: block;
 
-  .header {
-    background-color: $color-cadet-blue;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    font-weight: 800;
+        &.wide {
+          flex-basis: 30%;
+        }
+
+        &.narrow {
+          flex-basis: 10%;
+        }
+      }
+    }
   }
 }
