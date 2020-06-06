@@ -1,11 +1,13 @@
 <template>
     <div id="app">
         <Navigation/>
-        <div id="page-content" class="category-wrapper">
-            <h1>Transaction Categories</h1>
+        <div id="page-content" class="category-page">
+            <div class="page-header">
+                <h1 class="page-title">Categories</h1>
+            </div>
             <div class="cat-tree">
                 <ul class="cat-tree-subtree level-0">
-                    <CategoryTree :items="categoryTree" :level="1"/>
+                    <CategoryTree :items="categoryTree" :level="0"/>
                 </ul>
             </div>
             <div class="cat-create-form-wrapper">

@@ -1,0 +1,12 @@
+.category-page {
+  .page-header {
+    border-bottom: solid $color-cool-grey .5px;
+    display: flex;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+
+    .page-title {
+      font-size: 2.2em;
+    }
+  }
+}

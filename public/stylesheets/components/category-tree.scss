@@ -1,0 +1,38 @@
+.category-tree-wrapper {
+  .cat-delete {
+    cursor: pointer;
+    color: $color-blue-crayola;
+    position: absolute;
+    font-size: 15px;
+    top: 2px;
+    margin-left: 2px;
+
+    &:hover {
+      color: $color-green-ryb;
+    }
+  }
+
+  .cat-tree-branch {
+    font-weight: 600;
+    list-style: none;
+    position: relative;
+
+    &:before {
+      content: "\25E6";
+      display: inline-block;
+      margin-right: 3px;
+    }
+
+    &.level-0:before {
+      color: $color-space-cadet
+    }
+
+    &.level-1:before {
+      color: $color-cerulean-blue;
+    }
+
+    &.level-2:before {
+      color: $color-blue-crayola;
+    }
+  }
+}

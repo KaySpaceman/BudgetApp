@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 const categorySchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
+  IdString: String,
   Name: String,
   Parent: { type: mongoose.ObjectId, ref: 'Category' },
   Children: Array,
@@ -13,10 +14,6 @@ const categorySchema = new mongoose.Schema({
 {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
-});
-
-categorySchema.virtual('IdString').get(function () {
-  return this._id.toString();
 });
 
 categorySchema.statics.findDescendantIds = function (childrenArray, prevVal = []) {
@@ -60,6 +57,7 @@ categorySchema.statics.updateChildren = async function (
     }
 
     if (parent.Parent && parent.save) {
+      parent.IdString = parent._id.toString();
       parent.Level = level;
       parent.save();
       newFlatArray.push(parent);

@@ -48,11 +48,15 @@ router.post('/new', (req, res) => {
 });
 
 router.post('/delete', (req, res) => {
-  const { Id } = req.body;
+  const { categoryId } = req.body;
 
-  if (!Id) res.redirect('/categories');
+  if (!categoryId) {
+    res.status(500).send('No category id provided!');
 
-  deleteCategory(Id)
+    return;
+  }
+
+  deleteCategory(categoryId)
     .then(() => res.redirect('/categories'));
 });
 
