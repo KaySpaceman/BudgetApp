@@ -1,6 +1,6 @@
 <template>
     <div class="chart chart-categorized">
-        <h1 class="chart-heading" v-text="chartConfig.heading"/>
+        <h2 class="chart-heading" v-text="chartConfig.heading"/>
         <svg id="svg-categorized" class="chart chart-sunburst"/>
         <div class="controls">
             <TimeIntervalSelect :items="availableIntervals" :interval="interval" v-model="interval"/>

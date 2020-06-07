@@ -1,10 +1,23 @@
 <template>
     <div id="app">
         <Navigation/>
-        <div id="page-content" class="charts-container">
-            <ChartTotal :chart-data="monthlySpending" :chartConfig="totalsChartConfig"/>
+        <div id="page-content" class="chart-page">
+            <div class="page-header">
+                <h1 class="page-title">Charts</h1>
+                <div class="controls">
+                    <span class="toggle" :class="{ active :activeChart === 'total' }"
+                          @click="toggleCharts('total')">
+                        Total
+                    </span>
+                    <span class="toggle" :class="{ active :activeChart === 'categorized' }"
+                          @click="toggleCharts('categorized')">
+                        Categorized
+                    </span>
+                </div>
+            </div>
+            <ChartTotal :chart-data="monthlySpending" :chartConfig="totalsChartConfig" v-if="activeChart === 'total'"/>
             <ChartCategorized :chart-data="categorizedSpending" :chartConfig="categorizedChartConfig"
-                              v-on:update-data="updateCategorizedData"/>
+                              v-on:update-data="updateCategorizedData" v-if="activeChart === 'categorized'"/>
         </div>
     </div>
 </template>
@@ -32,11 +45,15 @@
           width: 600 - 2 * 60,
           heading: 'Spending per category',
         },
+        activeChart: 'total',
       };
     },
     methods: {
       updateCategorizedData: function (data) {
         this.categorizedSpending = data;
+      },
+      toggleCharts: function (chartCode) {
+        this.activeChart = chartCode;
       },
     },
     components: {

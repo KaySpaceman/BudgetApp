@@ -1,6 +1,6 @@
 <template>
     <div class="chart-container chart-bars">
-        <h1 class="chart-heading" v-text="chartConfig.heading"/>
+        <h2 class="chart-heading" v-text="chartConfig.heading"/>
         <svg id="svg-totals" class="chart chart-bars"/>
     </div>
 </template>
