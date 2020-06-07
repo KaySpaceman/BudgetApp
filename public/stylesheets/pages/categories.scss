@@ -2,11 +2,40 @@
   .page-header {
     border-bottom: solid $color-cool-grey .5px;
     display: flex;
+    flex-basis: 100%;
     padding-bottom: 20px;
     margin-bottom: 20px;
 
     .page-title {
       font-size: 2.2em;
     }
+  }
+
+  .category-view-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+
+    .cat-tree {
+    }
+
+    .cat-create-form-wrapper {
+      .cat-new-label {
+        font-weight: 700;
+      }
+
+      .cat-new-parent-select {
+        margin: 15px 0;
+      }
+    }
+  }
+
+  .button {
+    background-color: $color-cerulean-blue;
+    border-radius: 8px;
+    cursor: pointer;
+    color: $color-white;
+    padding: 10px 20px;
+    font-weight: 700;
   }
 }
