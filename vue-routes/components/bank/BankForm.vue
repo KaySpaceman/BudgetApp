@@ -1,6 +1,6 @@
 <template>
     <div class="bank-create-form-wrapper">
-        <form action="account/bank/new" class="bank-create-form" method="POST">
+        <form action="account/bank/new" class="bank-create-form" method="POST" @submit="createNewBank">
             <h2 class="bank-new-heading">Create A New Bank</h2>
             <fieldset>
                 <legend>Details</legend>
@@ -39,9 +39,9 @@
                 <span class="input-explanation">Are there rows that don't contain transactions</span>
                 <fieldset :disabled="!skipRows" v-if="skipRows">
                     <label for="skip-from-top">Top</label>
-                    <input id=skip-from-top type="text" name="skip-from-top" v-model="skipFromTop">
+                    <input id=skip-from-top type="number" name="skip-from-top" v-model="skipFromTop">
                     <label for="skip-from-bottom">Bottom</label>
-                    <input id=skip-from-bottom type="text" name="skip-from-bottom" v-model="skipFromBottom">
+                    <input id=skip-from-bottom type="number" name="skip-from-bottom" v-model="skipFromBottom">
                 </fieldset>
             </fieldset>
             <button class="bank-new-submit button" type="submit">Create</button>
@@ -64,7 +64,50 @@
         skipRows: true,
         skipFromTop: null,
         skipFromBottom: null,
-      }
+      };
+    },
+    methods: {
+      createNewBank: function (e) {
+        e.preventDefault();
+
+        $.post('/account/bank/new', this.createBankObject(), (data) => {
+          this.$emit('bank-saved', data);
+        })
+          .fail(() => alert('Failed to create a new bank'));
+      },
+      createBankObject: function () {
+        const bankObject = {
+          Name: this.bankName,
+          Columns: {
+            Date: this.dateColumn,
+            Reference: this.referenceColumn,
+            Amount: {},
+          },
+        };
+
+        if (this.amountIsCombined) {
+          bankObject.Columns.Amount.Combined = this.amountColumn;
+        } else {
+          bankObject.Columns.Amount = {
+            Incoming: this.incomingAmountColumn,
+            Outgoing: this.outgoingAmountColumn,
+          };
+        }
+
+        if (this.skipRows) {
+          bankObject.Padding = {};
+
+          if (this.skipFromTop) {
+            bankObject.Padding.Top = this.skipFromTop;
+          }
+
+          if (this.skipFromBottom) {
+            bankObject.Padding.Bottom = this.skipFromBottom;
+          }
+        }
+
+        return bankObject;
+      },
     },
   };
 </script>
