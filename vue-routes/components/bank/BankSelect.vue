@@ -2,7 +2,7 @@
     <div class="bank-select-wrapper">
         <label class="bank-label" for="bank-select">Bank</label>
         <select id="bank-select" class="bank-select" name="bank">
-            <option v-for="bank in banks" class="bank-option" :value="bank.id" v-text="bank.Name"/>
+            <option v-for="bank in banks" class="bank-option" :value="bank.value" v-text="bank.name"/>
         </select>
     </div>
 </template>

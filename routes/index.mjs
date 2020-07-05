@@ -1,6 +1,7 @@
 import express from 'express';
 import { format } from 'url';
 import processStatementUpload from '../services/processor/statement.mjs';
+import { getBankSelectOptions } from '../services/database/repositories/bank.mjs';
 
 const router = express.Router();
 
@@ -12,17 +13,8 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/upload', (req, res) => {
-  const availableBanks = [
-    {
-      id: 'citadele',
-      Name: 'Citadele',
-    },
-    {
-      id: 'revolut',
-      Name: 'Revolut',
-    },
-  ];
+router.get('/upload', async (req, res) => {
+  const availableBanks = await getBankSelectOptions();
 
   res.renderVue('StatementUpload.vue', {
     availableBanks,
