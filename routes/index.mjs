@@ -1,6 +1,10 @@
 import express from 'express';
 import { format } from 'url';
 import processStatementUpload from '../services/processor/statement.mjs';
+import {
+  getBankDateFormatOptions,
+  getBankSelectOptions,
+} from '../services/database/repositories/bank.mjs';
 
 const router = express.Router();
 
@@ -12,20 +16,14 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/upload', (req, res) => {
-  const availableBanks = [
-    {
-      id: 'citadele',
-      Name: 'Citadele',
-    },
-    {
-      id: 'revolut',
-      Name: 'Revolut',
-    },
-  ];
+router.get('/upload', async (req, res) => {
+  const [availableBanks, dateFormats] = await Promise.all(
+    [getBankSelectOptions(), getBankDateFormatOptions()],
+  );
 
   res.renderVue('StatementUpload.vue', {
     availableBanks,
+    dateFormats,
   }, {
     head: {
       title: 'Bank statement upload',
@@ -39,16 +37,8 @@ router.get('/upload', (req, res) => {
   });
 });
 
-router.post('/upload-action', (req, res) => {
-  processStatementUpload(req.files, req.body.bank)
-    .then((count) => {
-      res.redirect(format({
-        pathname: '/transactions',
-        query: {
-          count,
-        },
-      }));
-    })
+router.post('/upload-action', async (req, res) => {
+  const count = await processStatementUpload(req.files, req.body.bank)
     .catch((reason) => {
       res.redirect(format({
         pathname: '/transactions',
@@ -57,6 +47,13 @@ router.post('/upload-action', (req, res) => {
         },
       }));
     });
+
+  res.redirect(format({
+    pathname: '/transactions',
+    query: {
+      count,
+    },
+  }));
 });
 
 export default router;

@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const transactionSchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
   Date,
-  Type: String,
   Direction: String,
   Note: String,
   Amount: Number,
