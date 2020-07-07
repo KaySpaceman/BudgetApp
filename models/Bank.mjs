@@ -3,8 +3,10 @@ import mongoose from 'mongoose';
 const bankSchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
   Name: { type: String, required: true },
+  Separator: { type: String, max: 1, default: ';' },
   Columns: {
     Date: { type: Number, required: true, min: 1 },
+    DateFormat: { type: String },
     Reference: { type: Number, required: true, min: 1 },
     Amount: {
       Combined: { type: Number, min: 1 },

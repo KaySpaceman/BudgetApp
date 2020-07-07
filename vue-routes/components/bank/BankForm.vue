@@ -6,11 +6,14 @@
                 <legend>Details</legend>
                 <label for="bank-name">Name</label>
                 <input id=bank-name type="text" name="bank-name" required v-model="bankName">
+                <label for="bank-separator">Separator</label>
+                <input id=bank-separator type="text" name="bank-separator" required v-model="bankSeparator">
             </fieldset>
             <fieldset>
                 <legend>Columns</legend>
                 <label for="date-column">Date</label>
                 <input id="date-column" type="number" name="date-column" required v-model="dateColumn">
+                <DateFormatSelect :date-formats="dateFormats"/>
                 <label for="reference-column">Reference</label>
                 <input id="reference-column" type="number" name="reference-column" required v-model="referenceColumn">
                 <fieldset>
@@ -50,12 +53,16 @@
 </template>
 
 <script>
+  import DateFormatSelect from './DateFormatSelect.vue';
+
   export default {
     name: 'BankForm',
     data: () => {
       return {
         bankName: '',
+        bankSeparator: ';',
         dateColumn: null,
+        dateFormat: null,
         referenceColumn: null,
         amountIsCombined: true,
         amountColumn: null,
@@ -65,6 +72,9 @@
         skipFromTop: null,
         skipFromBottom: null,
       };
+    },
+    props: {
+      dateFormats: [Object, Array],
     },
     methods: {
       createNewBank: function (e) {
@@ -78,8 +88,10 @@
       createBankObject: function () {
         const bankObject = {
           Name: this.bankName,
+          Separator: this.bankSeparator,
           Columns: {
             Date: this.dateColumn,
+            DateFormat: this.dateFormat,
             Reference: this.referenceColumn,
             Amount: {},
           },
@@ -109,5 +121,8 @@
         return bankObject;
       },
     },
+    components: {
+      DateFormatSelect,
+    }
   };
 </script>
