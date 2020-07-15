@@ -6,21 +6,9 @@ const transactionSchema = new mongoose.Schema({
   Direction: String,
   Note: String,
   Amount: Number,
-  Bank: String,
   Hash: String,
   Category: { type: mongoose.ObjectId, ref: 'Category' },
-},
-{
-  toObject: { virtuals: true },
-  toJSON: { virtuals: true },
-});
-
-transactionSchema.virtual('IdString').get(function () {
-  return this._id.toString();
-});
-
-transactionSchema.virtual('CategoryIdString').get(function () {
-  return this.Category.toString();
+  Account: { type: mongoose.ObjectId, ref: 'Account' },
 });
 
 export default mongoose.model('Transaction', transactionSchema, 'Transactions');

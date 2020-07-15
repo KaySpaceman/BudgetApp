@@ -1,7 +1,8 @@
 <template>
     <div class="bank-select-wrapper">
         <label class="bank-label" for="bank-select">Bank</label>
-        <select id="bank-select" class="bank-select" name="bank">
+        <select id="bank-select" class="bank-select" name="bank" :required="isRequired"
+                v-on:change="emitValue($event.target.value)">
             <option v-for="bank in banks" class="bank-option" :value="bank.value" v-text="bank.name"/>
         </select>
     </div>
@@ -15,12 +16,12 @@
     },
     props: {
       banks: [Array, Object],
+      isRequired: false,
     },
-    mounted: function () {
-      $('#bank-select')
-        .select2({
-          width: '100px',
-        });
+    methods: {
+      emitValue: function (value) {
+        this.$emit('input', value);
+      },
     },
   };
 </script>

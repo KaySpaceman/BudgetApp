@@ -15,7 +15,7 @@ export async function createBank(data) {
   const createdBank = await new Bank(data).save();
 
   if (!createdBank) {
-    return false;
+    return null;
   }
 
   return createdBank;
