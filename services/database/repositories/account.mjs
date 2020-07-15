@@ -1,6 +1,11 @@
 import Account from '../../../models/Account.mjs';
 import mongoose from 'mongoose';
 
+export async function getAccountById(id) {
+  return Account.findOne({ _id: id })
+    .exec();
+}
+
 export async function getAccountByNumber(number) {
   return Account.findOne({ Number: number })
     .exec();

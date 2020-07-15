@@ -9,6 +9,7 @@ const transactionSchema = new mongoose.Schema({
   Hash: String,
   Category: { type: mongoose.ObjectId, ref: 'Category' },
   Account: { type: mongoose.ObjectId, ref: 'Account' },
+  Bank: { type: mongoose.ObjectId, ref: 'Bank' },
 });
 
 export default mongoose.model('Transaction', transactionSchema, 'Transactions');

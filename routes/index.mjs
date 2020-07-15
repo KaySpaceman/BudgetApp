@@ -40,22 +40,23 @@ router.get('/upload', async (req, res) => {
 });
 
 router.post('/upload-action', async (req, res) => {
-  const count = await processStatementUpload(req.files, req.body.bank)
-    .catch((reason) => {
-      res.redirect(format({
-        pathname: '/transactions',
-        query: {
-          error: reason,
-        },
-      }));
-    });
+  try {
+    const count = await processStatementUpload(req.files, req.body.account)
 
-  res.redirect(format({
-    pathname: '/transactions',
-    query: {
-      count,
-    },
-  }));
+    res.redirect(format({
+      pathname: '/transactions',
+      query: {
+        count,
+      },
+    }));
+  } catch (e) {
+    res.redirect(format({
+      pathname: '/transactions',
+      query: {
+        error: e.toString(),
+      },
+    }));
+  }
 });
 
 export default router;
