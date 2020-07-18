@@ -2,6 +2,7 @@ import express from 'express';
 import { createBank, getBankSelectOptions } from '../services/database/repositories/bank.mjs';
 import {
   getAccounts,
+  calculateAccountTotals,
   createAccount,
   editAccount,
 } from '../services/database/repositories/account.mjs';
@@ -9,10 +10,15 @@ import {
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const [rawAccounts, availableBanks] = await Promise.all(
-    [getAccounts(), getBankSelectOptions()],
+  const [rawAccounts, availableBanks, accountTotals] = await Promise.all(
+    [getAccounts(), getBankSelectOptions(), calculateAccountTotals()],
   );
-  const accounts = rawAccounts.map((x) => x.toJSON());
+  const accounts = rawAccounts.map((x) => {
+    x = x.toJSON();
+    x.Total = accountTotals[x._id];
+
+    return x;
+  });
 
   res.renderVue('Accounts.vue', {
     accounts,

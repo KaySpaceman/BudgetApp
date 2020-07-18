@@ -2,7 +2,7 @@
     <div class="account">
         <span class="column" v-text="account.Name"/>
         <span class="column" v-text="account.Number"/>
-        <span class="column" v-text="account.Bank"/>
+        <span class="column" v-text="account.Total"/>
         <button @click="emitEdit">Edit</button>
     </div>
 </template>
@@ -15,6 +15,7 @@
     },
     props: {
       account: [Array, Object],
+      accountTotal: Number,
       accountIndex: Number,
     },
     methods: {

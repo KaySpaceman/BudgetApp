@@ -1,5 +1,6 @@
 import Account from '../../../models/Account.mjs';
 import mongoose from 'mongoose';
+import Transaction from '../../../models/Transaction.mjs';
 
 export async function getAccountById(id) {
   return Account.findOne({ _id: id })
@@ -53,24 +54,6 @@ export async function editAccount(data) {
   return editedAccount;
 }
 
-async function accountExists(data) {
-  const promises = [];
-
-  promises.push(getAccountByName(data.Name));
-
-  if (data.Number) {
-    promises.push(getAccountByNumber(data.Number));
-  }
-
-  if (data._id) {
-    promises.push(getAccountById(data._id));
-  }
-
-  const [byName, byNumber, byId] = await Promise.all(promises);
-
-  return !!(byName || byNumber || byId);
-}
-
 export function getAccounts() {
   return Account.find({})
     .exec();
@@ -95,4 +78,49 @@ export async function getAccountSelectOptions() {
 
     return x;
   });
+}
+
+export async function calculateAccountTotals() {
+  const result = await Transaction.aggregate([
+    {
+      $group: {
+        _id: '$Account',
+        Total: { $sum: '$Amount' },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        Total: { $round: ['$Total', 2] },
+      },
+    },
+  ]);
+
+  if (!result) {
+    throw new Error('Failed to fetch account totals');
+  }
+
+  return result.reduce((acc, cur) => {
+    acc[cur._id.toString()] = cur.Total;
+
+    return acc;
+  }, []);
+}
+
+async function accountExists(data) {
+  const promises = [];
+
+  promises.push(getAccountByName(data.Name));
+
+  if (data.Number) {
+    promises.push(getAccountByNumber(data.Number));
+  }
+
+  if (data._id) {
+    promises.push(getAccountById(data._id));
+  }
+
+  const [byName, byNumber, byId] = await Promise.all(promises);
+
+  return !!(byName || byNumber || byId);
 }
