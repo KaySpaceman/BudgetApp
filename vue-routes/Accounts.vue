@@ -10,7 +10,7 @@
                          v-on:edit-account="updateEditForm"/>
             </div>
             <AccountForm :available-banks="availableBanks" :existing-account="editAccount"
-                         v-on:account-saved="addAccount"/>
+                         v-on:account-saved="addAccount" v-if="editAccountIndex"/>
         </div>
     </div>
 </template>
