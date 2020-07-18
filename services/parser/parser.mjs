@@ -67,6 +67,12 @@ function buildTransactions(row, transactions, accountId, bank) {
     Bank: bank._id,
   };
 
+  if (transaction.Direction === 'OUT') {
+    transaction.Amount = -1 * Math.abs(transaction.Amount);
+  } else {
+    transaction.Amount = Math.abs(transaction.Amount);
+  }
+
   transaction.Hash = generateHash(transaction);
 
   transactions.push(transaction);
