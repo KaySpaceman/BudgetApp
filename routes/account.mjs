@@ -44,7 +44,7 @@ router.post('/bank/new', async (req, res) => {
   const savedBank = await createBank(req.body);
 
   if (savedBank) {
-    res.send(savedBank);
+    res.send(savedBank.toJSON());
   } else {
     res.status(500)
       .send('Unknown error');
