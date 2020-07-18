@@ -1,15 +1,41 @@
 import express from 'express';
-import { createBank } from '../services/database/repositories/bank.mjs';
-import { createAccount } from '../services/database/repositories/account.mjs';
+import { createBank, getBankSelectOptions } from '../services/database/repositories/bank.mjs';
+import {
+  getAccounts,
+  createAccount,
+  editAccount,
+} from '../services/database/repositories/account.mjs';
 
 const router = express.Router();
 
-router.post('/new', async (req, res) => {
-  try {
-    const savedAccount = await createAccount(req.body);
+router.get('/', async (req, res) => {
+  const [rawAccounts, availableBanks] = await Promise.all(
+    [getAccounts(), getBankSelectOptions()],
+  );
+  const accounts = rawAccounts.map((x) => {
+    x = x._doc;
+    x._id = x._id.toString();
+    x.Bank = x.Bank ? x.Bank.toString() : null;
 
-    if (savedAccount) {
-      res.send(savedAccount);
+    return x;
+  });
+
+  res.renderVue('Accounts.vue', {
+    accounts,
+    availableBanks,
+  }, {
+    head: {
+      title: 'Account List',
+    },
+  });
+});
+
+router.post('/new-edit', async (req, res) => {
+  try {
+    const account = req.body._id ? await editAccount(req.body) : await createAccount(req.body);
+
+    if (account) {
+      res.send(account);
     } else {
       res.status(500)
         .send('Unknown error');

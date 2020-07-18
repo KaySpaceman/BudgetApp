@@ -32,6 +32,27 @@ export async function createAccount(data) {
   return createdAccount;
 }
 
+export async function editAccount(data) {
+  if (!await accountExists(data)) {
+    throw new Error('Account doesn\'t exists');
+  }
+
+  const account = await Account.findOne({ _id: data._id });
+
+  if (!account) {
+    return null;
+  }
+
+  const editedAccount = await account.set(data)
+    .save();
+
+  if (!editedAccount) {
+    return null;
+  }
+
+  return editedAccount;
+}
+
 async function accountExists(data) {
   const promises = [];
 
@@ -41,9 +62,18 @@ async function accountExists(data) {
     promises.push(getAccountByNumber(data.Number));
   }
 
-  const [byName, byNumber] = await Promise.all(promises);
+  if (data._id) {
+    promises.push(getAccountById(data._id));
+  }
 
-  return !!(byName || byNumber);
+  const [byName, byNumber, byId] = await Promise.all(promises);
+
+  return !!(byName || byNumber || byId);
+}
+
+export function getAccounts() {
+  return Account.find({})
+    .exec();
 }
 
 export async function getAccountSelectOptions() {

@@ -11,7 +11,10 @@
                 <button class="button button-submit" type="submit">Send</button>
             </form>
             <BankForm :date-formats="dateFormats" v-on:bank-saved="updateAvailableBanks"/>
-            <AccountForm :available-banks="availableBanks" v-on:account-saved="updateAvailableAccounts"/>
+            <div class="create-account">
+                <h2 class="account-new-heading">Create A New Account</h2>
+                <AccountForm :available-banks="availableBanks" v-on:account-saved="updateAvailableAccounts"/>
+            </div>
         </div>
     </div>
 </template>
