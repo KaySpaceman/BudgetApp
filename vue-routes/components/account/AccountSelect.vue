@@ -18,23 +18,9 @@
       accounts: [Array, Object],
       isRequired: false,
     },
-    watch: {
-      accounts: function () {
-        this.initSelect();
-      },
-    },
-    mounted: function () {
-      this.initSelect();
-    },
     methods: {
       emitValue: function (value) {
         this.$emit('input', value);
-      },
-      initSelect: function () {
-        $('#account-select')
-          .select2({
-            width: '100px',
-          });
       },
     },
   };

@@ -36,10 +36,16 @@
     },
     methods: {
       updateAvailableBanks: function (data) {
-        this.availableBanks.push(data);
+        this.availableBanks.push({
+          name: data.Name,
+          value: data._id,
+        });
       },
       updateAvailableAccounts: function (data) {
-        this.availableAccounts.push(data);
+        this.availableAccounts.push({
+          name: data.Name,
+          value: data._id,
+        });
       },
     },
     components: {

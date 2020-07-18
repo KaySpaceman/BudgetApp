@@ -9,7 +9,8 @@
                 <Account v-for="(account, index) in accounts" :account="account" :account-index="index"
                          v-on:edit-account="updateEditForm"/>
             </div>
-            <AccountForm :available-banks="availableBanks" :existing-account="editAccount"/>
+            <AccountForm :available-banks="availableBanks" :existing-account="editAccount"
+                         v-on:account-saved="addAccount"/>
         </div>
     </div>
 </template>
@@ -33,6 +34,10 @@
       updateEditForm: function (newIndex) {
         this.editAccountIndex = newIndex;
         this.editAccount = this.accounts[newIndex];
+      },
+      addAccount: function (data) {
+        this.accounts[this.editAccountIndex] = data;
+        this.updateEditForm(this.editAccountIndex);
       },
     },
     components: {
