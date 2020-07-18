@@ -12,13 +12,7 @@ router.get('/', async (req, res) => {
   const [rawAccounts, availableBanks] = await Promise.all(
     [getAccounts(), getBankSelectOptions()],
   );
-  const accounts = rawAccounts.map((x) => {
-    x = x._doc;
-    x._id = x._id.toString();
-    x.Bank = x.Bank ? x.Bank.toString() : null;
-
-    return x;
-  });
+  const accounts = rawAccounts.map((x) => x.toJSON());
 
   res.renderVue('Accounts.vue', {
     accounts,
@@ -35,7 +29,7 @@ router.post('/new-edit', async (req, res) => {
     const account = req.body._id ? await editAccount(req.body) : await createAccount(req.body);
 
     if (account) {
-      res.send(account);
+      res.send(account.toJSON());
     } else {
       res.status(500)
         .send('Unknown error');
