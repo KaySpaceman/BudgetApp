@@ -20,7 +20,7 @@
     "express": "~4.16.1",
     "express-fileupload": "^1.1.6",
     "express-vue": "^5.15.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.27.0",
     "mongodb": "^3.5.6",
     "mongoose": "^5.9.10",
