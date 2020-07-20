@@ -5,7 +5,7 @@
         <span class="column narrow" v-text="item.Direction"/>
         <span class="column narrow" v-text="item.Amount"/>
         <CategorySelect class="column" :categories="flatCategories" :identifier="item.IdString" :current="item.CategoryIdString"
-                        :onlyLastLevel="true" :currentName="item.CategoryName"/>
+                        :onlyLastLevel="true" :currentName="item.CategoryName" v-model="selectedCategory"/>
     </div>
 </template>
 
@@ -15,7 +15,9 @@
   export default {
     name: 'Transaction',
     data: () => {
-      return {};
+      return {
+        selectedCategory: null,
+      };
     },
     props: {
       item: Object,
