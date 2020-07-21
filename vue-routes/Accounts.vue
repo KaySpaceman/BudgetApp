@@ -5,6 +5,8 @@
             <div class="page-header">
                 <h1 class="page-title">Accounts</h1>
             </div>
+            <span>Net Total</span>
+            <span class="total" v-text="netTotal"/>
             <div id="account-list">
                 <Account v-for="(account, index) in accounts" :account="account" :account-index="index"
                          v-on:edit-account="updateEditForm"/>
@@ -29,6 +31,11 @@
         editAccountIndex: null,
         editAccount: [],
       };
+    },
+    computed: {
+      netTotal: function () {
+        return this.accounts.reduce((acc, cur) => acc + cur.Total, 0).toFixed(2);
+      },
     },
     methods: {
       updateEditForm: function (newIndex) {
