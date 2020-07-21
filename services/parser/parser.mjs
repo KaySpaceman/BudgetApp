@@ -3,7 +3,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import _ from 'lodash';
 import generateHash from '../utility/checksum.mjs';
-import validateTransactions from '../utility/validator.mjs';
+import filterInvalidTransactions from '../utility/validator.mjs';
 import moment from 'moment';
 import { getAccountById } from '../database/repositories/account.mjs';
 
@@ -22,7 +22,7 @@ export default async function parseTransactionData(path, accountId) {
     stream.on('data', (row) => buildTransactions(row, transactions, accountId, bank))
       .on('end', () => removePadding(transactions, bank))
       .on('close', () => {
-        resolve(validateTransactions(transactions));
+        resolve(filterInvalidTransactions(transactions));
       });
   });
 }

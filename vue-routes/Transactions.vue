@@ -10,7 +10,7 @@
                 </div>
             </div>
             <TransactionForm :available-accounts="availableAccounts" :available-categories="flatCategories"
-                             v-if="showCreateForm"/>
+                             v-on:transaction-saved="addTransaction" v-if="showCreateForm"/>
             <form id="transaction-form" action="/transactions/categorize" method="POST" encType="multipart/form-data">
                 <fieldset name="categories" class="transaction-table">
                     <div class="header">
@@ -47,6 +47,9 @@
     methods: {
       toggleCreateForm: function () {
         this.showCreateForm = !this.showCreateForm;
+      },
+      addTransaction: function (transaction) {
+        // TODO: Implement once save is improved
       },
     },
     components: {

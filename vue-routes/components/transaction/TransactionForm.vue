@@ -1,6 +1,6 @@
 <template>
     <div class="transaction-create-form-wrapper">
-        <form action="transaction/new" class="transaction-create-form" method="POST" @submit="submitForm">
+        <form action="transactions/new" class="transaction-create-form" method="POST" @submit="submitForm">
             <AccountSelect :accounts="availableAccounts" :is-required="true" v-model="transactionAccount"/>
             <label for="transaction-date">Date</label>
             <input id="transaction-date" type="date" name="date" required v-model="transactionDate"/>
@@ -60,12 +60,12 @@
         this.transactionDate = new Date().toISOString()
           .split('T')[0];
         this.transactionDirection = 'OUT';
-        this.transactionAccount = this.availableAccounts[0];
+        this.transactionAccount = this.availableAccounts[0].value;
       },
       submitForm: function (e) {
         e.preventDefault();
 
-        $.post('/transaction/new', this.transaction, (data) => {
+        $.post('/transactions/new', this.transaction, (data) => {
           this.$emit('transaction-saved', data);
         })
           .fail((res) => alert(`Failed to create a new transaction. ${res.responseText}`));

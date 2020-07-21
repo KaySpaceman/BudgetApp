@@ -7,8 +7,12 @@ import { objArrToObj } from '../utility/formatter.mjs';
 
 // TODO: Move functions to separate repositories
 
-export default function saveTransactions(data) {
+export function saveTransactions(data) {
   return new Promise((resolve, reject) => {
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+
     try {
       const insertPromises = Object.values(data)
         .map((entry) => Transaction.update(
@@ -20,11 +24,7 @@ export default function saveTransactions(data) {
 
       Promise.all(insertPromises)
         .then((newEntries) => {
-          resolve(
-            newEntries.reduce(
-              (count, current) => count + !_.isNil(current.upserted), 0,
-            ),
-          );
+          resolve(newEntries);
         });
     } catch (error) {
       reject(error);

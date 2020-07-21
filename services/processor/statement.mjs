@@ -1,4 +1,4 @@
-import saveTransactions from '../database/repository.mjs';
+import { saveTransactions } from '../database/repository.mjs';
 import saveStatementFile from '../utility/files.mjs';
 import parseTransactionData from '../parser/parser.mjs';
 
