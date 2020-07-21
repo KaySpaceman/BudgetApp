@@ -10,7 +10,7 @@
                 <option value="IN">IN</option>
             </select>
             <label for="transaction-amount">Amount</label>
-            <input id=transaction-amount type="number" name="amount" required v-model="transactionAmount">
+            <input id=transaction-amount type="number" step="0.01" name="amount" required v-model="transactionAmount">
             <label for="transaction-note">Note</label>
             <input id=transaction-note type="text" name="note" required v-model="transactionNote">
             <CategorySelect :categories="availableCategories" :onlyLastLevel="true" :label="'Category'"
