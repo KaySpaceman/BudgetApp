@@ -55,6 +55,9 @@ router.post('/new', async (req, res) => {
 
   delete transaction.Category;
   transaction.Date = new Date(transaction.Date);
+  if (transaction.Direction === 'OUT') {
+    transaction.Amount = -1 * Math.abs(transaction.Amount);
+  }
   transaction.Hash = generateHash(transaction);
   transaction.Category = category;
 
