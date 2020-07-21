@@ -32,12 +32,16 @@
     },
     computed: {
       account: function () {
-        return {
+        const account = {
           _id: this.accountId,
           Name: this.accountName,
           Number: this.accountNumber,
           Bank: this.accountBank,
         };
+
+        Object.keys(account).forEach((key) => (account[key] == null || account[key] === '') && delete account[key]);
+
+        return account;
       },
     },
     watch: {
@@ -46,6 +50,10 @@
       },
     },
     mounted: function () {
+      this.availableBanks.unshift({
+        value: null,
+        name: 'None',
+      });
       this.preFillForm();
     },
     methods: {
