@@ -5,9 +5,12 @@
             <div class="page-header">
                 <h1 class="page-title">Transactions</h1>
                 <div class="controls">
+                    <button class="button" @click="toggleCreateForm">New</button>
                     <button class="button button-submit" type="submit" form="transaction-form">Save</button>
                 </div>
             </div>
+            <TransactionForm :available-accounts="availableAccounts" :available-categories="flatCategories"
+                             v-if="showCreateForm"/>
             <form id="transaction-form" action="/transactions/categorize" method="POST" encType="multipart/form-data">
                 <fieldset name="categories" class="transaction-table">
                     <div class="header">
@@ -28,6 +31,7 @@
 <script>
   import Transaction from './components/transaction/Transaction.vue';
   import Navigation from './components/Navigation.vue';
+  import TransactionForm from './components/transaction/TransactionForm.vue';
 
   export default {
     name: 'Transactions',
@@ -36,9 +40,17 @@
         newCount: Number,
         transactions: Array,
         flatCategories: [Array, Object],
+        availableAccounts: [Array, Object],
+        showCreateForm: false,
       };
     },
+    methods: {
+      toggleCreateForm: function () {
+        this.showCreateForm = !this.showCreateForm;
+      },
+    },
     components: {
+      TransactionForm,
       Navigation,
       Transaction,
     },
