@@ -5,6 +5,7 @@ import {
   getBankDateFormatOptions,
   getBankSelectOptions,
 } from '../services/database/repositories/bank.mjs';
+import { getAccountSelectOptions } from '../services/database/repositories/account.mjs';
 
 const router = express.Router();
 
@@ -17,11 +18,12 @@ router.get('/', (req, res) => {
 });
 
 router.get('/upload', async (req, res) => {
-  const [availableBanks, dateFormats] = await Promise.all(
-    [getBankSelectOptions(), getBankDateFormatOptions()],
+  const [availableAccounts, availableBanks, dateFormats] = await Promise.all(
+    [getAccountSelectOptions(), getBankSelectOptions(), getBankDateFormatOptions()],
   );
 
   res.renderVue('StatementUpload.vue', {
+    availableAccounts,
     availableBanks,
     dateFormats,
   }, {
@@ -38,22 +40,23 @@ router.get('/upload', async (req, res) => {
 });
 
 router.post('/upload-action', async (req, res) => {
-  const count = await processStatementUpload(req.files, req.body.bank)
-    .catch((reason) => {
-      res.redirect(format({
-        pathname: '/transactions',
-        query: {
-          error: reason,
-        },
-      }));
-    });
+  try {
+    const count = await processStatementUpload(req.files, req.body.account)
 
-  res.redirect(format({
-    pathname: '/transactions',
-    query: {
-      count,
-    },
-  }));
+    res.redirect(format({
+      pathname: '/transactions',
+      query: {
+        count,
+      },
+    }));
+  } catch (e) {
+    res.redirect(format({
+      pathname: '/transactions',
+      query: {
+        error: e.toString(),
+      },
+    }));
+  }
 });
 
 export default router;

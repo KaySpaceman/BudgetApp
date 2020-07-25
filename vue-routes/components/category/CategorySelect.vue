@@ -2,11 +2,11 @@
     <div :id="'category-wrapper-' + identifier" class="category-wrapper">
         <label class="cat-label" :for="'cat-sel-' + identifier" v-text="label" v-if="label"/>
         <div :id="'select-wrapper-'+ identifier" class="select-wrapper" v-if="!current || selectIsShown">
-            <select :id="'cat-sel-' + identifier" class="category-select" :name="identifier"
+            <select :id="'cat-sel-' + identifier" class="category-select" :name="identifier" v-model="selectedValue"
                     :disabled="!!current && !selectIsShown">
-                <option value="" disabled hidden :selected="!current">Select a category</option>
-                <CategoryOption v-for="item in categories" :item="item" :current="current"
-                           :disabled="onlyLastLevel ? categoryHasChildren(item) : false"/>
+                <option value="" disabled hidden>Select a category</option>
+                <CategoryOption v-for="item in categories" :item="item"
+                                :disabled="onlyLastLevel ? categoryHasChildren(item) : false"/>
             </select>
         </div>
         <template v-else>
@@ -26,39 +26,7 @@
     data: function() {
       return {
         selectIsShown: false,
-        showSelect: function (id) {
-          this.selectIsShown = true;
-          this.$nextTick(() => {
-            this.initializeSelect(id);
-          });
-        },
-        categoryHasChildren: function (category) {
-          if (!category.Children) return false;
-          if (Array.isArray(category.Children)) return category.Children.length > 0;
-
-          return Object.keys(category.Children).length > 0;
-        },
-        initializeSelect: function (id) {
-          const selector = id ? `#cat-sel-${id}` : '.category-select';
-
-          $(selector)
-            .select2({
-              width: '200px',
-              templateResult: function (data) {
-                if (!data.element) {
-                  return data.text;
-                }
-
-                const element = $(data.element);
-                const wrapper = $('<span></span>');
-
-                wrapper.addClass(element[0].className);
-                wrapper.text(data.text);
-
-                return wrapper;
-              },
-            });
-        }
+        selectedValue: '',
       };
     },
     props: {
@@ -69,8 +37,29 @@
       currentName: String,
       label: String,
     },
+    watch: {
+      selectedValue: function (newValue) {
+        this.emitValue(newValue);
+      },
+    },
+    methods: {
+      showSelect: function (id) {
+        this.selectIsShown = true;
+      },
+      categoryHasChildren: function (category) {
+        if (!category.Children) return false;
+        if (Array.isArray(category.Children)) return category.Children.length > 0;
+
+        return Object.keys(category.Children).length > 0;
+      },
+      emitValue: function (value) {
+        this.$emit('input', value);
+      },
+    },
     mounted: function () {
-      this.initializeSelect();
+      if (this.current) {
+        this.selectedValue = this.current;
+      }
     },
     components: {
       CategoryOption,

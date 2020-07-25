@@ -3,8 +3,9 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import _ from 'lodash';
 import generateHash from '../utility/checksum.mjs';
-import validateTransactions from '../utility/validator.mjs';
+import filterInvalidTransactions from '../utility/validator.mjs';
 import moment from 'moment';
+import { getAccountById } from '../database/repositories/account.mjs';
 
 export const DATE_FORMATS = [
   'DD/MM/YYYY',
@@ -12,25 +13,37 @@ export const DATE_FORMATS = [
   'DD.MM.YY',
 ];
 
-export default async function parseTransactionData(path, bankId) {
-  const bank = await getBankModel(bankId);
+export default async function parseTransactionData(path, accountId) {
+  const bank = await getBankModel(accountId);
   const stream = createReadStream(path, bank.Separator);
   const transactions = [];
 
   return new Promise((resolve) => {
-    stream.on('data', (row) => buildTransactions(row, transactions, bank))
+    stream.on('data', (row) => buildTransactions(row, transactions, accountId, bank))
       .on('end', () => removePadding(transactions, bank))
       .on('close', () => {
-        resolve(validateTransactions(transactions));
+        resolve(filterInvalidTransactions(transactions));
       });
   });
 }
 
-async function getBankModel(bankId) {
-  const bank = await getBankById(bankId);
+async function getBankModel(accountId) {
+  const account = await getAccountById(accountId);
+
+  if (!account) {
+    throw new Error(`Account with Id "${accountId}" doesn't exist`);
+  }
+
+  const bankId = account.Bank;
+
+  if (!bankId) {
+    throw new Error(`Account "${accountId}" has no assigned bank"`);
+  }
+
+  const bank = await getBankById(account.Bank);
 
   if (!bank) {
-    throw new Error(`Bank with Id "${bank}" doesn't exist`);
+    throw new Error(`Bank with Id "${bankId}" doesn't exist`);
   }
 
   return bank;
@@ -44,14 +57,21 @@ function createReadStream(path, separator = ';') {
     }));
 }
 
-function buildTransactions(row, transactions, bank) {
+function buildTransactions(row, transactions, accountId, bank) {
   let transaction = {
     Date: extractData(row[bank.Columns.Date - 1], bank.Columns.DateFormat),
     Direction: extractDirection(row, bank.Columns.Amount),
     Amount: extractAmount(row, bank.Columns.Amount),
     Note: extractNote(row[bank.Columns.Reference - 1]),
+    Account: accountId,
     Bank: bank._id,
   };
+
+  if (transaction.Direction === 'OUT') {
+    transaction.Amount = -1 * Math.abs(transaction.Amount);
+  } else {
+    transaction.Amount = Math.abs(transaction.Amount);
+  }
 
   transaction.Hash = generateHash(transaction);
 

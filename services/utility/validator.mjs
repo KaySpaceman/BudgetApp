@@ -1,3 +1,7 @@
-export default function validateTransactions(transactions) {
-  return transactions.filter((entry) => entry.Date && entry.Amount && entry.Bank);
+export function isTransactionValid(transaction) {
+  return transaction.Date && transaction.Amount && transaction.Account;
+}
+
+export default function filterInvalidTransactions(transactions) {
+  return transactions.filter(isTransactionValid);
 }

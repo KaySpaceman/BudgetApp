@@ -10,10 +10,6 @@ const categorySchema = new mongoose.Schema({
   Children: Array,
   Level: Number,
   IsSystem: Boolean,
-},
-{
-  toObject: { virtuals: true },
-  toJSON: { virtuals: true },
 });
 
 categorySchema.statics.findDescendantIds = function (childrenArray, prevVal = []) {
