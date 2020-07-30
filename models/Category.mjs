@@ -1,4 +1,4 @@
-/* eslint-disable no-underscore-dangle, no-param-reassign, func-names, array-callback-return */
+/* eslint-disable no-param-reassign, func-names, array-callback-return */
 import mongoose from 'mongoose';
 import _ from 'lodash';
 

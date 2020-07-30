@@ -31,7 +31,6 @@ export function flattenArray(rawArr = [], property = null) {
 }
 
 export function flattenCategories(categoryTree = []) {
-  // eslint-disable-next-line no-underscore-dangle
   return categoryTree.map((x) => x._doc)
     .reduce(
       (acc, cur) => {

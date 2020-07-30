@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import _ from 'lodash';
 import mongoose from 'mongoose';
 import Transaction from '../../models/Transaction.mjs';

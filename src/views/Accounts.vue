@@ -17,20 +17,22 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Account from '../components/account/Account.vue';
 import AccountForm from '../components/account/AccountForm.vue';
 
 export default {
   name: 'Accounts',
   data: () => ({
-    accounts: [],
     availableBanks: [],
     editAccountIndex: null,
     editAccount: [],
   }),
   computed: {
+    ...mapState({}),
     netTotal() {
-      return this.accounts.reduce((acc, cur) => acc + cur.Total, 0)
+      return Object.values(this.totals)
+        .reduce((acc, cur) => acc + cur, 0)
         .toFixed(2);
     },
   },

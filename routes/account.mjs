@@ -1,5 +1,4 @@
 import express from 'express';
-import { createBank, getBankSelectOptions } from '../services/database/repositories/bank.mjs';
 import {
   getAccounts,
   calculateAccountTotals,
@@ -9,25 +8,18 @@ import {
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const [rawAccounts, availableBanks, accountTotals] = await Promise.all(
-    [getAccounts(), getBankSelectOptions(), calculateAccountTotals()],
-  );
-  const accounts = rawAccounts.map((x) => {
-    x = x.toJSON();
-    x.Total = accountTotals[x._id];
+router.get('/all', async (req, res) => {
+  const allAccounts = await getAccounts();
 
-    return x;
-  });
+  res.setHeader('Content-Type', 'application/json');
+  res.send(allAccounts.map((acc) => acc.toJSON()));
+});
 
-  res.renderVue('Accounts.vue', {
-    accounts,
-    availableBanks,
-  }, {
-    head: {
-      title: 'Account List',
-    },
-  });
+router.get('/totals', async (req, res) => {
+  const totals = await calculateAccountTotals();
+
+  res.setHeader('Content-Type', 'application/json');
+  res.send(totals);
 });
 
 router.post('/new-edit', async (req, res) => {
@@ -43,17 +35,6 @@ router.post('/new-edit', async (req, res) => {
   } catch (e) {
     res.status(500)
       .send(e.toString());
-  }
-});
-
-router.post('/bank/new', async (req, res) => {
-  const savedBank = await createBank(req.body);
-
-  if (savedBank) {
-    res.send(savedBank.toJSON());
-  } else {
-    res.status(500)
-      .send('Unknown error');
   }
 });
 

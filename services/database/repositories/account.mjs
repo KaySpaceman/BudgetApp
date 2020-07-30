@@ -1,5 +1,5 @@
-import Account from '../../../models/Account.mjs';
 import mongoose from 'mongoose';
+import Account from '../../../models/Account.mjs';
 import Transaction from '../../../models/Transaction.mjs';
 
 export async function getAccountById(id) {
@@ -59,6 +59,7 @@ export function getAccounts() {
     .exec();
 }
 
+// TODO: Replace with new Vue component. Use already existing Account state
 export async function getAccountSelectOptions() {
   const accounts = await Account.aggregate([
     { $sort: { Name: 1 } },
@@ -104,7 +105,7 @@ export async function calculateAccountTotals() {
     acc[cur._id.toString()] = cur.Total;
 
     return acc;
-  }, []);
+  }, {});
 }
 
 async function accountExists(data) {

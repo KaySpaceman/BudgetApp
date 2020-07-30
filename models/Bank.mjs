@@ -1,4 +1,4 @@
-/* eslint-disable no-underscore-dangle, func-names */
+/* eslint-disable func-names */
 import mongoose from 'mongoose';
 
 const bankSchema = new mongoose.Schema({
