@@ -1,0 +1,32 @@
+type Account {
+    id: ID!,
+    Name: String!,
+    Number: String,
+    Bank: Bank,
+}
+
+type Bank {
+    id: ID!,
+    Name: String!,
+    Separator: String,
+    Columns: BankColumns,
+    Padding: BankPadding,
+}
+
+type BankColumns {
+    Date: Int,
+    DateFormat: String,
+    Reference: Int,
+    Amount: BankAmountColumn
+}
+
+type BankAmountColumn {
+    Combined: Int,
+    Incoming: Int,
+    Outgoing: Int,
+}
+
+type BankPadding {
+    Top: Int,
+    Bottom: Int,
+}
