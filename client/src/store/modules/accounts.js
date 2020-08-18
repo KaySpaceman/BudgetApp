@@ -10,8 +10,8 @@ export default new Vuex.Store({
   },
   mutations: {
     addAccount() {
-      this.$store.commit('increment')
-      console.log(this.$store.state.count)
+      this.$store.commit('increment');
+      console.log(this.$store.state.count);
     },
   },
   actions: {

@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
-import './registerServiceWorker';
-import router from './router';
-import store from './store';
-import { createProvider } from './vue-apollo';
+import './registerServiceWorker.js';
+import router from './router/index.js';
+import store from './store/index.js';
+import { createProvider } from './vue-apollo.js';
 
 Vue.config.productionTip = false;
 

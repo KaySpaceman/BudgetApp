@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import * as d3 from 'd3';
 import TimeIntervalSelect from './TimeIntervalSelect.vue';
 
 export default {
