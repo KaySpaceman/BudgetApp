@@ -10,7 +10,7 @@ const accountSchema = new mongoose.Schema({
 
 accountSchema.methods.toJSON = function () {
   return {
-    _id: this._id.toString(),
+    id: this.id,
     Name: this.Name,
     Number: this.Number,
     Bank: this.Bank ? this.Bank.toString() : null,

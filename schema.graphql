@@ -3,6 +3,14 @@ type Account {
     Name: String!,
     Number: String,
     Bank: Bank,
+    Balance: Float,
+}
+
+input AccountInput {
+    id: ID,
+    Name: String!,
+    Number: String,
+    Bank: String,
 }
 
 type Bank {
@@ -29,4 +37,13 @@ type BankAmountColumn {
 type BankPadding {
     Top: Int,
     Bottom: Int,
+}
+
+type Query {
+    accounts: [Account!]!,
+}
+
+type Mutation {
+    upsertAccount(account: AccountInput!): Account,
+    deleteAccount(accountId: ID!): Boolean,
 }

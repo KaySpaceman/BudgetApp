@@ -5,7 +5,6 @@ import {
   getBankDateFormatOptions,
   getBankSelectOptions,
 } from '../services/database/repositories/bank.mjs';
-import { getAccountSelectOptions } from '../services/database/repositories/account.mjs';
 
 const router = express.Router();
 
@@ -18,12 +17,11 @@ router.get('/', (req, res) => {
 });
 
 router.get('/upload', async (req, res) => {
-  const [availableAccounts, availableBanks, dateFormats] = await Promise.all(
-    [getAccountSelectOptions(), getBankSelectOptions(), getBankDateFormatOptions()],
+  const [availableBanks, dateFormats] = await Promise.all(
+    [getBankSelectOptions(), getBankDateFormatOptions()],
   );
 
   res.renderVue('StatementUpload.vue', {
-    availableAccounts,
     availableBanks,
     dateFormats,
   }, {

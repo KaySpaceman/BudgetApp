@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 import Account from '../../../models/Account.mjs';
 import Transaction from '../../../models/Transaction.mjs';
 
+export function getAccounts() {
+  return Account.find({})
+    .exec();
+}
+
 export async function getAccountById(id) {
   return Account.findOne({ _id: id })
     .exec();
@@ -15,6 +20,25 @@ export async function getAccountByNumber(number) {
 export async function getAccountByName(name) {
   return Account.findOne({ Name: name })
     .exec();
+}
+
+async function accountExists(data) {
+  const promises = [];
+  const id = data._id || data.id;
+
+  promises.push(getAccountByName(data.Name));
+
+  if (data.Number) {
+    promises.push(getAccountByNumber(data.Number));
+  }
+
+  if (id) {
+    promises.push(getAccountById(id));
+  }
+
+  const [byName, byNumber, byId] = await Promise.all(promises);
+
+  return !!(byName || byNumber || byId);
 }
 
 export async function createAccount(data) {
@@ -33,12 +57,14 @@ export async function createAccount(data) {
   return createdAccount;
 }
 
-export async function editAccount(data) {
+export async function updateAccount(data) {
+  const id = data._id || data.id;
+
   if (!await accountExists(data)) {
     throw new Error('Account doesn\'t exists');
   }
 
-  const account = await Account.findOne({ _id: data._id });
+  const account = await Account.findOne({ _id: id });
 
   if (!account) {
     return null;
@@ -54,35 +80,18 @@ export async function editAccount(data) {
   return editedAccount;
 }
 
-export function getAccounts() {
-  return Account.find({})
+export async function deleteAccountById(accountId) {
+  return Account.deleteOne({
+    _id: { $eq: new mongoose.Types.ObjectId(accountId) },
+  })
     .exec();
 }
 
-// TODO: Replace with new Vue component. Use already existing Account state
-export async function getAccountSelectOptions() {
-  const accounts = await Account.aggregate([
-    { $sort: { Name: 1 } },
+export async function calculateAccountBalance(accountId) {
+  const balance = await Transaction.aggregate([
     {
-      $project: {
-        value: '$_id',
-        name: '$Name',
-      },
+      $match: { Account: new mongoose.Types.ObjectId(accountId) },
     },
-  ])
-    .exec();
-
-  return accounts.map((x) => {
-    if (x.value) {
-      x.value = x.value.toString();
-    }
-
-    return x;
-  });
-}
-
-export async function calculateAccountTotals() {
-  const result = await Transaction.aggregate([
     {
       $group: {
         _id: '$Account',
@@ -91,37 +100,12 @@ export async function calculateAccountTotals() {
     },
     {
       $project: {
-        _id: 1,
+        _id: 0,
         Total: { $round: ['$Total', 2] },
       },
     },
-  ]);
+  ])
+    .exec();
 
-  if (!result) {
-    throw new Error('Failed to fetch account totals');
-  }
-
-  return result.reduce((acc, cur) => {
-    acc[cur._id.toString()] = cur.Total;
-
-    return acc;
-  }, {});
-}
-
-async function accountExists(data) {
-  const promises = [];
-
-  promises.push(getAccountByName(data.Name));
-
-  if (data.Number) {
-    promises.push(getAccountByNumber(data.Number));
-  }
-
-  if (data._id) {
-    promises.push(getAccountById(data._id));
-  }
-
-  const [byName, byNumber, byId] = await Promise.all(promises);
-
-  return !!(byName || byNumber || byId);
+  return balance[0] ? balance[0].Total : 0;
 }

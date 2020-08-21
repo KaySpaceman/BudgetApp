@@ -6,22 +6,20 @@ import {
 } from '../services/database/repository.mjs';
 import updateCategories from '../services/processor/transaction.mjs';
 import { flattenCategories } from '../services/utility/formatter.mjs';
-import { getAccountSelectOptions } from '../services/database/repositories/account.mjs';
 import { isTransactionValid } from '../services/utility/validator.mjs';
 import generateHash from '../services/utility/checksum.mjs';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const [transactions, categoryTree, availableAccounts] = await Promise.all(
-    [getTransactions(), getCategoryTree(), getAccountSelectOptions()],
+  const [transactions, categoryTree] = await Promise.all(
+    [getTransactions(), getCategoryTree()],
   );
 
   res.renderVue('Transactions.vue', {
     newCount: req.query.count,
     transactions,
     flatCategories: flattenCategories(categoryTree),
-    availableAccounts,
   }, {
     head: {
       title: 'Transaction List',

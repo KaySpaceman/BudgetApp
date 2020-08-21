@@ -38,9 +38,14 @@ export default {
     newCount: Number,
     transactions: Array,
     flatCategories: [Array, Object],
-    availableAccounts: [Array, Object],
     showCreateForm: false,
   }),
+  computed: {
+    availableAccounts() {
+      // TODO: Create id => Name array of all accounts for select options
+      return [];
+    },
+  },
   methods: {
     toggleCreateForm() {
       this.showCreateForm = !this.showCreateForm;
