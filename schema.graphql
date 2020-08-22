@@ -21,14 +21,40 @@ type Bank {
     Padding: BankPadding,
 }
 
+input BankInput {
+    id: ID,
+    Name: String!,
+    Separator: String,
+    Columns: BankColumnsInput,
+    Padding: BankPaddingInput,
+}
+
 type BankColumns {
     Date: Int,
     DateFormat: String,
     Reference: Int,
-    Amount: BankAmountColumn
+    Amount: BankAmountColumn,
+}
+
+input BankColumnsInput {
+    Date: Int,
+    DateFormat: String,
+    Reference: Int,
+    Amount: BankAmountColumnInput,
+}
+
+type BankDateFormat {
+    value: String!,
+    name: String!,
 }
 
 type BankAmountColumn {
+    Combined: Int,
+    Incoming: Int,
+    Outgoing: Int,
+}
+
+input BankAmountColumnInput {
     Combined: Int,
     Incoming: Int,
     Outgoing: Int,
@@ -39,11 +65,20 @@ type BankPadding {
     Bottom: Int,
 }
 
+input BankPaddingInput {
+    Top: Int,
+    Bottom: Int,
+}
+
 type Query {
     accounts: [Account!]!,
+    banks: [Bank!]!,
+    bankDateFormats: [BankDateFormat!]!,
 }
 
 type Mutation {
     upsertAccount(account: AccountInput!): Account,
     deleteAccount(accountId: ID!): Boolean,
+    upsertBank(bank: BankInput!): Bank,
+    deleteBank(bankId: ID!): Boolean,
 }

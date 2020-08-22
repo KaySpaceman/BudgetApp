@@ -1,10 +1,46 @@
-import Bank from '../../../models/Bank.mjs';
 import mongoose from 'mongoose';
-import { DATE_FORMATS } from '../../parser/parser.mjs';
+import Bank from '../../../models/Bank.mjs';
+
+export const DATE_FORMATS = [
+  'DD/MM/YYYY',
+  'DD-MMM-YY',
+  'DD.MM.YY',
+];
+
+export async function getBanks() {
+  return Bank.find({}).exec();
+}
 
 export async function getBankById(id) {
   return Bank.findOne({ _id: id })
     .exec();
+}
+
+export async function getBankByName(name) {
+  return Bank.findOne({ Name: name })
+    .exec();
+}
+
+async function bankExists(data) {
+  const promises = [];
+  const id = data._id || data.id;
+
+  promises.push(getBankByName(data.Name));
+
+  if (id) {
+    promises.push(getBankById(id));
+  }
+
+  const [byName, byId] = await Promise.all(promises);
+
+  return !!(byName || byId);
+}
+
+export function getBankDateFormatOptions() {
+  return DATE_FORMATS.map((date) => ({
+    value: date,
+    name: date,
+  }));
 }
 
 export async function createBank(data) {
@@ -21,32 +57,32 @@ export async function createBank(data) {
   return createdBank;
 }
 
-export async function getBankSelectOptions() {
-  const banks = await Bank.aggregate([
-    { $sort: { Name: 1 } },
-    {
-      $project: {
-        value: '$_id',
-        name: '$Name',
-      },
-    },
-  ])
-    .exec();
+export async function updateBank(data) {
+  const id = data._id || data.id;
 
-  return banks.map((x) => {
-    if (x.value) {
-      x.value = x.value.toString();
-    }
+  if (!await bankExists(data)) {
+    throw new Error('Bank doesn\'t exists');
+  }
 
-    return x;
-  });
+  const bank = await Bank.findOne({ _id: id });
+
+  if (!bank) {
+    throw new Error('Bank doesn\'t exists');
+  }
+
+  const editedBank = await bank.set(data)
+    .save();
+
+  if (!editedBank) {
+    throw new Error('Failed to update bank data');
+  }
+
+  return editedBank;
 }
 
-export function getBankDateFormatOptions() {
-  return DATE_FORMATS.map((date) => {
-    return {
-      value: date,
-      name: date,
-    }
-  });
+export async function deleteBankById(bankId) {
+  return Bank.deleteOne({
+    _id: { $eq: new mongoose.Types.ObjectId(bankId) },
+  })
+    .exec();
 }

@@ -7,12 +7,6 @@ import filterInvalidTransactions from '../utility/validator.mjs';
 import moment from 'moment';
 import { getAccountById } from '../database/repositories/account.mjs';
 
-export const DATE_FORMATS = [
-  'DD/MM/YYYY',
-  'DD-MMM-YY',
-  'DD.MM.YY',
-];
-
 export default async function parseTransactionData(path, accountId) {
   const bank = await getBankModel(accountId);
   const stream = createReadStream(path, bank.Separator);

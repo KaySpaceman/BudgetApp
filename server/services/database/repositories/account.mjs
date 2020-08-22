@@ -67,14 +67,14 @@ export async function updateAccount(data) {
   const account = await Account.findOne({ _id: id });
 
   if (!account) {
-    return null;
+    throw new Error('Account doesn\'t exists');
   }
 
   const editedAccount = await account.set(data)
     .save();
 
   if (!editedAccount) {
-    return null;
+    throw new Error('Failed to update account data');
   }
 
   return editedAccount;

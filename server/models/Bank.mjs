@@ -23,7 +23,7 @@ const bankSchema = new mongoose.Schema({
 
 bankSchema.methods.toJSON = function () {
   return {
-    _id: this._id.toString(),
+    id: this.id,
     Name: this.Name,
     Separator: this.Separator,
     Columns: {

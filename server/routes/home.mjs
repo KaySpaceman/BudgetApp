@@ -3,7 +3,6 @@ import { format } from 'url';
 import processStatementUpload from '../services/processor/statement.mjs';
 import {
   getBankDateFormatOptions,
-  getBankSelectOptions,
 } from '../services/database/repositories/bank.mjs';
 
 const router = express.Router();
@@ -17,12 +16,11 @@ router.get('/', (req, res) => {
 });
 
 router.get('/upload', async (req, res) => {
-  const [availableBanks, dateFormats] = await Promise.all(
-    [getBankSelectOptions(), getBankDateFormatOptions()],
+  const [dateFormats] = await Promise.all(
+    [getBankDateFormatOptions()],
   );
 
   res.renderVue('StatementUpload.vue', {
-    availableBanks,
     dateFormats,
   }, {
     head: {
