@@ -11,8 +11,8 @@ export async function getBanks() {
   return Bank.find({}).exec();
 }
 
-export async function getBankById(id) {
-  return Bank.findOne({ _id: id })
+export async function getBankById(bankId) {
+  return Bank.findOne({ _id: bankId })
     .exec();
 }
 

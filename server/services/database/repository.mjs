@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import mongoose from 'mongoose';
 import Transaction from '../../models/Transaction.mjs';
 import Category from '../../models/Category.mjs';
@@ -7,6 +6,8 @@ import { objArrToObj } from '../utility/formatter.mjs';
 // TODO: Move functions to separate repositories
 
 export function saveTransactions(data) {
+  // TODO: Move to Transaction repository
+  // TODO: Rework
   return new Promise((resolve, reject) => {
     if (!Array.isArray(data)) {
       data = [data];
@@ -32,6 +33,8 @@ export function saveTransactions(data) {
 }
 
 export function updateTransactions(data) {
+  // TODO: Move to Transaction repository
+  // TODO: Rework
   return new Promise((resolve, reject) => {
     try {
       const updatePromises = Object.entries(data)
@@ -51,6 +54,8 @@ export function updateTransactions(data) {
 }
 
 export function getTransactions(page = 0, limit = 40) {
+  // TODO: Move to Transaction repository
+  // TODO: Rework
   return Transaction.aggregate([
     {
       $set: {
@@ -90,25 +95,9 @@ export function getTransactions(page = 0, limit = 40) {
     .exec();
 }
 
-export function getCategories() {
-  return Category.find({})
-    .exec();
-}
-
-export function getSystemCategoryIds(asString = true) {
-  return Category.find({ IsSystem: true })
-    .select('_id')
-    .exec()
-    .then((systemCategories) => {
-      if (asString) {
-        return systemCategories.map((cat) => cat._id.toString());
-      }
-
-      return systemCategories.map((cat) => cat._id);
-    });
-}
-
 export async function getOutgoingByDate(interval = 'month') {
+  // TODO: Move to Chart repository
+  // TODO: Rework
   const systemCategories = await getSystemCategoryIds(false);
   let dateString = '%Y-%m';
 
@@ -157,6 +146,8 @@ export async function getOutgoingByDate(interval = 'month') {
 }
 
 export async function getOutgoingByCategory(timePeriod = 'quarterly') {
+  // TODO: Move to Chart repository
+  // TODO: Rework
   const systemCategories = await getSystemCategoryIds(false);
   const dateFilter = new Date();
 
@@ -224,84 +215,4 @@ export async function getOutgoingByCategory(timePeriod = 'quarterly') {
     name: 'Total',
     children,
   };
-}
-
-export function regenerateTree() {
-  return Category.regenerateTree();
-}
-
-export async function createCategory(name, parent = null) {
-  const newCategory = new Category({
-    _id: new mongoose.Types.ObjectId(),
-    Name: name,
-  });
-
-  newCategory.IdString = newCategory._id.toString();
-
-  if (parent) {
-    newCategory.Parent = parent;
-  }
-
-  const savedCategory = await newCategory.save();
-  await regenerateTree();
-
-  return savedCategory;
-}
-
-export function getCategoryTree() {
-  return new Promise((resolve) => {
-    Category.find({ Parent: null })
-      .exec()
-      .then((topLevel) => {
-        const haveTrees = topLevel.filter(
-          (cat) => Array.isArray(cat.Children) && cat.Children.length > 0,
-        );
-
-        if (!Array.isArray(haveTrees) || haveTrees.length < 1) {
-          regenerateTree()
-            .then(() => Category.find({ Parent: null })
-              .exec()
-              .then((newTopLevel) => {
-                resolve(newTopLevel);
-              }));
-        } else {
-          resolve(topLevel);
-        }
-      });
-  });
-}
-
-export async function deleteCategory(categoryId) {
-  const cleanup = [];
-  let categoryIds = await Category.findById(categoryId)
-    .exec()
-    .then((category) => {
-      if (!category) return [];
-
-      const childIds = Category.findDescendantIds(category.Children);
-
-      childIds.push(category._id);
-
-      return childIds;
-    });
-
-  const systemCategoryIds = await getSystemCategoryIds();
-
-  categoryIds = categoryIds.filter(
-    (id) => !systemCategoryIds.includes(id.toString()),
-  );
-
-  cleanup.push(
-    Transaction.where({ Category: { $in: categoryIds } })
-      .update({ $unset: { Category: '' } })
-      .exec(),
-  );
-
-  cleanup.push(
-    Category.deleteMany({ _id: { $in: categoryIds } })
-      .exec()
-      .then(async () => regenerateTree()),
-  );
-
-  return Promise.all(cleanup);
 }

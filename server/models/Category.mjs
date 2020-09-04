@@ -4,13 +4,23 @@ import _ from 'lodash';
 
 const categorySchema = new mongoose.Schema({
   _id: mongoose.ObjectId,
-  IdString: String,
   Name: String,
   Parent: { type: mongoose.ObjectId, ref: 'Category' },
   Children: Array,
   Level: Number,
   IsSystem: Boolean,
 });
+
+categorySchema.methods.toJSON = function () {
+  return {
+    id: this.id,
+    Name: this.Name,
+    Parent: this.Parent ? this.Parent.toString() : null,
+    Children: this.Children,
+    Level: this.Level,
+    IsSystem: this.IsSystem,
+  };
+};
 
 categorySchema.statics.findDescendantIds = function (childrenArray, prevVal = []) {
   return childrenArray.reduce((acc, cur) => {
@@ -71,10 +81,14 @@ categorySchema.statics.regenerateTree = async function () {
 
   const updatedFlatArray = await this.updateChildren(flatArray);
 
-  topLevel.forEach((category) => {
+  return Promise.all(topLevel.reduce((acc, category) => {
+    category.Level = 1;
     category.Children = this.findChildren(updatedFlatArray, category);
-    category.save();
-  });
+
+    acc.push(category.save());
+
+    return acc;
+  }, []));
 };
 
 categorySchema.statics.assignTotalsToCategories = function (categories, totals) {

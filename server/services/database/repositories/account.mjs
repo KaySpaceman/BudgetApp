@@ -2,13 +2,13 @@ import mongoose from 'mongoose';
 import Account from '../../../models/Account.mjs';
 import Transaction from '../../../models/Transaction.mjs';
 
-export function getAccounts() {
+export async function getAccounts() {
   return Account.find({})
     .exec();
 }
 
-export async function getAccountById(id) {
-  return Account.findOne({ _id: id })
+export async function getAccountById(accountId) {
+  return Account.findOne({ _id: accountId })
     .exec();
 }
 
@@ -42,6 +42,7 @@ async function accountExists(data) {
 }
 
 export async function createAccount(data) {
+  // TODO: Add data validation
   if (await accountExists(data)) {
     throw new Error('Account already exists');
   }
@@ -58,6 +59,7 @@ export async function createAccount(data) {
 }
 
 export async function updateAccount(data) {
+  // TODO: Add data validation
   const id = data._id || data.id;
 
   if (!await accountExists(data)) {

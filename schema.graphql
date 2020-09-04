@@ -70,10 +70,26 @@ input BankPaddingInput {
     Bottom: Int,
 }
 
+type Category {
+    id: ID!,
+    Name: String!,
+    Parent: Category,
+    Children: [Category]!,
+    Level: Int!,
+    IsSystem: Boolean,
+}
+
+input CategoryInput {
+    id: ID,
+    Name: String!,
+    Parent: ID,
+}
+
 type Query {
     accounts: [Account!]!,
     banks: [Bank!]!,
     bankDateFormats: [BankDateFormat!]!,
+    categories(maxLevel: Int): [Category!]!,
 }
 
 type Mutation {
@@ -81,4 +97,6 @@ type Mutation {
     deleteAccount(accountId: ID!): Boolean,
     upsertBank(bank: BankInput!): Bank,
     deleteBank(bankId: ID!): Boolean,
+    upsertCategory(category: CategoryInput!): Category,
+    deleteCategory(categoryId: ID!): Boolean,
 }
