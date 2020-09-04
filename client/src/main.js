@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import App from './App.vue';
-import './registerServiceWorker.js';
 import router from './router/index.js';
 import store from './store/index.js';
 import { createProvider } from './vue-apollo.js';
