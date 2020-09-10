@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import mongoose from 'mongoose';
 
 const transactionSchema = new mongoose.Schema({
@@ -13,9 +14,10 @@ const transactionSchema = new mongoose.Schema({
 
 transactionSchema.methods.toJSON = function () {
   return {
-    _id: this._id.toString(),
+    id: this.id,
     Date: this.Date,
     Direction: this.Direction,
+    Note: this.Note,
     Amount: this.Amount,
     Hash: this.Hash,
     Category: this.Category ? this.Category.toString() : null,

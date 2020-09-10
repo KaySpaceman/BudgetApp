@@ -10,14 +10,6 @@ import { getBankById } from '../../services/database/repositories/bank.mjs';
 
 const { GraphQLError } = graphql;
 
-export async function accountBalance(accountId) {
-  return calculateAccountBalance(accountId);
-}
-
-export async function accountBank(bankId) {
-  return getBankById(bankId);
-}
-
 export async function accounts() {
   const rawAccounts = await getAccounts();
 
@@ -26,8 +18,8 @@ export async function accounts() {
 
     return {
       ...data,
-      Bank: accountBank.bind(this, data.Bank),
-      Balance: accountBalance.bind(this, data.id),
+      Bank: getBankById.bind(this, data.Bank),
+      Balance: calculateAccountBalance.bind(this, data.id),
     };
   });
 }

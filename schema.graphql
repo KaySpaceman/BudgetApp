@@ -85,11 +85,33 @@ input CategoryInput {
     Parent: ID,
 }
 
+type Transaction {
+    id: ID!,
+    Date: String!,
+    Direction: String!,
+    Note: String!
+    Amount: Float!,
+    Hash: String!,
+    Category: Category,
+    Account: Account!,
+}
+
+input TransactionInput {
+    id: ID,
+    Date: String!,
+    Direction: String,
+    Note: String!,
+    Amount: Float!,
+    Category: ID,
+    Account: ID!,
+}
+
 type Query {
     accounts: [Account!]!,
     banks: [Bank!]!,
     bankDateFormats: [BankDateFormat!]!,
     categories(maxLevel: Int): [Category!]!,
+    transactions: [Transaction!]!,
 }
 
 type Mutation {
@@ -99,4 +121,6 @@ type Mutation {
     deleteBank(bankId: ID!): Boolean,
     upsertCategory(category: CategoryInput!): Category,
     deleteCategory(categoryId: ID!): Boolean,
+    upsertTransaction(transaction: TransactionInput!): Transaction,
+    deleteTransaction(transactionId: ID!): Boolean,
 }
