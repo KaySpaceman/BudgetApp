@@ -91,21 +91,4 @@ categorySchema.statics.regenerateTree = async function () {
   }, []));
 };
 
-categorySchema.statics.assignTotalsToCategories = function (categories, totals) {
-  return categories.map((category) => {
-    const categoryId = category._id.toString();
-    const dataPoint = { name: category.Name };
-
-    if (totals[categoryId]) {
-      dataPoint.value = totals[categoryId];
-    }
-
-    if (category.Children && category.Children.length > 0) {
-      dataPoint.children = this.assignTotalsToCategories(category.Children, totals);
-    }
-
-    return dataPoint;
-  });
-};
-
 export default mongoose.model('Category', categorySchema, 'Categories');

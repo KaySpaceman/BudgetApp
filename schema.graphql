@@ -112,9 +112,22 @@ enum TimeUnit {
     ANNUAL,
 }
 
+enum TimePeriod {
+    LAST_MONTH,
+    LAST_QUARTER,
+    LAST_HALF_YEAR,
+    LAST_YEAR,
+}
+
 type ChartDataPoint {
-    x: String
+    x: String,
     y: Float,
+}
+
+type SunburstDataPoint {
+    Name: String!,
+    Value: Float,
+    Children: [SunburstDataPoint!],
 }
 
 type Query {
@@ -124,6 +137,7 @@ type Query {
     categories(maxLevel: Int): [Category!]!,
     transactions: [Transaction!]!,
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
+    categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
 }
 
 type Mutation {

@@ -1,7 +1,23 @@
 import Transaction from '../../../models/Transaction.mjs';
-// import Category from '../../../models/Category.mjs';
-// import { objArrToObj } from '../../utility/formatter.mjs';
+import Category from '../../../models/Category.mjs';
 import { getSystemCategoryIds } from './category.mjs';
+
+function combineTotalsWithCategories(categories, totals) {
+  return categories.map((category) => {
+    const categoryId = category._id.toString();
+    const dataPoint = { Name: category.Name };
+
+    if (totals[categoryId]) {
+      dataPoint.Value = totals[categoryId];
+    }
+
+    if (category.Children && category.Children.length > 0) {
+      dataPoint.Children = combineTotalsWithCategories(category.Children, totals);
+    }
+
+    return dataPoint;
+  });
+}
 
 export async function getOutgoingByDate(timeUnit) {
   const systemCategories = await getSystemCategoryIds();
@@ -52,24 +68,21 @@ export async function getOutgoingByDate(timeUnit) {
     .exec();
 }
 
-export async function getOutgoingByCategory(timePeriod = 'quarterly') {
-  // TODO: Move to Chart repository
-  // TODO: Rework
-  /*
+export async function getOutgoingByCategory(timePeriod) {
   const systemCategories = await getSystemCategoryIds(false);
   const dateFilter = new Date();
 
   switch (timePeriod) {
-    case 'monthly':
+    case 'LAST_MONTH':
       dateFilter.setMonth(dateFilter.getMonth() - 1);
       break;
-    case 'quarterly':
+    case 'LAST_QUARTER':
       dateFilter.setMonth(dateFilter.getMonth() - 3);
       break;
-    case 'semiannual':
+    case 'LAST_HALF_YEAR':
       dateFilter.setMonth(dateFilter.getMonth() - 6);
       break;
-    case 'annual':
+    case 'LAST_YEAR':
       dateFilter.setMonth(dateFilter.getMonth() - 12);
       break;
     default:
@@ -79,7 +92,7 @@ export async function getOutgoingByCategory(timePeriod = 'quarterly') {
   const promiseGroupedTotals = Transaction.aggregate([
     {
       $match: {
-        Category: { $nin: systemCategories },
+        Category: { $exists: true, $nin: systemCategories },
         Direction: { $eq: 'OUT' },
         Date: { $gte: dateFilter },
       },
@@ -113,15 +126,18 @@ export async function getOutgoingByCategory(timePeriod = 'quarterly') {
   ])
     .exec();
 
-  const [totals, topCategories] = await Promise.all([promiseGroupedTotals, promiseTopCategories]);
-  const children = await Category.assignTotalsToCategories(
-    topCategories,
-    objArrToObj(totals, '_id', 'value'),
+  const [rawTotals, topCategories] = await Promise.all(
+    [promiseGroupedTotals, promiseTopCategories],
   );
 
+  const totals = rawTotals.reduce((acc, cur) => {
+    acc[cur._id.toString()] = cur.value;
+
+    return acc;
+  }, {});
+
   return {
-    name: 'Total',
-    children,
+    Name: 'Total',
+    Children: combineTotalsWithCategories(topCategories, totals),
   };
-   */
 }
