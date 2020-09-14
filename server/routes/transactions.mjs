@@ -4,7 +4,6 @@ import {
   getTransactions,
   saveTransactions,
 } from '../services/database/repository.mjs';
-import updateCategories from '../services/processor/transaction.mjs';
 import { flattenCategories } from '../services/utility/formatter.mjs';
 import { isTransactionValid } from '../services/utility/validator.mjs';
 import generateHash from '../services/utility/checksum.mjs';

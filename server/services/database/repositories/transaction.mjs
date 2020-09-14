@@ -23,6 +23,24 @@ export async function createTransaction(data) {
   return createdTransaction;
 }
 
+export async function upsertTransactions(transactions) {
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    throw new Error('Invalid argument. Expected array of transactions');
+  }
+
+  const promises = transactions
+    .map((entry) => Transaction.update(
+      { Hash: entry.Hash },
+      { $setOnInsert: entry },
+      { upsert: true },
+    )
+      .exec());
+
+  const response = await Promise.all(promises);
+
+  return response.reduce((acc, cur) => acc + cur.nModified);
+}
+
 export async function updateTransaction(data) {
   // TODO: Add data validation
   const id = data._id || data.id;
