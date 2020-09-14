@@ -1,0 +1,152 @@
+type Account {
+    id: ID!,
+    Name: String!,
+    Number: String,
+    Bank: Bank,
+    Balance: Float,
+}
+
+input AccountInput {
+    id: ID,
+    Name: String!,
+    Number: String,
+    Bank: String,
+}
+
+type Bank {
+    id: ID!,
+    Name: String!,
+    Separator: String,
+    Columns: BankColumns,
+    Padding: BankPadding,
+}
+
+input BankInput {
+    id: ID,
+    Name: String!,
+    Separator: String,
+    Columns: BankColumnsInput,
+    Padding: BankPaddingInput,
+}
+
+type BankColumns {
+    Date: Int,
+    DateFormat: String,
+    Reference: Int,
+    Amount: BankAmountColumn,
+}
+
+input BankColumnsInput {
+    Date: Int,
+    DateFormat: String,
+    Reference: Int,
+    Amount: BankAmountColumnInput,
+}
+
+type BankDateFormat {
+    value: String!,
+    name: String!,
+}
+
+type BankAmountColumn {
+    Combined: Int,
+    Incoming: Int,
+    Outgoing: Int,
+}
+
+input BankAmountColumnInput {
+    Combined: Int,
+    Incoming: Int,
+    Outgoing: Int,
+}
+
+type BankPadding {
+    Top: Int,
+    Bottom: Int,
+}
+
+input BankPaddingInput {
+    Top: Int,
+    Bottom: Int,
+}
+
+type Category {
+    id: ID!,
+    Name: String!,
+    Parent: Category,
+    Children: [Category]!,
+    Level: Int!,
+    IsSystem: Boolean,
+}
+
+input CategoryInput {
+    id: ID,
+    Name: String!,
+    Parent: ID,
+}
+
+type Transaction {
+    id: ID!,
+    Date: String!,
+    Direction: String!,
+    Note: String!
+    Amount: Float!,
+    Hash: String!,
+    Category: Category,
+    Account: Account!,
+}
+
+input TransactionInput {
+    id: ID,
+    Date: String!,
+    Direction: String,
+    Note: String!,
+    Amount: Float!,
+    Category: ID,
+    Account: ID!,
+}
+
+enum TimeUnit {
+    DAILY,
+    MONTHLY,
+    ANNUAL,
+}
+
+enum TimePeriod {
+    LAST_MONTH,
+    LAST_QUARTER,
+    LAST_HALF_YEAR,
+    LAST_YEAR,
+}
+
+type ChartDataPoint {
+    x: String,
+    y: Float,
+}
+
+type SunburstDataPoint {
+    Name: String!,
+    Value: Float,
+    Children: [SunburstDataPoint!],
+}
+
+type Query {
+    accounts: [Account!]!,
+    banks: [Bank!]!,
+    bankDateFormats: [BankDateFormat!]!,
+    categories(maxLevel: Int): [Category!]!,
+    transactions: [Transaction!]!,
+    totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
+    categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
+}
+
+type Mutation {
+    upsertAccount(account: AccountInput!): Account,
+    deleteAccount(accountId: ID!): Boolean,
+    upsertBank(bank: BankInput!): Bank,
+    deleteBank(bankId: ID!): Boolean,
+    upsertCategory(category: CategoryInput!): Category,
+    deleteCategory(categoryId: ID!): Boolean,
+    upsertTransaction(transaction: TransactionInput!): Transaction,
+    deleteTransaction(transactionId: ID!): Boolean,
+}
