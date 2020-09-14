@@ -3,6 +3,8 @@ import Transaction from '../../../models/Transaction.mjs';
 import generateHash from '../../utility/checksum.mjs';
 
 export async function getTransactions() {
+  // TODO: Add Pagination
+  // TODO: Sort by date and move uncategorized to top
   return Transaction.find({})
     .exec();
 }

@@ -11,6 +11,7 @@ import { getAccountById } from '../../services/database/repositories/account.mjs
 const { GraphQLError } = graphql;
 
 export async function transactions() {
+  // TODO: Add Pagination
   const rawTransactions = await getTransactions();
 
   return rawTransactions.map((model) => {

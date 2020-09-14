@@ -106,12 +106,24 @@ input TransactionInput {
     Account: ID!,
 }
 
+enum TimeUnit {
+    DAILY,
+    MONTHLY,
+    ANNUAL,
+}
+
+type ChartDataPoint {
+    x: String
+    y: Float,
+}
+
 type Query {
     accounts: [Account!]!,
     banks: [Bank!]!,
     bankDateFormats: [BankDateFormat!]!,
     categories(maxLevel: Int): [Category!]!,
     transactions: [Transaction!]!,
+    totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
 }
 
 type Mutation {
