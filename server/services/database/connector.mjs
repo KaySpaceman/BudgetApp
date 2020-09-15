@@ -16,5 +16,9 @@ export function buildMongoDbUrl() {
 }
 
 export default function connectDb() {
-  return mongoose.connect(buildMongoDbUrl(), { dbName: process.env.MONGO_DB });
+  return mongoose.connect(buildMongoDbUrl(), {
+    dbName: process.env.MONGO_DB,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 }
