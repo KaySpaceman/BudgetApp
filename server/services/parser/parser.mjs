@@ -1,24 +1,28 @@
-import { getBankById } from '../database/repositories/bank.mjs';
 import fs from 'fs';
 import csv from 'csv-parser';
 import _ from 'lodash';
-import generateHash from '../utility/checksum.mjs';
-import filterInvalidTransactions from '../utility/validator.mjs';
 import moment from 'moment';
+import { getBankById } from '../database/repositories/bank.mjs';
+import filterInvalidTransactions from '../utility/validator.mjs';
+import generateHash from '../utility/checksum.mjs';
 import { getAccountById } from '../database/repositories/account.mjs';
 
-export default async function parseTransactionData(path, accountId) {
-  const bank = await getBankModel(accountId);
-  const stream = createReadStream(path, bank.Separator);
-  const transactions = [];
+// TODO: Clean up this file
 
-  return new Promise((resolve) => {
-    stream.on('data', (row) => buildTransactions(row, transactions, accountId, bank))
-      .on('end', () => removePadding(transactions, bank))
-      .on('close', () => {
-        resolve(filterInvalidTransactions(transactions));
-      });
-  });
+function createReadStream(path, separator = ';') {
+  return fs.createReadStream(path, { encoding: 'utf8' })
+    .pipe(csv({
+      separator,
+      headers: false,
+    }));
+}
+
+function toDecimal(value) {
+  if (!value) {
+    return null;
+  }
+
+  return parseFloat(value.replace(',', '.')) ?? null;
 }
 
 async function getBankModel(accountId) {
@@ -43,35 +47,6 @@ async function getBankModel(accountId) {
   return bank;
 }
 
-function createReadStream(path, separator = ';') {
-  return fs.createReadStream(path, { encoding: 'utf8' })
-    .pipe(csv({
-      separator,
-      headers: false,
-    }));
-}
-
-function buildTransactions(row, transactions, accountId, bank) {
-  let transaction = {
-    Date: extractData(row[bank.Columns.Date - 1], bank.Columns.DateFormat),
-    Direction: extractDirection(row, bank.Columns.Amount),
-    Amount: extractAmount(row, bank.Columns.Amount),
-    Note: extractNote(row[bank.Columns.Reference - 1]),
-    Account: accountId,
-    Bank: bank._id,
-  };
-
-  if (transaction.Direction === 'OUT') {
-    transaction.Amount = -1 * Math.abs(transaction.Amount);
-  } else {
-    transaction.Amount = Math.abs(transaction.Amount);
-  }
-
-  transaction.Hash = generateHash(transaction);
-
-  transactions.push(transaction);
-}
-
 function extractData(value, format) {
   if (!value) {
     return null;
@@ -87,9 +62,7 @@ function extractDirection(row, amountConfig) {
     return toDecimal(row[amountConfig.Combined - 1]) > 0 ? 'IN' : 'OUT';
   }
 
-  return toDecimal(row[amountConfig.Incoming - 1]) ?
-    'IN' :
-    toDecimal(row[amountConfig.Outgoing - 1]) ? 'OUT' : null;
+  return toDecimal(row[amountConfig.Incoming - 1]) ? 'IN' : 'OUT';
 }
 
 function extractAmount(row, amountConfig) {
@@ -98,9 +71,9 @@ function extractAmount(row, amountConfig) {
   if (amountConfig.Combined) {
     amount = row[amountConfig.Combined - 1];
   } else {
-    amount = toDecimal(row[amountConfig.Incoming - 1]) ?
-      row[amountConfig.Incoming - 1] :
-      row[amountConfig.Outgoing - 1];
+    amount = toDecimal(row[amountConfig.Incoming - 1])
+      ? row[amountConfig.Incoming - 1]
+      : row[amountConfig.Outgoing - 1];
   }
 
   amount = toDecimal(amount);
@@ -129,10 +102,37 @@ function removePadding(transactions, bank) {
   return transactions.slice(top, bottom);
 }
 
-function toDecimal(value) {
-  if (!value) {
-    return null;
+function buildTransactions(row, transactions, accountId, bank) {
+  const transaction = {
+    Date: extractData(row[bank.Columns.Date - 1], bank.Columns.DateFormat),
+    Direction: extractDirection(row, bank.Columns.Amount),
+    Amount: extractAmount(row, bank.Columns.Amount),
+    Note: extractNote(row[bank.Columns.Reference - 1]),
+    Account: accountId,
+    Bank: bank._id,
+  };
+
+  if (transaction.Direction === 'OUT') {
+    transaction.Amount = -1 * Math.abs(transaction.Amount);
+  } else {
+    transaction.Amount = Math.abs(transaction.Amount);
   }
 
-  return parseFloat(value.replace(',', '.')) ?? null;
+  transaction.Hash = generateHash(transaction);
+
+  transactions.push(transaction);
+}
+
+export default async function parseTransactionData(path, accountId) {
+  const bank = await getBankModel(accountId);
+  const stream = createReadStream(path, bank.Separator);
+  const transactions = [];
+
+  return new Promise((resolve) => {
+    stream.on('data', (row) => buildTransactions(row, transactions, accountId, bank))
+      .on('end', () => removePadding(transactions, bank))
+      .on('close', () => {
+        resolve(filterInvalidTransactions(transactions));
+      });
+  });
 }
