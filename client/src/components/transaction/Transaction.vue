@@ -1,29 +1,18 @@
 <template>
-  <div class="transaction" :class="{ 'un-categorized': !item.Category }">
-    <span class="column" v-text="item.DateString"/>
-    <span class="column wide" v-text="item.Note"/>
-    <span class="column narrow" v-text="item.Direction"/>
-    <span class="column narrow" v-text="item.Amount"/>
-    <CategorySelect class="column" :categories="flatCategories" :identifier="item.IdString"
-                    :current="item.CategoryIdString" :onlyLastLevel="true"
-                    :currentName="item.CategoryName" v-model="selectedCategory"/>
+  <div class="transaction" :class="{ 'un-categorized': !transaction.Category }">
+    <span class="column wide" v-text="transaction.Note"/>
+    <span class="column" v-text="transaction.Date"/>
+    <span class="column narrow" v-text="transaction.Amount"/>
+    <span class="column narrow" v-text="(transaction.Category && transaction.Category.Name) || ''"/>
   </div>
 </template>
 
 <script>
-import CategorySelect from '../category/CategorySelect.vue';
-
 export default {
   name: 'Transaction',
-  data: () => ({
-    selectedCategory: null,
-  }),
+  data: () => ({}),
   props: {
-    item: Object,
-    flatCategories: [Array, Object],
-  },
-  components: {
-    CategorySelect,
+    transaction: Object,
   },
 };
 </script>
