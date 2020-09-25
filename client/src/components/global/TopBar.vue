@@ -23,7 +23,7 @@ export default {
 .top-bar {
   display: flex;
   flex-direction: row;
-  height: 47px;
+  height: 80px;
   background: $c-white;
 
   .user-info {
@@ -31,7 +31,9 @@ export default {
 
     .username {
       font-size: 18px;
+      font-weight: $fw-semi-bold;
       text-align: center;
+      margin-right: 10px;
     }
   }
 }

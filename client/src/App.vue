@@ -30,4 +30,20 @@ export default {
   letter-spacing: -0.333333px;
   color: $c-earie-black;
 }
+
+#app {
+  display: flex;
+  height: 100vh;
+
+  #nav {
+    height: 100%;
+    width: 250px;
+  }
+
+  #content-wrapper {
+    background-color: $c-alice-blue;
+    height: 100%;
+    flex-grow: 1;
+  }
+}
 </style>
