@@ -1,8 +1,8 @@
 <template>
-  <div class="navigation">
+  <div class="sidebar">
     <div class="logo-container">
       <router-link to="/">
-        <img class="logo" src="../assets/logo.svg" alt="logo"/>
+        <img class="logo" src="../../assets/logo.svg" alt="logo"/>
       </router-link>
     </div>
     <div class="menu">

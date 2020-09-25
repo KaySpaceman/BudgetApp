@@ -4,5 +4,19 @@ module.exports = {
       entry: 'client/src/main.js',
     },
   },
-  pluginOptions: { apollo: { lintGQL: false } },
+  css: {
+    loaderOptions: {
+      scss: {
+        additionalData: '@import "~@/variables.scss";',
+      },
+    },
+  },
+  pluginOptions: {
+    apollo: {
+      lintGQL: false,
+    },
+  },
+  transpileDependencies: [
+    'vuetify',
+  ],
 };
