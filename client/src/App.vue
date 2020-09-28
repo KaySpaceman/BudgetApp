@@ -40,9 +40,10 @@ export default {
     width: 250px;
   }
 
-  #content-wrapper {
+  #content-wrapper,
+  #content {
     background-color: $c-alice-blue;
-    height: 100%;
+    min-height: 100%;
     flex-grow: 1;
   }
 }
