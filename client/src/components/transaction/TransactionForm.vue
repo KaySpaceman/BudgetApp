@@ -1,19 +1,6 @@
 <template>
   <div class="transaction-form" data-app>
-    <v-btn-toggle class="type-selector" v-model="type" background-color="#FFFFFF" mandatory dense>
-      <v-btn class="type-toggle" value="SPENDING">
-        <span class="type-name">Spending</span>
-      </v-btn>
-      <v-btn class="type-toggle" value="INCOME">
-        <span class="type-name">Income</span>
-      </v-btn>
-      <v-btn class="type-toggle" value="SAVINGS">
-        <span class="type-name">Savings</span>
-      </v-btn>
-      <v-btn class="type-toggle" value="INVESTMENT">
-        <span class="type-name">Investment</span>
-      </v-btn>
-    </v-btn-toggle>
+    <button-toggle :options="types" v-model="selectedType"/>
     <div class="fields">
       <div class="column">
         <v-menu v-model="showDatePicker" :close-on-content-click="false"
@@ -48,6 +35,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 import { DateTime } from 'luxon';
+import ButtonToggle from '../inputs/ButtonToggle.vue';
 
 export default {
   name: 'TransactionForm',
@@ -59,7 +47,13 @@ export default {
       { text: 'Three', value: 3 },
       { text: 'Four', value: 4 },
     ],
-    type: 'SPENDING',
+    types: [
+      { value: 'SPENDING', text: 'Spending' },
+      { value: 'INCOME', text: 'Income' },
+      { value: 'SAVINGS', text: 'Savings' },
+      { value: 'INVESTMENT', text: 'Investment' },
+    ],
+    selectedType: 'SPENDING',
   }),
   computed: {
     ...mapState({
@@ -102,6 +96,9 @@ export default {
       this.selectTransaction({});
       this.type = 'SPENDING';
     },
+  },
+  components: {
+    ButtonToggle,
   },
 };
 </script>
@@ -225,45 +222,6 @@ export default {
         color: $c-cadet-blue-crayola;
         font-size: 16px;
       }
-    }
-  }
-
-  .type-selector.v-btn-toggle {
-    margin: auto auto 15px;
-
-    .type-toggle.v-btn {
-      border-color: $c-cadet-blue-crayola;
-      border-width: 1px 1px 1px 0;
-      background-color: $c-white;
-      width: 65px;
-      height: 25px;
-
-      &:first-of-type {
-        border-radius: 3px 0 0 3px;
-        border-width: 1px;
-      }
-
-      &:last-of-type {
-        border-radius: 0 3px 3px 0;
-      }
-
-      &.v-btn--active {
-        background-color: $c-dodger-blue;
-        border: 1px solid $c-dodger-blue;
-
-        .type-name {
-          color: $c-white;
-        }
-      }
-    }
-
-    .type-name {
-      font-family: $f-open-sans;
-      font-weight: $fw-bold;
-      font-size: 9px;
-      line-height: 12px;
-      text-align: center;
-      color: $c-cadet-blue-crayola;
     }
   }
 
