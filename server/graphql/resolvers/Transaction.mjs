@@ -1,5 +1,4 @@
 import graphql from 'graphql';
-import moment from 'moment';
 import {
   createTransaction,
   getTransactions,
@@ -22,7 +21,7 @@ export async function transactions() {
       ...data,
       Category: getCategoryById.bind(this, data.Category),
       Account: getAccountById.bind(this, data.Account),
-      Date: moment(data.Date).format('DD/MM/YYYY'),
+      Date: data.Date.toISOString().split('T')[0],
     };
   });
 }

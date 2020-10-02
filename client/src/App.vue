@@ -5,7 +5,7 @@
     </div>
     <div id="content-wrapper">
       <TopBar/>
-      <router-view id="content"/>
+      <router-view id="page"/>
     </div>
   </div>
 </template>

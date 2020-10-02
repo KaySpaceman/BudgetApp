@@ -6,8 +6,12 @@ const graphqlClient = getClient();
 export default {
   state: () => ({
     transactionList: [],
+    selectedTransaction: Object,
   }),
   mutations: {
+    selectTransaction(state, transaction) {
+      state.selectedTransaction = transaction;
+    },
     addTransactionToList(state, transaction) {
       state.transactionList.add(transaction);
     },

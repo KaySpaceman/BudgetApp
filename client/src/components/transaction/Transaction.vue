@@ -1,22 +1,35 @@
 <template>
   <div class="transaction" :class="{ 'un-categorized': !transaction.Category }">
     <span class="column wide font-small" v-text="transaction.Note"/>
-    <span class="column" v-text="transaction.Date"/>
+    <span class="column" v-text="formattedDate"/>
     <span class="column font-bold">EUR {{transaction.Amount}}</span>
     <span class="column" v-text="(transaction.Category && transaction.Category.Name) || ''"/>
     <span class="column">
       <img class="icon" src="@/assets/Delete.svg" alt="delete"/>
-      <img class="icon" src="@/assets/ToEdit.svg" alt="edit"/>
+      <img class="icon" src="@/assets/ToEdit.svg" alt="edit"
+           @click="selectTransaction(transaction)"/>
     </span>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+import { DateTime } from 'luxon';
+
 export default {
   name: 'Transaction',
   data: () => ({}),
   props: {
     transaction: Object,
+  },
+  methods: {
+    ...mapMutations(['selectTransaction']),
+  },
+  computed: {
+    formattedDate() {
+      return DateTime.fromISO(this.transaction.Date)
+        .toLocaleString(DateTime.DATE_SHORT);
+    },
   },
 };
 </script>
