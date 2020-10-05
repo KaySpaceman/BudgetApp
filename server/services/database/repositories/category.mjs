@@ -2,32 +2,28 @@ import mongoose from 'mongoose';
 import Category from '../../../models/Category.mjs';
 import Transaction from '../../../models/Transaction.mjs';
 
-export async function getCategories() {
-  return Category.find({})
-    .exec();
-}
-
-export async function getCategoryById(categoryId) {
-  return Category.findOne({ _id: categoryId })
-    .exec();
-}
-
 export async function regenerateTree() {
   return Category.regenerateTree();
 }
 
-export async function getCategoriesUpToLevel(maxLevel = 1) {
-  const categories = Category.find({ Level: { $lte: maxLevel } })
+export async function getCategories(filters = []) {
+  const filterObject = filters.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+  const categories = await Category.find(filterObject)
     .exec();
 
   if (categories.length === 0) {
     await regenerateTree();
 
-    return Category.find({ Level: { $lte: maxLevel } })
+    return Category.find(filterObject)
       .exec();
   }
 
   return categories;
+}
+
+export async function getCategoryById(categoryId) {
+  return Category.findOne({ _id: categoryId })
+    .exec();
 }
 
 export async function getSystemCategoryIds() {

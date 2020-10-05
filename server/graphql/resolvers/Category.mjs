@@ -3,7 +3,6 @@ import graphql from 'graphql';
 import {
   getCategories,
   getCategoryById,
-  getCategoriesUpToLevel,
   createCategory,
   updateCategory,
   deleteCategoryById,
@@ -35,14 +34,18 @@ export async function categoryChildren(childArray) {
   }));
 }
 
-export async function categories({ maxLevel }) {
-  let rawCategories;
+export async function categories({ maxLevel, type }) {
+  const filters = [];
 
-  if (typeof maxLevel !== 'undefined') {
-    rawCategories = await getCategoriesUpToLevel(maxLevel);
-  } else {
-    rawCategories = await getCategories();
+  if (maxLevel) {
+    filters.push({ Level: { $lte: maxLevel } });
   }
+
+  if (type) {
+    filters.push({ Type: type });
+  }
+
+  const rawCategories = await getCategories(filters);
 
   return rawCategories.map((model) => {
     const data = model.toJSON();

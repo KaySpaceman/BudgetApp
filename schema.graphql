@@ -74,6 +74,7 @@ type Category {
     id: ID!,
     Name: String!,
     Parent: Category,
+    Type: String,
     Children: [Category]!,
     Level: Int!,
     IsSystem: Boolean,
@@ -83,6 +84,7 @@ input CategoryInput {
     id: ID,
     Name: String!,
     Parent: ID,
+    Type: String!,
 }
 
 type Transaction {
@@ -136,7 +138,7 @@ type Query {
     accounts: [Account!]!,
     banks: [Bank!]!,
     bankDateFormats: [BankDateFormat!]!,
-    categories(maxLevel: Int): [Category!]!,
+    categories(maxLevel: Int, type: String): [Category!]!,
     transactions: [Transaction!]!,
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
