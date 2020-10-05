@@ -89,6 +89,7 @@ type Transaction {
     id: ID!,
     Date: String!,
     Direction: String!,
+    Type: String,
     Note: String!
     Amount: Float!,
     Hash: String!,
@@ -100,6 +101,7 @@ input TransactionInput {
     id: ID,
     Date: String!,
     Direction: String,
+    Type: String!,
     Note: String!,
     Amount: Float!,
     Category: ID,
