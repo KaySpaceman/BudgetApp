@@ -1,11 +1,13 @@
 <template>
-  <div class="transaction-form" data-app>
-    <button-toggle v-model="selectedType" :options="types"/>
+  <div class="transaction-form">
+    <button-toggle v-model="selectedType" :options="types" @change="formData.Category = null"/>
     <div class="fields">
       <div class="column">
         <date-field v-model="formData.Date" label="Date" appendIcon wide/>
         <text-field v-model="formData.Amount" label="Amount" :rules="[validateAmount]"/>
-        <select-field v-model="formData.Category" label="Category" :options="spendingCategories"/>
+        <category-select-field v-model="formData.Category" label="Category" text-property="Name"
+                               :categoryTree="typeCategories" value-property="id" wide
+                               v-if="['SPENDING', 'INCOME'].includes(selectedType)"/>
       </div>
       <div class="column">
         <textarea-field v-model="formData.Note" label="Reason" fill-height wide/>
@@ -19,29 +21,35 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 import ButtonToggle from '../inputs/ButtonToggle.vue';
 import DateField from '../inputs/DateField.vue';
 import TextField from '../inputs/TextField.vue';
 import TextareaField from '../inputs/TextareaField.vue';
-import SelectField from '../inputs/SelectField.vue';
+import CategorySelectField from '../inputs/CategorySelectField.vue';
 import Btn from '../inputs/Btn.vue';
 
 export default {
   name: 'TransactionForm',
   data: () => ({
     showDatePicker: false,
-    spendingCategories: [
-      { text: 'One', value: 'o' },
-      { text: 'Two', value: 'tw' },
-      { text: 'Three', value: 'th' },
-      { text: 'Four', value: 'f' },
-    ],
     types: [
-      { value: 'SPENDING', text: 'Spending' },
-      { value: 'INCOME', text: 'Income' },
-      { value: 'SAVINGS', text: 'Savings' },
-      { value: 'INVESTMENT', text: 'Investment' },
+      {
+        value: 'SPENDING',
+        text: 'Spending',
+      },
+      {
+        value: 'INCOME',
+        text: 'Income',
+      },
+      {
+        value: 'SAVINGS',
+        text: 'Savings',
+      },
+      {
+        value: 'INVESTMENT',
+        text: 'Investment',
+      },
     ],
     selectedType: 'SPENDING',
     formData: {},
@@ -49,24 +57,24 @@ export default {
   computed: {
     ...mapState({
       selectedTransaction: (state) => state.transactions.selectedTransaction,
+      spendingCategories: (state) => state.categories.spendingCategories,
+      incomeCategories: (state) => state.categories.incomeCategories,
     }),
-    transactionCategory: {
-      // TODO: Change once category select is implemented
-      get() {
-        return this.formData.Category ? this.formData.Category.id : null;
-      },
-      set(newId) {
-        this.formData.Category.id = newId;
-      },
+    typeCategories() {
+      return this.selectedType === 'INCOME' ? this.incomeCategories : this.spendingCategories;
     },
   },
   watch: {
     selectedTransaction(transaction) {
-      this.formData = { ...transaction };
+      this.formData = {
+        ...transaction,
+        Category: transaction.Category ? transaction.Category.id : null,
+      };
     },
   },
   methods: {
     ...mapMutations(['selectTransaction']),
+    ...mapActions(['fetchCategories']),
     validateAmount() {
       return (
         (!!Number.parseFloat(this.formData.Amount) && this.formData.Amount > 0)
@@ -81,12 +89,27 @@ export default {
       this.selectedType = 'SPENDING';
     },
   },
+  created() {
+    if (!this.spendingCategories || this.spendingCategories.length === 0) {
+      this.fetchCategories({
+        type: 'SPENDING',
+        mutation: 'setSpendingCategories',
+      });
+    }
+
+    if (!this.incomeCategories || this.incomeCategories.length === 0) {
+      this.fetchCategories({
+        type: 'INCOME',
+        mutation: 'setIncomeCategories',
+      });
+    }
+  },
   components: {
     ButtonToggle,
     DateField,
     TextField,
     TextareaField,
-    SelectField,
+    CategorySelectField,
     Btn,
   },
 };

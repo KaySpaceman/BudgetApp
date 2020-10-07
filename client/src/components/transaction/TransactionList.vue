@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
 import Transaction from './Transaction.vue';
 
 export default {
@@ -25,13 +26,19 @@ export default {
     page: 1, // TODO: Update list on change
     perPage: 10, // TODO: Fetch from BE or calculate from entire list
   }),
-  props: {
-    transactionList: Array,
-  },
   computed: {
+    ...mapState({ transactionList: (state) => state.transactions.transactionList }),
     pageCount() {
       return Math.ceil(this.transactionList.length / this.perPage);
     },
+  },
+  methods: {
+    ...mapActions(['fetchTransactionList']),
+  },
+  created() {
+    if (!this.transactionList || this.transactionList.length === 0) {
+      this.fetchTransactionList();
+    }
   },
   components: {
     Transaction,

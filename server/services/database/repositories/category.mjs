@@ -42,6 +42,7 @@ export async function getSystemCategoryIds() {
 export async function createCategory(data) {
   // TODO: Add data validation
   // TODO: Prevent same name on one level
+  // TODO: Add category type. Based on highest parent?
   const newCategory = new Category({
     ...data,
     _id: new mongoose.Types.ObjectId(),

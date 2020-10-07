@@ -1,7 +1,7 @@
 <template>
   <div id="page">
     <div class="content">
-      <TransactionList :transactionList="transactionList"/>
+      <TransactionList/>
     </div>
     <div class="sidebar">
       <TransactionForm></TransactionForm>
@@ -10,24 +10,12 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
 import TransactionList from '../components/transaction/TransactionList.vue';
 import TransactionForm from '../components/transaction/TransactionForm.vue';
 
 export default {
   name: 'Transactions',
   data: () => ({}),
-  computed: {
-    ...mapState({
-      transactionList: (state) => state.transactions.transactionList,
-    }),
-  },
-  mounted() {
-    this.fetchTransactionList();
-  },
-  methods: {
-    ...mapActions(['fetchTransactionList']),
-  },
   components: {
     TransactionList,
     TransactionForm,

@@ -1,66 +1,53 @@
 <template>
-  <div class="date-picker-field">
-    <v-menu :close-on-content-click="false" :return-value="value" v-model="showDatePicker"
-            transition="scale-transition" offset-y min-width="290px" attach=".date-picker-field">
-      <template v-slot:activator="{ on, attrs }">
-        <v-text-field :label="label" :class="{ 'wide': wide, 'fill-height': fillHeight }" v-on="on"
-                      :value="formattedDate" :attrs="attrs" placeholder=" " readonly
-                      :append-icon="appendIcon ? 'mdi-calendar' : ''"/>
+  <div class="category-select" data-app>
+    <v-select class="select-field" :class="{ 'wide': wide, 'fill-height': fillHeight }"
+              :label="label" :value="value" v-on="$listeners" :items="treeToOptions(categoryTree)"
+              :item-text="textProperty" :item-value="valueProperty" placeholder=" " dense
+              menu-props="{ attach: '.category-select' }">
+      <template v-slot:item="data">
+        <span :class="'level-' + data.item.Level" v-text="data.item.Name"/>
       </template>
-      <v-date-picker :value="value" v-on="inputListeners" no-title/>
-    </v-menu>
+    </v-select>
   </div>
 </template>
 
 <script>
-import { DateTime } from 'luxon';
-
 export default {
-  name: 'DateField',
-  data: () => ({
-    showDatePicker: false,
-  }),
+  name: 'CategorySelectField',
+  data: () => ({}),
   props: {
-    value: String,
+    value: [String, Number],
+    categoryTree: Array,
+    textProperty: String,
+    valueProperty: String,
     label: String,
-    appendIcon: Boolean,
     wide: Boolean,
     fillHeight: Boolean,
   },
   model: {
     prop: 'value',
-    event: 'change',
+    event: 'input',
   },
-  computed: {
-    formattedDate: {
-      cache: false,
-      get() {
-        if (!this.value) {
-          return '';
+  methods: {
+    treeToOptions(categoryTree = []) {
+      return categoryTree.reduce((acc, cur) => {
+        if (cur.Children && cur.Children.length > 0) {
+          // eslint-disable-next-line no-param-reassign
+          cur.disabled = true;
         }
 
-        return DateTime.fromISO(this.value)
-          .toLocaleString(DateTime.DATE_SHORT);
-      },
-    },
-    inputListeners() {
-      const vm = this;
+        acc.push(cur);
 
-      return {
-        ...this.$listeners,
-        input(event) {
-          vm.$emit('input', event);
-          vm.showDatePicker = false;
-        },
-      };
+        return acc.concat(this.treeToOptions(cur.Children));
+      }, []);
     },
   },
 };
 </script>
 
 <style lang="scss">
-.date-picker-field {
-  .v-input {
+.category-select {
+  .select-field.v-input {
     width: 80px;
     height: 40px;
     margin-bottom: 15px;
@@ -84,8 +71,7 @@ export default {
 
       input,
       .v-input__control,
-      .v-input__slot,
-      .v-text-field__slot {
+      .v-input__slot {
         height: 100%;
       }
     }
@@ -116,11 +102,11 @@ export default {
           font-size: 12px;
           line-height: 12px;
           text-transform: uppercase;
-          margin-left: -5px;
+          margin-left: -7px;
           top: 1px
         }
 
-        input {
+        .v-select__selection {
           color: $c-cadet-blue-crayola;
           font-family: $f-open-sans;
           font-weight: $fw-bold;
@@ -136,17 +122,24 @@ export default {
       .v-messages {
         display: none;
       }
+
+      .v-select__slot > .v-input__append-inner > .v-input__icon > .v-icon {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .v-select-list > .v-list-item {
+    &.v-list-item--disabled {
+      background-color: $c-alice-blue;
     }
 
-    .v-input__icon {
-      height: 16px;
-      min-width: 16px;
-      width: 20px;
+    > .level-2 {
+      padding-left: 15px;
+    }
 
-      > .v-icon {
-        color: $c-cadet-blue-crayola;
-        font-size: 16px;
-      }
+    > .level-3 {
+      padding-left: 30px;
     }
   }
 }

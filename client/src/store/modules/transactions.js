@@ -12,9 +12,9 @@ export default {
     selectTransaction(state, transaction) {
       state.selectedTransaction = transaction;
     },
-    addTransactionToList(state, transaction) {
-      state.transactionList.add(transaction);
-    },
+    // addTransactionToList(state, transaction) {
+    //   state.transactionList.add(transaction);
+    // },
     setTransactionList(state, transactionList) {
       state.transactionList = transactionList;
     },
