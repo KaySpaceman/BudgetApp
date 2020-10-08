@@ -21,6 +21,13 @@ export default {
         state.transactionList.splice(existingIndex, 1, transaction);
       }
     },
+    removeTransaction(state, id) {
+      const deleteIndex = state.transactionList.findIndex((t) => t.id === id);
+
+      if (deleteIndex >= 0) {
+        state.transactionList.splice(deleteIndex, 1);
+      }
+    },
     selectTransaction(state, transaction) {
       state.selectedTransaction = transaction;
     },
@@ -79,6 +86,22 @@ export default {
       });
 
       commit('addTransactionToList', response.data.upsertTransaction);
+    },
+    async deleteTransaction({ commit }, id) {
+      const response = await graphqlClient.mutate({
+        mutation: gql`
+          mutation DeleteTransaction($id: ID!) {
+            deleteTransaction(transactionId: $id)
+          }
+        `,
+        variables: {
+          id,
+        },
+      });
+
+      if (response.data.deleteTransaction) {
+        commit('removeTransaction', id);
+      }
     },
   },
 };

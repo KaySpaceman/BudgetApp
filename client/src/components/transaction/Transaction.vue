@@ -7,7 +7,8 @@
     </span>
     <span class="column" v-text="(transaction.Category && transaction.Category.Name) || ''"/>
     <span class="column">
-      <img class="icon" src="@/assets/Delete.svg" alt="delete"/>
+      <img class="icon" src="@/assets/Delete.svg" alt="delete"
+           @click="deleteTransaction(transaction.id)"/>
       <img class="icon" src="@/assets/ToEdit.svg" alt="edit"
            @click="selectTransaction(transaction)"/>
     </span>
@@ -15,7 +16,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapActions } from 'vuex';
 import { DateTime } from 'luxon';
 
 export default {
@@ -26,6 +27,7 @@ export default {
   },
   methods: {
     ...mapMutations(['selectTransaction']),
+    ...mapActions(['deleteTransaction']),
   },
   computed: {
     formattedDate() {
