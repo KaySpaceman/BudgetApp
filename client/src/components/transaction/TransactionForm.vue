@@ -57,9 +57,6 @@ export default {
   },
   watch: {
     selectedTransaction(transaction) {
-      // eslint-disable-next-line no-param-reassign
-      delete transaction.__typename;
-
       this.formData = {
         ...transaction,
         Account: transaction.Account ? transaction.Account.id : null,

@@ -51,6 +51,9 @@ export default {
       commit('setTransactionList', response.data.transactions);
     },
     async upsertTransaction({ commit }, formData) {
+      // eslint-disable-next-line no-param-reassign
+      delete formData.__typename;
+
       const response = await graphqlClient.mutate({
         mutation: gql`
           mutation UpsertTransaction($formData: TransactionInput!) {
