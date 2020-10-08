@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import transactions from './modules/transactions.js';
 import categories from './modules/categories.js';
+import accounts from './modules/accounts.js';
 
 Vue.use(Vuex);
 
@@ -10,5 +11,6 @@ export default new Vuex.Store({
   modules: {
     transactions,
     categories,
+    accounts,
   },
 });

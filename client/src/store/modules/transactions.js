@@ -9,14 +9,20 @@ export default {
     selectedTransaction: Object,
   }),
   mutations: {
-    selectTransaction(state, transaction) {
-      state.selectedTransaction = transaction;
-    },
-    // addTransactionToList(state, transaction) {
-    //   state.transactionList.add(transaction);
-    // },
     setTransactionList(state, transactionList) {
       state.transactionList = transactionList;
+    },
+    addTransactionToList(state, transaction) {
+      const existingIndex = state.transactionList.findIndex((t) => t.id === transaction.id);
+
+      if (existingIndex < 0) {
+        state.transactionList.unshift(transaction);
+      } else {
+        state.transactionList.splice(existingIndex, 1, transaction);
+      }
+    },
+    selectTransaction(state, transaction) {
+      state.selectedTransaction = transaction;
     },
   },
   actions: {
@@ -29,6 +35,10 @@ export default {
               Date
               Amount
               Note
+              Account {
+                id
+              }
+              Type
               Category {
                 id
                 Name
@@ -39,6 +49,33 @@ export default {
       });
 
       commit('setTransactionList', response.data.transactions);
+    },
+    async upsertTransaction({ commit }, formData) {
+      const response = await graphqlClient.mutate({
+        mutation: gql`
+          mutation UpsertTransaction($formData: TransactionInput!) {
+            upsertTransaction(transaction: $formData) {
+              id
+              Date
+              Amount
+              Note
+              Account {
+                id
+              }
+              Type
+              Category {
+                id
+                Name
+              }
+            }
+          },
+        `,
+        variables: {
+          formData,
+        },
+      });
+
+      commit('addTransactionToList', response.data.upsertTransaction);
     },
   },
 };

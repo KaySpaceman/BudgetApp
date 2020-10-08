@@ -32,7 +32,16 @@ export async function upsertTransaction({ transaction }) {
     throw new GraphQLError('Received invalid transaction upsert request data');
   }
 
-  return transaction.id ? updateTransaction(transaction) : createTransaction(transaction);
+  const response = transaction.id ? await updateTransaction(transaction)
+    : await createTransaction(transaction);
+  const data = response.toJSON();
+
+  return {
+    ...data,
+    Category: getCategoryById.bind(this, data.Category),
+    Account: getAccountById.bind(this, data.Account),
+    Date: data.Date.toISOString().split('T')[0],
+  };
 }
 
 export async function deleteTransaction({ transactionId }) {

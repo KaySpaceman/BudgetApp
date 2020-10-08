@@ -1,15 +1,19 @@
 <template>
   <div class="transaction-form">
-    <button-toggle v-model="selectedType" :options="types" @change="formData.Category = null"/>
+    <button-toggle v-model="formData.Type" :options="types" @change="formData.Category = null"/>
     <div class="fields">
       <div class="column">
         <date-field v-model="formData.Date" label="Date" appendIcon wide/>
-        <text-field v-model="formData.Amount" label="Amount" :rules="[validateAmount]"/>
+        <text-field v-model.number="formData.Amount" label="Amount" type="number"
+                    :rules="[validateAmount]"/>
         <category-select-field v-model="formData.Category" label="Category" text-property="Name"
-                               :categoryTree="typeCategories" value-property="id" wide
-                               v-if="['SPENDING', 'INCOME'].includes(selectedType)"/>
+                               :category-type="categoryType" value-property="id" wide
+                               v-if="['SPENDING', 'INCOME'].includes(formData.Type)"/>
       </div>
       <div class="column">
+        <select-field v-model="formData.Account" label="Account" text-property="Name"
+                      :options="accountsList" value-property="id"
+                      v-if="['SPENDING', 'INCOME'].includes(formData.Type)" wide/>
         <textarea-field v-model="formData.Note" label="Reason" fill-height wide/>
       </div>
     </div>
@@ -28,61 +32,65 @@ import TextField from '../inputs/TextField.vue';
 import TextareaField from '../inputs/TextareaField.vue';
 import CategorySelectField from '../inputs/CategorySelectField.vue';
 import Btn from '../inputs/Btn.vue';
+import SelectField from '../inputs/SelectField.vue';
 
 export default {
   name: 'TransactionForm',
   data: () => ({
+    formData: {},
     showDatePicker: false,
     types: [
-      {
-        value: 'SPENDING',
-        text: 'Spending',
-      },
-      {
-        value: 'INCOME',
-        text: 'Income',
-      },
-      {
-        value: 'SAVINGS',
-        text: 'Savings',
-      },
-      {
-        value: 'INVESTMENT',
-        text: 'Investment',
-      },
+      { value: 'SPENDING', text: 'Spending' },
+      { value: 'INCOME', text: 'Income' },
+      { value: 'SAVINGS', text: 'Savings' },
+      { value: 'INVESTMENT', text: 'Investment' },
     ],
-    selectedType: 'SPENDING',
-    formData: {},
   }),
   computed: {
     ...mapState({
       selectedTransaction: (state) => state.transactions.selectedTransaction,
-      spendingCategories: (state) => state.categories.spendingCategories,
-      incomeCategories: (state) => state.categories.incomeCategories,
+      accountsList: (state) => state.accounts.accountsList,
     }),
-    typeCategories() {
-      return this.selectedType === 'INCOME' ? this.incomeCategories : this.spendingCategories;
+    categoryType() {
+      return this.formData.Type === 'INCOME' ? 'INCOME' : 'SPENDING';
     },
   },
   watch: {
     selectedTransaction(transaction) {
+      // eslint-disable-next-line no-param-reassign
+      delete transaction.__typename;
+
       this.formData = {
         ...transaction,
+        Account: transaction.Account ? transaction.Account.id : null,
         Category: transaction.Category ? transaction.Category.id : null,
+        Type: transaction.Type || 'SPENDING',
       };
     },
   },
   methods: {
     ...mapMutations(['selectTransaction']),
-    ...mapActions(['fetchCategories']),
+    ...mapActions(['fetchAccountList', 'upsertTransaction']),
     validateAmount() {
-      return (
-        (!!Number.parseFloat(this.formData.Amount) && this.formData.Amount > 0)
-        || !this.formData.Amount)
+      const amount = this.formData.Amount;
+
+      return ((!!Number.parseFloat(amount) && amount > 0) || !amount)
         || 'Must be a positive number!';
     },
     submitForm() {
-      // TODO: Submit data and add now transaction to list
+      if (this.validateForm()) {
+        this.upsertTransaction(this.formData);
+        this.clearForm();
+      }
+    },
+    validateForm() {
+      // TODO: Validate data with JOI
+      // eslint-disable-next-line object-curly-newline
+      const { Date, Type, Note, Account } = this.formData;
+
+      return typeof Date === 'string' && typeof Note === 'string' && this.validateAmount() === true
+        && this.types.map((cur) => cur.value).includes(Type)
+        && this.accountsList.map((cur) => cur.id).includes(Account);
     },
     clearForm() {
       this.selectTransaction({});
@@ -90,18 +98,8 @@ export default {
     },
   },
   created() {
-    if (!this.spendingCategories || this.spendingCategories.length === 0) {
-      this.fetchCategories({
-        type: 'SPENDING',
-        mutation: 'setSpendingCategories',
-      });
-    }
-
-    if (!this.incomeCategories || this.incomeCategories.length === 0) {
-      this.fetchCategories({
-        type: 'INCOME',
-        mutation: 'setIncomeCategories',
-      });
+    if (!this.accountsList || this.accountsList.length === 0) {
+      this.fetchAccountList();
     }
   },
   components: {
@@ -109,6 +107,7 @@ export default {
     DateField,
     TextField,
     TextareaField,
+    SelectField,
     CategorySelectField,
     Btn,
   },
@@ -131,6 +130,8 @@ export default {
     margin: auto auto 15px;
 
     .column {
+      display: flex;
+      flex-flow: column;
       flex-basis: 50%;
 
       &:first-of-type {

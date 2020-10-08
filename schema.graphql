@@ -91,7 +91,7 @@ type Transaction {
     id: ID!,
     Date: String!,
     Direction: String!,
-    Type: String,
+    Type: TransactionType,
     Note: String!
     Amount: Float!,
     Hash: String!,
@@ -102,12 +102,18 @@ type Transaction {
 input TransactionInput {
     id: ID,
     Date: String!,
-    Direction: String,
-    Type: String!,
+    Type: TransactionType!,
     Note: String!,
     Amount: Float!,
     Category: ID,
     Account: ID!,
+}
+
+enum TransactionType {
+    SPENDING,
+    INCOME,
+    SAVINGS,
+    INVESTMENT,
 }
 
 enum TimeUnit {

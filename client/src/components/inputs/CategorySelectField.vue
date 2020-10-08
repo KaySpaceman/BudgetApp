@@ -1,7 +1,7 @@
 <template>
   <div class="category-select" data-app>
     <v-select class="select-field" :class="{ 'wide': wide, 'fill-height': fillHeight }"
-              :label="label" :value="value" v-on="$listeners" :items="treeToOptions(categoryTree)"
+              :label="label" :value="value" v-on="$listeners" :items="options"
               :item-text="textProperty" :item-value="valueProperty" placeholder=" " dense
               menu-props="{ attach: '.category-select' }">
       <template v-slot:item="data">
@@ -12,23 +12,43 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 export default {
   name: 'CategorySelectField',
   data: () => ({}),
   props: {
     value: [String, Number],
-    categoryTree: Array,
+    categoryType: String,
     textProperty: String,
     valueProperty: String,
     label: String,
     wide: Boolean,
     fillHeight: Boolean,
   },
+  computed: {
+    ...mapState({
+      spendingCategories: (state) => state.categories.spendingCategories,
+      incomeCategories: (state) => state.categories.incomeCategories,
+    }),
+    options() {
+      switch (this.categoryType) {
+        case 'INCOME':
+          return this.treeToOptions(this.incomeCategories);
+        case 'SPENDING':
+          return this.treeToOptions(this.spendingCategories);
+        default:
+          // TODO: Return all categories
+          return this.treeToOptions(this.spendingCategories);
+      }
+    },
+  },
   model: {
     prop: 'value',
     event: 'input',
   },
   methods: {
+    ...mapActions(['fetchCategories']),
     treeToOptions(categoryTree = []) {
       return categoryTree.reduce((acc, cur) => {
         if (cur.Children && cur.Children.length > 0) {
@@ -41,6 +61,22 @@ export default {
         return acc.concat(this.treeToOptions(cur.Children));
       }, []);
     },
+  },
+  created() {
+    // TODO: Check and fetch only when accessed
+    if (!this.spendingCategories || this.spendingCategories.length === 0) {
+      this.fetchCategories({
+        type: 'SPENDING',
+        mutation: 'setSpendingCategories',
+      });
+    }
+
+    if (!this.incomeCategories || this.incomeCategories.length === 0) {
+      this.fetchCategories({
+        type: 'INCOME',
+        mutation: 'setIncomeCategories',
+      });
+    }
   },
 };
 </script>

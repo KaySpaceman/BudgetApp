@@ -109,7 +109,6 @@ function buildTransactions(row, transactions, accountId, bank) {
     Amount: extractAmount(row, bank.Columns.Amount),
     Note: extractNote(row[bank.Columns.Reference - 1]),
     Account: accountId,
-    Bank: bank._id,
   };
 
   if (transaction.Direction === 'OUT') {

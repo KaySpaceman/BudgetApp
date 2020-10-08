@@ -2,7 +2,9 @@
   <div class="transaction" :class="{ 'un-categorized': !transaction.Category }">
     <span class="column wide font-small" v-text="transaction.Note"/>
     <span class="column" v-text="formattedDate"/>
-    <span class="column font-bold">EUR {{transaction.Amount}}</span>
+    <span class="column font-bold" :class="{ 'income': transaction.Type === 'INCOME' }">
+      EUR {{transaction.Amount}}
+    </span>
     <span class="column" v-text="(transaction.Category && transaction.Category.Name) || ''"/>
     <span class="column">
       <img class="icon" src="@/assets/Delete.svg" alt="delete"/>
@@ -73,6 +75,10 @@ export default {
        font-weight: $fw-bold;
        font-size: 12px;
        line-height: 16px;
+     }
+
+     &.income {
+       color: $c-sheen-green;
      }
 
      .icon {

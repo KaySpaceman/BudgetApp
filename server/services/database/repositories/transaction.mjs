@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import mongoose from 'mongoose';
 import Transaction from '../../../models/Transaction.mjs';
 import generateHash from '../../utility/checksum.mjs';
@@ -14,6 +15,10 @@ export async function createTransaction(data) {
   data._id = new mongoose.Types.ObjectId();
   data.Hash = generateHash(data);
 
+  if (data.Type) {
+    data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
+  }
+
   const createdTransaction = await new Transaction(data).save();
 
   if (!createdTransaction) {
@@ -29,12 +34,18 @@ export async function upsertTransactions(transactions) {
   }
 
   const promises = transactions
-    .map((entry) => Transaction.update(
-      { Hash: entry.Hash },
-      { $setOnInsert: entry },
-      { upsert: true },
-    )
-      .exec());
+    .map((entry) => {
+      if (entry.Type) {
+        entry.Direction = entry.Type === 'INCOME' ? 'IN' : 'OUT';
+      }
+
+      return Transaction.update(
+        { Hash: entry.Hash },
+        { $setOnInsert: entry },
+        { upsert: true },
+      )
+        .exec();
+    });
 
   const response = await Promise.all(promises);
 
@@ -43,8 +54,7 @@ export async function upsertTransactions(transactions) {
 
 export async function updateTransaction(data) {
   // TODO: Add data validation
-  const id = data._id || data.id;
-
+  const id = new mongoose.Types.ObjectId(data._id || data.id);
   const transaction = await Transaction.findOne({ _id: id });
 
   if (!transaction) {
@@ -52,6 +62,11 @@ export async function updateTransaction(data) {
   }
 
   data.Hash = generateHash(data);
+
+  if (data.Type) {
+    data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
+  }
+
   const editedTransaction = await transaction.set(data)
     .save();
 
