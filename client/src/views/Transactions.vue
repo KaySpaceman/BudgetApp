@@ -4,7 +4,8 @@
       <TransactionList/>
     </div>
     <div class="sidebar">
-      <TransactionForm></TransactionForm>
+      <TransactionForm/>
+      <StatementUpload/>
     </div>
   </div>
 </template>
@@ -12,11 +13,13 @@
 <script>
 import TransactionList from '../components/transaction/TransactionList.vue';
 import TransactionForm from '../components/transaction/TransactionForm.vue';
+import StatementUpload from '../components/transaction/StatementUpload.vue';
 
 export default {
   name: 'Transactions',
   data: () => ({}),
   components: {
+    StatementUpload,
     TransactionList,
     TransactionForm,
   },
