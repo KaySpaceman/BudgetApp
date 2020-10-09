@@ -33,7 +33,7 @@ export default {
     },
   },
   actions: {
-    async fetchTransactionList({ commit }) {
+    async fetchTransactionList({ commit }, forceRefresh = false) {
       const response = await graphqlClient.query({
         query: gql`
           query TransactionList {
@@ -53,6 +53,7 @@ export default {
             }
           },
         `,
+        fetchPolicy: forceRefresh ? 'network-only' : 'cache-first',
       });
 
       commit('setTransactionList', response.data.transactions);

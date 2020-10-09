@@ -49,7 +49,7 @@ export async function upsertTransactions(transactions) {
 
   const response = await Promise.all(promises);
 
-  return response.reduce((acc, cur) => acc + cur.nModified);
+  return response.reduce((acc, cur) => acc + !!cur.upserted, 0);
 }
 
 export async function updateTransaction(data) {

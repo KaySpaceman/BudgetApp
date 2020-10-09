@@ -22,7 +22,9 @@ function toDecimal(value) {
     return null;
   }
 
-  return parseFloat(value.replace(',', '.')) ?? null;
+  const decimal = parseFloat(value.replace(',', '.'));
+
+  return _.isNumber(decimal) ? decimal : null;
 }
 
 async function getBankModel(accountId) {
@@ -78,11 +80,13 @@ function extractAmount(row, amountConfig) {
 
   amount = toDecimal(amount);
 
-  if (_.isNumber(amount)) {
-    amount = Math.abs(amount);
+  if (!_.isNumber(amount)) {
+    return null;
   }
 
-  return amount;
+  amount = Math.abs(amount);
+
+  return Number.isInteger(amount) ? amount.toFixed(0) : amount.toFixed(2);
 }
 
 function extractNote(value) {
@@ -111,14 +115,7 @@ function buildTransactions(row, transactions, accountId, bank) {
     Account: accountId,
   };
 
-  if (transaction.Direction === 'OUT') {
-    transaction.Amount = -1 * Math.abs(transaction.Amount);
-  } else {
-    transaction.Amount = Math.abs(transaction.Amount);
-  }
-
   transaction.Hash = generateHash(transaction);
-
   transactions.push(transaction);
 }
 

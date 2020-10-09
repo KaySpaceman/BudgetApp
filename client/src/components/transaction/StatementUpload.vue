@@ -18,6 +18,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import axios from 'axios';
 import Btn from '../inputs/Btn.vue';
 import SelectField from '../inputs/SelectField.vue';
 import FileUpload from '../inputs/FileUpload.vue';
@@ -32,12 +33,32 @@ export default {
     ...mapState({ accountsList: (state) => state.accounts.accountsList }),
   },
   methods: {
-    ...mapActions(['fetchAccountList']),
+    ...mapActions(['fetchAccountList', 'fetchTransactionList']),
     uploadStatement() {
-      // TODO: Upload statement
+      if (!this.validateForm()) {
+        return;
+      }
+
+      const { href } = window.location;
+      const baseURL = `${href.substring(0, href.lastIndexOf(':'))}:4000`;
+      const formData = new FormData();
+
+      formData.append('statementFile', this.statementFile);
+      formData.append('account', this.account);
+
+      axios.post('/upload', formData, { baseURL })
+        .then((res) => {
+          this.clearForm();
+          this.fetchTransactionList(true);
+
+          console.log(`New transaction count: ${res.data.newCount || 0}`);
+        })
+        .catch((err) => {
+          console.log(`Upload error: ${err}`);
+        });
     },
     validateForm() {
-      // TODO: Validate
+      return !!this.statementFile && typeof this.account === 'string';
     },
     clearForm() {
       this.account = null;
