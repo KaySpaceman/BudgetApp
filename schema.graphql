@@ -84,7 +84,7 @@ input CategoryInput {
     id: ID,
     Name: String!,
     Parent: ID,
-    Type: String!,
+    Type: String,
 }
 
 type Transaction {

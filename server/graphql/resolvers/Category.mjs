@@ -10,7 +10,7 @@ import {
 
 const { GraphQLError } = graphql;
 
-export async function categoryById(categoryId) {
+async function categoryById(categoryId) {
   const model = await getCategoryById(categoryId);
   const data = model.toJSON();
 
@@ -21,7 +21,7 @@ export async function categoryById(categoryId) {
   };
 }
 
-export async function categoryChildren(childArray) {
+async function categoryChildren(childArray) {
   if (!childArray || !Array.isArray(childArray) || childArray.length === 0) {
     return [];
   }
@@ -59,6 +59,7 @@ export async function categories({ maxLevel, type }) {
 }
 
 export async function upsertCategory({ category }) {
+  // TODO: Add data validation
   if (!category) {
     throw new GraphQLError('Received invalid category upsert request data');
   }

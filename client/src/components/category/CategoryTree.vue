@@ -1,37 +1,34 @@
 <template>
-  <div class="category-tree-wrapper">
-    <li class="cat-tree-branch" :class="'level-' + level" v-for="(item, index) in items"
-        :key="item.id">
-      <span class="cat-name" v-text="item.Name"/>
-      <i class="material-icons md-18 cat-delete" @click="deleteCategory(item.IdString, index)">
-        delete_outline
-      </i>
-      <ul class="cat-tree-subtree" v-if="item.Children">
-        <CategoryTree :items="item.Children" :level="level + 1"/>
-      </ul>
-    </li>
-  </div>
+    <div class="category-tree">
+      <v-treeview :items="allCategories" item-text="Name" item-key="id" item-children="Children"
+                  dense>
+        <template v-slot:append="{ item }">
+          <img class="icon" src="@/assets/Delete.svg" alt="delete"
+               @click="deleteCategory(item.id)"/>
+          <img class="icon" src="@/assets/ToEdit.svg" alt="edit"
+               @click="selectCategory(item)"/>
+        </template>
+      </v-treeview>
+    </div>
 </template>
 
 <script>
+import { mapActions, mapMutations, mapGetters } from 'vuex';
+
 export default {
   name: 'CategoryTree',
   data: () => ({}),
-  methods: {
-    deleteCategory(categoryId, index) {
-      // TODO: Replace with Axios
-      return categoryId + index;
-      // $.post('/categories/delete', { categoryId }, () => {
-      //   Vue.delete(this.items, index);
-      // })
-      //   .fail(() => {
-      //     alert('Failed to delete category!');
-      //   });
-    },
+  computed: {
+    ...mapGetters(['allCategories']),
   },
-  props: {
-    items: [Array, Object],
-    level: Number,
+  methods: {
+    ...mapMutations(['selectCategory']),
+    ...mapActions(['deleteCategory']),
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.category-tree {
+}
+</style>

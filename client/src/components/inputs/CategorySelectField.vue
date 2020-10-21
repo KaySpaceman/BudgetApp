@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default {
   name: 'CategorySelectField',
@@ -25,12 +25,14 @@ export default {
     label: String,
     wide: Boolean,
     fillHeight: Boolean,
+    allowAllLevels: Boolean,
   },
   computed: {
     ...mapState({
       spendingCategories: (state) => state.categories.spendingCategories,
       incomeCategories: (state) => state.categories.incomeCategories,
     }),
+    ...mapGetters(['allCategories']),
     options() {
       switch (this.categoryType) {
         case 'INCOME':
@@ -38,8 +40,7 @@ export default {
         case 'SPENDING':
           return this.treeToOptions(this.spendingCategories);
         default:
-          return this.treeToOptions(this.spendingCategories)
-            .concat(this.treeToOptions(this.incomeCategories));
+          return this.treeToOptions(this.allCategories);
       }
     },
   },
@@ -51,12 +52,17 @@ export default {
     ...mapActions(['fetchCategories']),
     treeToOptions(categoryTree = []) {
       return categoryTree.reduce((acc, cur) => {
-        if (cur.Children && cur.Children.length > 0) {
-          // eslint-disable-next-line no-param-reassign
-          cur.disabled = true;
+        const option = {
+          id: cur.id,
+          Name: cur.Name,
+          Level: cur.Level,
+        };
+
+        if (!this.allowAllLevels && (cur.Children && cur.Children.length > 0)) {
+          option.disabled = true;
         }
 
-        acc.push(cur);
+        acc.push(option);
 
         return acc.concat(this.treeToOptions(cur.Children));
       }, []);
@@ -65,17 +71,11 @@ export default {
   created() {
     // TODO: Check and fetch only when accessed
     if (!this.spendingCategories || this.spendingCategories.length === 0) {
-      this.fetchCategories({
-        type: 'SPENDING',
-        mutation: 'setSpendingCategories',
-      });
+      this.fetchCategories({ type: 'SPENDING' });
     }
 
     if (!this.incomeCategories || this.incomeCategories.length === 0) {
-      this.fetchCategories({
-        type: 'INCOME',
-        mutation: 'setIncomeCategories',
-      });
+      this.fetchCategories({ type: 'INCOME' });
     }
   },
 };
