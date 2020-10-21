@@ -17,7 +17,7 @@
       <btn row @click="submitForm">Save</btn>
       <btn row clear outlined @click="clearForm">Clear</btn>
     </div>
-    <category-tree v-if="showTree"/>
+    <category-tree class="category-tree" v-if="showTree"/>
   </div>
 </template>
 
@@ -108,6 +108,10 @@ export default {
 
   .controls {
     display: flex;
+  }
+
+  .category-tree {
+    margin-top: 10px;
   }
 }
 </style>
