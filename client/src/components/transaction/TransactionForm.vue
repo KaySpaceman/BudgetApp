@@ -6,8 +6,8 @@
         <date-field v-model="formData.Date" label="Date" appendIcon wide/>
         <text-field v-model.number="formData.Amount" label="Amount" type="number"
                     :rules="[validateAmount]"/>
-        <category-select-field v-model="formData.Category" label="Category" text-property="Name"
-                               :category-type="categoryType" value-property="id" wide
+        <category-select-field v-model="formData.Category" label="Category"
+                               :category-type="categoryType" wide
                                v-if="['SPENDING', 'INCOME'].includes(formData.Type)"/>
       </div>
       <div class="column">

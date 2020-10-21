@@ -96,6 +96,10 @@ export default {
     }
   }
 
+  .v-list--dense .v-list-item {
+    min-height: 30px;
+  }
+
   .v-input__control {
     .v-messages {
       display: none;

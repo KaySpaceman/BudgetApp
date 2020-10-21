@@ -2,8 +2,8 @@
   <div class="category-select" data-app>
     <v-select class="select-field" :class="{ 'wide': wide, 'fill-height': fillHeight }"
               :label="label" :value="value" v-on="$listeners" :items="options"
-              :item-text="textProperty" :item-value="valueProperty" placeholder=" " dense
-              menu-props="{ attach: '.category-select' }">
+              :item-text="textProperty || 'Name'" :item-value="valueProperty || 'id'" dense
+              placeholder=" " menu-props="{ attach: '.category-select' }">
       <template v-slot:item="data">
         <span :class="'level-' + data.item.Level" v-text="data.item.Name"/>
       </template>
@@ -38,8 +38,8 @@ export default {
         case 'SPENDING':
           return this.treeToOptions(this.spendingCategories);
         default:
-          // TODO: Return all categories
-          return this.treeToOptions(this.spendingCategories);
+          return this.treeToOptions(this.spendingCategories)
+            .concat(this.treeToOptions(this.incomeCategories));
       }
     },
   },
@@ -165,7 +165,13 @@ export default {
     }
   }
 
+  .v-list--dense .v-list-item {
+    min-height: 30px;
+  }
+
   .v-select-list > .v-list-item {
+    font-size: 14px;
+
     &.v-list-item--disabled {
       background-color: $c-alice-blue;
     }
