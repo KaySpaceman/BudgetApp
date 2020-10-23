@@ -9,9 +9,12 @@
     </div>
     <Transaction v-for="transaction in transactionList" :transaction="transaction"
                  :key="transaction.id"/>
-    <div class="pagination">
-      <v-pagination :value="page" @input="changePage" :length="pageCount" total-visible="7"
-                    prev-icon="mdi-menu-left" next-icon="mdi-menu-right"/>
+    <div class="pagination-bar">
+      <v-pagination class="pagination" :value="page" @input="changePage" :length="pageCount"
+                    total-visible="7" prev-icon="mdi-menu-left" next-icon="mdi-menu-right"/>
+      <div class="x-of-x-counter">
+        <span>{{--page * perPage + 1}}-{{page * perPage}} of {{count}}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -92,12 +95,16 @@ export default {
     }
   }
 
-  .pagination {
+  .pagination-bar {
     background-color: $c-white;
     display: flex;
     justify-content: center;
     flex-direction: row;
     flex-wrap: nowrap;
+
+    .pagination {
+      flex-grow: 1;
+    }
 
     .v-pagination__item,
     .v-pagination__navigation,
@@ -105,6 +112,7 @@ export default {
       box-shadow: none;
       color: $c-cadet-blue-crayola;
       font-weight: $fw-semi-bold;
+      font-size: 9px;
       padding: 0;
       margin: 0 5px;
       min-width: auto;
@@ -115,6 +123,21 @@ export default {
       border: none;
       color: $c-cadet-blue-crayola;
       font-weight: $fw-extra-bold;
+    }
+
+    .x-of-x-counter {
+      align-items: center;
+      display: inline-flex;
+      list-style-type: none;
+      justify-content: center;
+      margin-right: 15px;
+
+      > span {
+        font-size: 9px;
+        font-weight: $fw-semi-bold;
+        line-height: 12px;
+        color: $c-cadet-blue-crayola;
+      }
     }
   }
 }
