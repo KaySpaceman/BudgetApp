@@ -10,20 +10,16 @@ import { getAccountById } from '../../services/database/repositories/account.mjs
 
 const { GraphQLError } = graphql;
 
-export async function transactions() {
-  // TODO: Add Pagination
-  const rawTransactions = await getTransactions();
+export async function transactions({ page = 1, perPage = 10 }) {
+  const rawTransactions = await getTransactions(page, perPage);
 
-  return rawTransactions.map((model) => {
-    const data = model.toJSON();
-
-    return {
-      ...data,
-      Category: getCategoryById.bind(this, data.Category),
-      Account: getAccountById.bind(this, data.Account),
-      Date: data.Date.toISOString().split('T')[0],
-    };
-  });
+  return rawTransactions.map((data) => ({
+    ...data,
+    id: data._id.toString(),
+    Category: getCategoryById.bind(this, data.Category),
+    Account: getAccountById.bind(this, data.Account),
+    Date: data.Date.toISOString().split('T')[0],
+  }));
 }
 
 export async function upsertTransaction({ transaction }) {

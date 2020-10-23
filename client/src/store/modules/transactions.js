@@ -6,7 +6,12 @@ const graphqlClient = getClient();
 export default {
   state: () => ({
     transactionList: [],
-    selectedTransaction: Object,
+    selectedTransaction: {},
+    page: 1,
+    perPage: 10,
+    count: 110, // TODO: fetch from DB
+    cachedPages: [],
+    stalePages: [],
   }),
   mutations: {
     setTransactionList(state, transactionList) {
@@ -31,13 +36,34 @@ export default {
     selectTransaction(state, transaction) {
       state.selectedTransaction = transaction;
     },
+    setTransactionPage(state, page) {
+      state.page = page;
+    },
+    setTransactionPerPage(state, perPage) {
+      state.perPage = perPage;
+    },
+    invalidateTransactionCache(state) {
+      state.stalePages = [...state.cachedPages];
+      state.cachedPages = [];
+    },
+    addCachedPage(state, page) {
+      if (!state.cachedPages.includes(page)) {
+        state.cachedPages.push(page);
+      }
+    },
+    removeStalePage(state, page) {
+      state.stalePages.splice(state.stalePages.indexOf(page), 1);
+    },
   },
   actions: {
-    async fetchTransactionList({ commit }, forceRefresh = false) {
+    async fetchTransactionList({ commit, state }) {
+      const { page } = state;
+      const forceRefresh = state.stalePages.includes(page);
+
       const response = await graphqlClient.query({
         query: gql`
-          query TransactionList {
-            transactions {
+          query TransactionList($page: Int, $perPage: Int) {
+            transactions(page: $page, perPage: $perPage) {
               id
               Date
               Amount
@@ -53,12 +79,21 @@ export default {
             }
           },
         `,
+        variables: {
+          page,
+          perPage: state.perPage,
+        },
         fetchPolicy: forceRefresh ? 'network-only' : 'cache-first',
       });
 
+      if (forceRefresh) {
+        commit('removeStalePage', page);
+      }
+
+      commit('addCachedPage', page);
       commit('setTransactionList', response.data.transactions);
     },
-    async upsertTransaction({ commit }, formData) {
+    async upsertTransaction({ commit, state, dispatch }, formData) {
       // eslint-disable-next-line no-param-reassign
       delete formData.__typename;
 
@@ -86,6 +121,13 @@ export default {
         },
       });
 
+      commit('invalidateTransactionCache');
+
+      if (state.page !== 1) {
+        commit('setTransactionPage', 1);
+        dispatch('fetchTransactionList');
+      }
+
       commit('addTransactionToList', response.data.upsertTransaction);
     },
     async deleteTransaction({ commit }, id) {
@@ -102,6 +144,7 @@ export default {
 
       if (response.data.deleteTransaction) {
         commit('removeTransaction', id);
+        commit('invalidateTransactionCache');
       }
     },
   },

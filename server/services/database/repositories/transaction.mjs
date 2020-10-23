@@ -3,10 +3,18 @@ import mongoose from 'mongoose';
 import Transaction from '../../../models/Transaction.mjs';
 import generateHash from '../../utility/checksum.mjs';
 
-export async function getTransactions() {
-  // TODO: Add Pagination
-  // TODO: Sort by date and move uncategorized to top
-  return Transaction.find({})
+export async function getTransactions(page = 1, perPage = 10) {
+  return Transaction.aggregate([
+    { $set: { HasCategory: { $and: ['$Category'] } } },
+    {
+      $sort: {
+        HasCategory: 1,
+        Date: -1,
+      },
+    },
+    { $skip: (page - 1) * perPage },
+    { $limit: perPage },
+  ])
     .exec();
 }
 

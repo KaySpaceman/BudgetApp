@@ -10,30 +10,37 @@
     <Transaction v-for="transaction in transactionList" :transaction="transaction"
                  :key="transaction.id"/>
     <div class="pagination">
-      <v-pagination v-model="page" :length="pageCount" total-visible="7"
+      <v-pagination :value="page" @input="changePage" :length="pageCount" total-visible="7"
                     prev-icon="mdi-menu-left" next-icon="mdi-menu-right"/>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 import Transaction from './Transaction.vue';
 
 export default {
   name: 'TransactionList',
-  data: () => ({
-    page: 1, // TODO: Update list on change
-    perPage: 10, // TODO: Fetch from BE or calculate from entire list
-  }),
+  data: () => ({}),
   computed: {
-    ...mapState({ transactionList: (state) => state.transactions.transactionList }),
+    ...mapState({
+      transactionList: (state) => state.transactions.transactionList,
+      page: (state) => state.transactions.page,
+      perPage: (state) => state.transactions.perPage,
+      count: (state) => state.transactions.count,
+    }),
     pageCount() {
-      return Math.ceil(this.transactionList.length / this.perPage);
+      return this.count / this.perPage; // TODO: Calculate count in store/resolver
     },
   },
   methods: {
     ...mapActions(['fetchTransactionList']),
+    ...mapMutations(['setTransactionPage', 'setTransactionPerPage']),
+    changePage(page) {
+      this.setTransactionPage(page);
+      this.fetchTransactionList();
+    },
   },
   created() {
     if (!this.transactionList || this.transactionList.length === 0) {

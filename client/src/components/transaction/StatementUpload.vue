@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 import axios from 'axios';
 import Btn from '../inputs/Btn.vue';
 import SelectField from '../inputs/SelectField.vue';
@@ -34,6 +34,7 @@ export default {
   },
   methods: {
     ...mapActions(['fetchAccountList', 'fetchTransactionList']),
+    ...mapMutations(['invalidateTransactionCache', 'setTransactionPage']),
     uploadStatement() {
       if (!this.validateForm()) {
         return;
@@ -49,7 +50,9 @@ export default {
       axios.post('/upload', formData, { baseURL })
         .then((res) => {
           this.clearForm();
-          this.fetchTransactionList(true);
+          this.invalidateTransactionCache();
+          this.setTransactionPage(1);
+          this.fetchTransactionList();
 
           console.log(`New transaction count: ${res.data.newCount || 0}`);
         })
