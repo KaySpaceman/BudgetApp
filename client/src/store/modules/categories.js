@@ -8,6 +8,7 @@ export default {
     spendingCategories: [],
     incomeCategories: [],
     selectedCategory: Object,
+    staleCache: false,
   }),
   getters: {
     allCategories: (state) => state.spendingCategories.concat(state.incomeCategories),
@@ -22,9 +23,13 @@ export default {
     selectCategory(state, category) {
       state.selectedCategory = category;
     },
+    invalidateCategoryCache(state) {
+      state.staleCache = true;
+    },
   },
   actions: {
-    async fetchCategories({ commit }, { type, forceRefresh }) {
+    async fetchCategories({ commit, state }, { type }) {
+      const forceRefresh = state.staleCache;
       let mutation = '';
 
       switch (type) {
@@ -72,7 +77,7 @@ export default {
 
       commit(mutation, response.data.categories);
     },
-    async upsertCategory({ dispatch }, formData) {
+    async upsertCategory({ commit, dispatch }, formData) {
       // eslint-disable-next-line no-param-reassign
       delete formData.__typename;
 
@@ -90,11 +95,12 @@ export default {
       });
 
       if (response.data.upsertCategory.id) {
-        dispatch('fetchCategories', { type: 'SPENDING', forceRefresh: true });
-        dispatch('fetchCategories', { type: 'INCOME', forceRefresh: true });
+        commit('invalidateCategoryCache');
+        dispatch('fetchCategories', { type: 'SPENDING' });
+        dispatch('fetchCategories', { type: 'INCOME' });
       }
     },
-    async deleteCategory({ dispatch }, id) {
+    async deleteCategory({ commit, dispatch }, id) {
       const response = await graphqlClient.mutate({
         mutation: gql`
           mutation DeleteCategory($id: ID!) {
@@ -107,8 +113,9 @@ export default {
       });
 
       if (response.data.deleteCategory) {
-        dispatch('fetchCategories', { type: 'SPENDING', forceRefresh: true });
-        dispatch('fetchCategories', { type: 'INCOME', forceRefresh: true });
+        commit('invalidateCategoryCache');
+        dispatch('fetchCategories', { type: 'SPENDING' });
+        dispatch('fetchCategories', { type: 'INCOME' });
       }
     },
   },
