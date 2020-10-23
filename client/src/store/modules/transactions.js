@@ -21,7 +21,9 @@ export default {
       const existingIndex = state.transactionList.findIndex((t) => t.id === transaction.id);
 
       if (existingIndex < 0) {
-        state.transactionList.unshift(transaction);
+        if (state.page === 1) {
+          state.transactionList.unshift(transaction);
+        }
       } else {
         state.transactionList.splice(existingIndex, 1, transaction);
       }
@@ -43,7 +45,7 @@ export default {
       state.perPage = perPage;
     },
     invalidateTransactionCache(state) {
-      state.stalePages = [...state.cachedPages];
+      state.stalePages = [...state.stalePages, ...state.cachedPages];
       state.cachedPages = [];
     },
     addCachedPage(state, page) {
@@ -122,13 +124,12 @@ export default {
       });
 
       commit('invalidateTransactionCache');
+      commit('addTransactionToList', response.data.upsertTransaction);
 
       if (state.page !== 1) {
         commit('setTransactionPage', 1);
         dispatch('fetchTransactionList');
       }
-
-      commit('addTransactionToList', response.data.upsertTransaction);
     },
     async deleteTransaction({ commit }, id) {
       const response = await graphqlClient.mutate({
