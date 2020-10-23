@@ -91,3 +91,8 @@ export async function deleteTransactionById(transactionId) {
   })
     .exec();
 }
+
+export async function getTransactionCount() {
+  return Transaction.countDocuments({})
+    .exec();
+}

@@ -146,6 +146,7 @@ type Query {
     bankDateFormats: [BankDateFormat!]!,
     categories(maxLevel: Int, type: String): [Category!]!,
     transactions(page: Int, perPage: Int): [Transaction!]!,
+    transactionCount: Int!,
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
 }

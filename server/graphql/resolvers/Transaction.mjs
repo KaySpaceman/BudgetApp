@@ -2,6 +2,7 @@ import graphql from 'graphql';
 import {
   createTransaction,
   getTransactions,
+  getTransactionCount,
   updateTransaction,
   deleteTransactionById,
 } from '../../services/database/repositories/transaction.mjs';
@@ -49,4 +50,8 @@ export async function deleteTransaction({ transactionId }) {
   const { deletedCount } = await deleteTransactionById(transactionId);
 
   return !!deletedCount;
+}
+
+export async function transactionCount() {
+  return getTransactionCount();
 }

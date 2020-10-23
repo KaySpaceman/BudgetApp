@@ -9,7 +9,7 @@ export default {
     selectedTransaction: {},
     page: 1,
     perPage: 10,
-    count: 110, // TODO: fetch from DB
+    count: 20,
     cachedPages: [],
     stalePages: [],
   }),
@@ -38,6 +38,9 @@ export default {
     selectTransaction(state, transaction) {
       state.selectedTransaction = transaction;
     },
+    setTransactionCount(state, count) {
+      state.count = count;
+    },
     setTransactionPage(state, page) {
       state.page = page;
     },
@@ -47,6 +50,7 @@ export default {
     invalidateTransactionCache(state) {
       state.stalePages = [...state.stalePages, ...state.cachedPages];
       state.cachedPages = [];
+      state.count = null;
     },
     addCachedPage(state, page) {
       if (!state.cachedPages.includes(page)) {
@@ -147,6 +151,20 @@ export default {
         commit('removeTransaction', id);
         commit('invalidateTransactionCache');
       }
+    },
+    async fetchTransactionCount({ commit, state }) {
+      const forceRefresh = state.count === null;
+
+      const response = await graphqlClient.query({
+        query: gql`
+          query TransactionCount {
+            transactionCount
+          }
+        `,
+        fetchPolicy: forceRefresh ? 'network-only' : 'cache-first',
+      });
+
+      commit('setTransactionCount', response.data.transactionCount);
     },
   },
 };

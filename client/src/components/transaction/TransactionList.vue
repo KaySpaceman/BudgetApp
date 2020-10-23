@@ -31,20 +31,27 @@ export default {
       count: (state) => state.transactions.count,
     }),
     pageCount() {
-      return this.count / this.perPage; // TODO: Calculate count in store/resolver
+      return this.count / this.perPage;
     },
   },
   methods: {
-    ...mapActions(['fetchTransactionList']),
-    ...mapMutations(['setTransactionPage', 'setTransactionPerPage']),
+    ...mapActions(['fetchTransactionList', 'fetchTransactionCount']),
+    ...mapMutations(['setTransactionPage', 'setTransactionPerPage', 'invalidateTransactionCache']),
     changePage(page) {
       this.setTransactionPage(page);
       this.fetchTransactionList();
     },
+    changePerPage(perPage) {
+      this.setTransactionPerPage(perPage);
+      this.invalidateTransactionCache();
+      this.fetchTransactionList();
+      this.fetchTransactionCount();
+    },
   },
   created() {
-    if (!this.transactionList || this.transactionList.length === 0) {
+    if (!this.transactionList || this.transactionList.length === 0 || this.count <= 0) {
       this.fetchTransactionList();
+      this.fetchTransactionCount();
     }
   },
   components: {
