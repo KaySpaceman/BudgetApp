@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import ChartTotal from '../components/chart/ChartTotal.vue';
-import ChartCategorized from '../components/chart/ChartCategorized.vue';
+import ChartTotal from '../../components/depreciated/chart/ChartTotal.vue';
+import ChartCategorized from '../../components/depreciated/chart/ChartCategorized.vue';
 
 export default {
   name: 'Charts',
