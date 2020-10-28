@@ -135,6 +135,56 @@ export default {
         dispatch('fetchTransactionList');
       }
     },
+    async createTransferTransaction(
+      { commit, state, dispatch }, { transaction, destination, createCopy },
+    ) {
+      // eslint-disable-next-line no-param-reassign
+      delete transaction.__typename;
+
+      const response = await graphqlClient.mutate({
+        mutation: gql`
+          mutation CreateTransferTransaction(
+            $transaction: TransactionInput!,
+            $destination: ID!,
+            $createCopy: Boolean!
+          ) {
+            createTransferTransaction(
+              transaction: $transaction,
+              destination: $destination,
+              createCopy: $createCopy
+            ) {
+              id
+              Date
+              Amount
+              Note
+              Account {
+                id
+              }
+              Type
+              Category {
+                id
+                Name
+              }
+            }
+          },
+        `,
+        variables: {
+          transaction,
+          destination,
+          createCopy,
+        },
+      });
+
+      commit('invalidateTransactionCache');
+      response.data.createTransferTransaction.forEach((responseTransaction) => {
+        commit('addTransactionToList', responseTransaction);
+      });
+
+      if (state.page !== 1) {
+        commit('setTransactionPage', 1);
+        dispatch('fetchTransactionList');
+      }
+    },
     async deleteTransaction({ commit }, id) {
       const response = await graphqlClient.mutate({
         mutation: gql`

@@ -5,7 +5,7 @@ import generateHash from '../../utility/checksum.mjs';
 
 export async function getTransactions(page = 1, perPage = 10) {
   return Transaction.aggregate([
-    { $set: { HasCategory: { $or: ['$Category', { $eq: ['Type', 'TRANSFER'] }] } } },
+    { $set: { HasCategory: { $or: ['$Category', { $eq: ['$Type', 'TRANSFER'] }] } } },
     {
       $sort: {
         HasCategory: 1,
@@ -23,7 +23,7 @@ export async function createTransaction(data) {
   data._id = new mongoose.Types.ObjectId();
   data.Hash = generateHash(data);
 
-  if (data.Type) {
+  if (data.Type && !data.Direction) {
     data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
   }
 

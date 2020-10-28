@@ -112,6 +112,7 @@ input TransactionInput {
 enum TransactionType {
     SPENDING,
     INCOME,
+    TRANSFER,
     SAVINGS,
     INVESTMENT,
 }
@@ -159,5 +160,6 @@ type Mutation {
     upsertCategory(category: CategoryInput!): Category,
     deleteCategory(categoryId: ID!): Boolean,
     upsertTransaction(transaction: TransactionInput!): Transaction,
+    createTransferTransaction(transaction: TransactionInput!, destination: ID!, createCopy: Boolean!): [Transaction],
     deleteTransaction(transactionId: ID!): Boolean,
 }

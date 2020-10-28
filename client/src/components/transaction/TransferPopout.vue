@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import ToggleSwitch from '../inputs/ToggleSwitch.vue';
 import SelectField from '../inputs/SelectField.vue';
 import Btn from '../inputs/Btn.vue';
@@ -33,17 +33,21 @@ export default {
     ...mapState({ accountsList: (state) => state.accounts.accountsList }),
     formData() {
       return {
+        transaction: {
+          ...this.transaction,
+          Type: 'TRANSFER',
+          Account: this.transaction.Account.id,
+        },
         destination: this.destination ?? null,
         createCopy: !!this.createCopy,
       };
     },
   },
   methods: {
-    ...mapMutations(['selectTransaction']),
-    ...mapActions(['fetchAccountList', 'upsertTransaction']),
+    ...mapActions(['fetchAccountList', 'createTransferTransaction']),
     submitForm() {
       if (this.validateForm()) {
-        // TODO: Update transaction and create copy, if necessary
+        this.createTransferTransaction(this.formData);
       }
     },
     validateForm() {
