@@ -1,7 +1,8 @@
 <template>
-  <v-select class="select-field" :class="{ 'wide': wide, 'fill-height': fillHeight }" :label="label"
-            :value="value" v-on="$listeners" :items="options" :item-text="textProperty"
-            :item-value="valueProperty" placeholder=" " dense/>
+  <v-select class="select-field" :label="label" :value="value" v-on="$listeners"
+            :class="{ 'wide': wide, 'fill-height': fillHeight, 'no-margin': noMargin }"
+            :items="options" :item-text="textProperty" :item-value="valueProperty"
+            placeholder=" " dense/>
 </template>
 
 <script>
@@ -16,6 +17,7 @@ export default {
     label: String,
     wide: Boolean,
     fillHeight: Boolean,
+    noMargin: Boolean,
   },
   model: {
     prop: 'value',
@@ -42,6 +44,10 @@ export default {
 
   &.wide {
     width: 125px;
+  }
+
+  &.no-margin {
+    margin-bottom: 0;
   }
 
   &.fill-height {
@@ -80,8 +86,7 @@ export default {
         font-size: 12px;
         line-height: 12px;
         text-transform: uppercase;
-        margin-left: -7px;
-        top: 1px
+        top: 2px;
       }
 
       .v-select__selection {

@@ -13,7 +13,7 @@
       <v-pagination class="pagination" :value="page" @input="changePage" :length="pageCount"
                     total-visible="7" prev-icon="mdi-menu-left" next-icon="mdi-menu-right"/>
       <div class="x-of-x-counter">
-        <span>{{--page * perPage + 1}}-{{page * perPage}} of {{count}}</span>
+        <span>{{(page - 1) * perPage + 1}}-{{page * perPage}} of {{count}}</span>
       </div>
     </div>
   </div>

@@ -5,7 +5,7 @@ import generateHash from '../../utility/checksum.mjs';
 
 export async function getTransactions(page = 1, perPage = 10) {
   return Transaction.aggregate([
-    { $set: { HasCategory: { $and: ['$Category'] } } },
+    { $set: { HasCategory: { $or: ['$Category', { $eq: ['Type', 'TRANSFER'] }] } } },
     {
       $sort: {
         HasCategory: 1,

@@ -9,6 +9,9 @@
     <span class="column">
       <img class="icon" src="@/assets/Delete.svg" alt="delete"
            @click="deleteTransaction(transaction.id)"/>
+      <transfer-popout :transaction="transaction" v-slot="slot">
+        <img class="icon" src="@/assets/Transfer.svg" alt="transfer" v-on="slot.on"/>
+      </transfer-popout>
       <img class="icon" src="@/assets/ToEdit.svg" alt="edit"
            @click="selectTransaction(transaction)"/>
     </span>
@@ -16,8 +19,9 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 import { DateTime } from 'luxon';
+import TransferPopout from './TransferPopout.vue';
 
 export default {
   name: 'Transaction',
@@ -34,6 +38,9 @@ export default {
       return DateTime.fromISO(this.transaction.Date)
         .toLocaleString(DateTime.DATE_SHORT);
     },
+  },
+  components: {
+    TransferPopout,
   },
 };
 </script>
@@ -85,7 +92,7 @@ export default {
 
      .icon {
        height: 15px;
-       margin: 0 10px;
+       margin: 0 5px;
 
        &:hover {
          filter: brightness(0%);

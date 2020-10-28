@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <v-app>
     <div id="nav">
       <Navigation/>
     </div>
@@ -7,7 +7,7 @@
       <TopBar/>
       <router-view id="page"/>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -31,8 +31,9 @@ export default {
   color: $c-earie-black;
 }
 
-#app {
+#app > .v-application--wrap {
   display: flex;
+  flex-direction: row;
   height: 100vh;
 
   #nav {

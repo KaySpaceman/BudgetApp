@@ -1,9 +1,9 @@
 <template>
   <div class="category-select" data-app>
-    <v-select class="select-field" :class="{ 'wide': wide, 'fill-height': fillHeight }"
-              :label="label" :value="value" v-on="$listeners" :items="options"
-              :item-text="textProperty || 'Name'" :item-value="valueProperty || 'id'" dense
-              placeholder=" " menu-props="{ attach: '.category-select' }">
+    <v-select class="select-field" :label="label" v-on="$listeners" :value="value" placeholder=" "
+              :class="{ 'wide': wide, 'fill-height': fillHeight, 'no-margin': noMargin }"
+              :item-text="textProperty || 'Name'" :item-value="valueProperty || 'id'"
+              :items="options" menu-props="{ attach: '.category-select' }" dense>
       <template v-slot:item="data">
         <span :class="'level-' + data.item.Level" v-text="data.item.Name"/>
       </template>
@@ -24,6 +24,7 @@ export default {
     valueProperty: String,
     label: String,
     wide: Boolean,
+    noMargin: Boolean,
     fillHeight: Boolean,
     allowAllLevels: Boolean,
   },
@@ -102,6 +103,10 @@ export default {
       width: 125px;
     }
 
+    &.no-margin {
+      margin-bottom: 0;
+    }
+
     &.fill-height {
       height: 100%;
 
@@ -138,8 +143,7 @@ export default {
           font-size: 12px;
           line-height: 12px;
           text-transform: uppercase;
-          margin-left: -7px;
-          top: 1px
+          top: 2px;
         }
 
         .v-select__selection {

@@ -78,8 +78,7 @@ export default {
         font-size: 12px;
         line-height: 12px;
         text-transform: uppercase;
-        margin-left: -7px;
-        top: 1px
+        top: 2px;
       }
 
       textarea {

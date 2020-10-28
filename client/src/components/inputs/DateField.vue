@@ -116,8 +116,7 @@ export default {
           font-size: 12px;
           line-height: 12px;
           text-transform: uppercase;
-          margin-left: -5px;
-          top: 1px
+          top: 2px;
         }
 
         input {
