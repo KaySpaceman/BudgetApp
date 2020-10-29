@@ -133,6 +133,7 @@ export default {
       if (state.page !== 1) {
         commit('setTransactionPage', 1);
         dispatch('fetchTransactionList');
+        dispatch('fetchTransactionCount');
       }
     },
     async createTransferTransaction(

@@ -43,7 +43,7 @@ export async function upsertTransactions(transactions) {
 
   const promises = transactions
     .map((entry) => {
-      if (entry.Type) {
+      if (entry.Type && !entry.Direction) {
         entry.Direction = entry.Type === 'INCOME' ? 'IN' : 'OUT';
       }
 
@@ -66,12 +66,12 @@ export async function updateTransaction(data) {
   const transaction = await Transaction.findOne({ _id: id });
 
   if (!transaction) {
-    throw new Error('Account doesn\'t exists');
+    throw new Error('Transaction doesn\'t exists');
   }
 
   data.Hash = generateHash(data);
 
-  if (data.Type) {
+  if (data.Type && !data.Direction) {
     data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
   }
 

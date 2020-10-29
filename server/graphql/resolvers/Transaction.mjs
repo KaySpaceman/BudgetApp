@@ -9,6 +9,7 @@ import {
 import { getCategoryById } from '../../services/database/repositories/category.mjs';
 import { getAccountById } from '../../services/database/repositories/account.mjs';
 import Account from '../../models/Account.mjs';
+import { getUserById, updateUser } from '../../services/database/repositories/user.mjs';
 
 const { GraphQLError } = graphql;
 
@@ -24,10 +25,34 @@ export async function transactions({ page = 1, perPage = 10 }) {
   }));
 }
 
-export async function upsertTransaction({ transaction }) {
+async function handleSavingsUpsert(transaction) {
+  const userId = process.env.DEV_USER_ID; // TODO: Replace later with proper user auth!!!!
+  const amount = transaction.Amount;
+
+  const user = await getUserById(userId);
+
+  if (!user || !user.id) throw new GraphQLError('User doesn\'t exist');
+  if (!amount) throw new GraphQLError('Invalid transaction amount value');
+
+  user.Vaults.UnassignedBalances.Savings += amount;
+  await updateUser(user);
+
+  // eslint-disable-next-line no-param-reassign
+  transaction.Note = 'Savings deposit'; // TODO: Replace with setter when switched to models
+  // eslint-disable-next-line no-param-reassign
+  transaction.Category = null;
+
+  return transaction;
+}
+
+export async function upsertTransaction({ transaction: formData }) {
   // TODO: Add Validation
-  if (!transaction) {
-    throw new GraphQLError('Received invalid transaction upsert request data');
+  if (!formData) throw new GraphQLError('Received invalid transaction upsert request data');
+
+  let transaction = formData; // TODO: Create model if data is valid
+
+  if (formData.Type === 'SAVINGS') {
+    transaction = await handleSavingsUpsert(transaction);
   }
 
   const response = transaction.id ? await updateTransaction(transaction)
