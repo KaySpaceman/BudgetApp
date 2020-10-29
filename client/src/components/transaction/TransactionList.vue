@@ -117,10 +117,15 @@ export default {
       margin: 0 5px;
       min-width: auto;
       width: auto;
+
+      .v-icon {
+        font-size: 20px;
+      }
     }
 
     .v-pagination__item--active {
       border: none;
+      background-color: transparent !important;
       color: $c-cadet-blue-crayola;
       font-weight: $fw-extra-bold;
     }
