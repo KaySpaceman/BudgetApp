@@ -65,7 +65,7 @@ export async function createTransferTransaction({ transaction, destination, crea
   delete transfer.Category;
 
   const updatedTransaction = await updateTransaction(transfer);
-  returnTransactions.push(updatedTransaction);
+  returnTransactions.push(updatedTransaction.toJSON());
 
   if (updatedTransaction.Type !== 'TRANSFER') {
     throw new GraphQLError('Error when setting TRANSFER type');
@@ -80,7 +80,7 @@ export async function createTransferTransaction({ transaction, destination, crea
     };
 
     const createdTransferTransaction = await createTransaction(transferCopy);
-    returnTransactions.push(createdTransferTransaction);
+    returnTransactions.push(createdTransferTransaction.toJSON());
 
     if (createdTransferTransaction.Type !== 'TRANSFER') {
       throw new GraphQLError('Error when setting TRANSFER type');
@@ -88,8 +88,7 @@ export async function createTransferTransaction({ transaction, destination, crea
   }
 
   return returnTransactions.map((data) => ({
-    ...data.toJSON(),
-    id: data._id.toString(),
+    ...data,
     Category: getCategoryById.bind(this, data.Category),
     Account: getAccountById.bind(this, data.Account),
     Date: data.Date.toISOString().split('T')[0],
