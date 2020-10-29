@@ -1,6 +1,6 @@
 <template>
-  <div class="transaction"
-       :class="{ 'un-categorized': !transaction.Category && transaction.Type !== 'TRANSFER'}"
+  <div class="transaction" :class="{
+    'highlighted': !transaction.Category && !['TRANSFER', 'SAVINGS'].includes(transaction.Type)}"
   >
     <span class="column wide font-small" v-text="transaction.Note"/>
     <span class="column" v-text="formattedDate"/>
@@ -10,6 +10,7 @@
     <span class="column" v-text="(
         (transaction.Category && transaction.Category.Name)
         || (transaction.Type === 'TRANSFER' && 'Transfer')
+        || (transaction.Type === 'SAVINGS' && 'Savings')
       ) || ''"/>
     <span class="column">
       <img class="icon" src="@/assets/Delete.svg" alt="delete"
@@ -63,7 +64,7 @@ export default {
   width: 100%;
   padding: 5px 10px;
 
-  &.un-categorized {
+  &.highlighted {
     border-left: 2px solid $c-dodger-blue;
   }
 
