@@ -81,7 +81,7 @@ export default {
     height: 32px;
     width: 100%;
 
-    &.router-link-active,
+    &.router-link-exact-active,
     &:hover {
       .name {
         color: $c-dodger-blue;
@@ -103,7 +103,7 @@ export default {
       }
     }
 
-    &:not(.router-link-active):hover:before {
+    &:not(.router-link-exact-active):hover:before {
       height: 10px;
       top: 11px;
     }
