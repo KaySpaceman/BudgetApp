@@ -6,7 +6,7 @@
       </div>
       <div class="column">
         <select-field v-model="account" label="Account" text-property="Name" :options="accountsList"
-                      value-property="id" wide/>
+                      value-property="id" wide no-margin/>
       </div>
     </div>
     <div class="controls">

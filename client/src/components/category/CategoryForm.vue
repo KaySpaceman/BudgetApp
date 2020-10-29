@@ -5,7 +5,7 @@
         <text-field v-model.number="formData.Name" label="Name" wide/>
       </div>
       <div class="column row">
-        <category-select-field v-model="formData.Parent" label="Parent" allow-all-levels/>
+        <category-select-field v-model="formData.Parent" label="Parent" allow-all-levels no-margin/>
         <btn class="tree-toggle" square>
           <img class="icon" src="@/assets/TreeIcon.svg" alt="Show category tree"
                @click="showTree = !showTree"/>

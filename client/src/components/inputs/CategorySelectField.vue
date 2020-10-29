@@ -1,9 +1,11 @@
 <template>
-  <div class="category-select" data-app>
-    <v-select class="select-field" :label="label" v-on="$listeners" :value="value" placeholder=" "
+  <div class="category-select" :id="`select-${this._uid}`">
+    <v-select class="select-field" :label="label" v-on="$listeners" :value="value"
               :class="{ 'wide': wide, 'fill-height': fillHeight, 'no-margin': noMargin }"
               :item-text="textProperty || 'Name'" :item-value="valueProperty || 'id'"
-              :items="options" menu-props="{ attach: '.category-select' }" dense>
+              :items="options" :menu-props="{ absolute: true, nudgeWidth: 145, nudgeBottom: 12 }"
+              :attach="`#select-${this._uid}`"
+              placeholder=" " dense>
       <template v-slot:item="data">
         <span :class="'level-' + data.item.Level" v-text="data.item.Name"/>
       </template>
@@ -84,16 +86,14 @@ export default {
 
 <style lang="scss">
 .category-select {
+  position: relative;
+
   .select-field.v-input {
     width: 80px;
     height: 40px;
     margin-bottom: 15px;
     margin-top: 0;
     padding-top: 14px;
-
-    &:last-of-type {
-      margin-bottom: 0;
-    }
 
     input {
       height: 25px;
@@ -169,12 +169,13 @@ export default {
     }
   }
 
-  .v-list--dense .v-list-item {
+  .v-list--dense > .v-list-item {
     min-height: 30px;
   }
 
   .v-select-list > .v-list-item {
-    font-size: 14px;
+    font-size: 12px;
+    white-space: nowrap;
 
     &.v-list-item--disabled {
       background-color: $c-alice-blue;
@@ -187,6 +188,10 @@ export default {
     > .level-3 {
       padding-left: 30px;
     }
+  }
+
+  &:last-child .select-field.v-input {
+    margin-bottom: 0;
   }
 }
 </style>
