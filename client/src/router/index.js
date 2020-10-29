@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
 import Transactions from '../views/Transactions.vue';
+import Savings from '../views/Savings.vue';
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/transactions',
     name: 'Transactions',
     component: Transactions,
+  },
+  {
+    path: '/savings',
+    name: 'Savings',
+    component: Savings,
   },
 ];
 
