@@ -109,6 +109,26 @@ input TransactionInput {
     Account: ID!,
 }
 
+type Vault {
+    id: ID!,
+    Name: String!,
+    Goal: Float!,
+    Balance: Float!,
+    Color: String,
+    Parent: Vault,
+    Children: [Vault]!,
+    IsBuffer: Boolean,
+}
+
+input VaultInput {
+    id: ID,
+    Name: String!,
+    Goal: Float!,
+    Color: String,
+    Parent: ID,
+    IsBuffer: Boolean,
+}
+
 enum TransactionType {
     SPENDING,
     INCOME,
@@ -148,6 +168,7 @@ type Query {
     categories(maxLevel: Int, type: String): [Category!]!,
     transactions(page: Int, perPage: Int): [Transaction!]!,
     transactionCount: Int!,
+    vaults: [Vault]!
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
 }
@@ -162,4 +183,6 @@ type Mutation {
     upsertTransaction(transaction: TransactionInput!): Transaction,
     createTransferTransaction(transaction: TransactionInput!, destination: ID!, createCopy: Boolean!): [Transaction],
     deleteTransaction(transactionId: ID!): Boolean,
+    upsertVault(vault: VaultInput!): Vault,
+    deleteVault(vaultId: ID!): Boolean,
 }

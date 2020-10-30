@@ -7,46 +7,65 @@ export async function getUsers() {
 }
 
 export async function getUserById(userId) {
-  // if (!(userId instanceof mongoose.Types.ObjectId)) {
-    // eslint-disable-next-line no-param-reassign
-    // userId = new mongoose.Types.ObjectId(userId);
-  // }
+  let id = userId;
 
-  return User.findOne({ _id: userId })
+  if (!(userId instanceof mongoose.Types.ObjectId)) {
+    try {
+      id = new mongoose.Types.ObjectId(userId);
+    } catch (e) {
+      throw new Error('Invalid user id value');
+    }
+  }
+
+  return User.findOne({ _id: id })
     .exec();
 }
 
-export async function createUser(formData) {
-  // TODO: Add data validation
-  const userData = {
-    ...formData,
-    _id: new mongoose.Types.ObjectId(),
-  };
-  const newUser = await new User(userData).save();
+export async function createUser(user) {
+  let userModel = user;
 
-  if (!newUser) throw new Error('Failed to create new user');
+  if (!(user instanceof User)) {
+    userModel = new User(user);
 
-  return newUser;
+    if (!userModel) {
+      throw new Error('Invalid user data');
+    }
+  }
+
+  const newUserModel = await userModel.set({ _id: new mongoose.Types.ObjectId() })
+    .save();
+
+  if (!newUserModel) throw new Error('Failed to create new user');
+
+  return newUserModel;
 }
 
 export async function updateUser(user) {
-  if (!(user instanceof User)) {
-    const id = new mongoose.Types.ObjectId(user._id || user.id);
-    // eslint-disable-next-line no-param-reassign
-    user = await User.findOne({ _id: id }); // TODO: Remove once switched to using models
+  const userModel = await getUserById(user.id);
 
-    if (!user) {
-      throw new Error('User doesn\'t exists');
+  if (!userModel) {
+    throw new Error('User doesn\'t exists');
+  }
+
+  const updatedVault = await userModel.set(user)
+    .save();
+
+  if (!updatedVault) throw new Error('Failed to update user data');
+
+  return updatedVault;
+}
+
+export async function deleteUserById(userId) {
+  let id = userId;
+
+  if (!(userId instanceof mongoose.Types.ObjectId)) {
+    id = new mongoose.Types.ObjectId(userId);
+
+    if (!id) {
+      throw new Error('Invalid user id value');
     }
-
-    user.set(user);
   }
 
-  const updatedUser = await user.save();
-
-  if (!updatedUser) {
-    throw new Error('Failed to update user data');
-  }
-
-  return updatedUser;
+  return User.deleteOne({ _id: id })
+    .exec();
 }
