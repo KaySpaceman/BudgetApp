@@ -5,6 +5,7 @@
     </div>
     <div class="sidebar">
       <SavingsInfo/>
+      <VaultForm/>
     </div>
   </div>
 </template>
@@ -12,11 +13,13 @@
 <script>
 import VaultGrid from '../components/savings/VaultGrid.vue';
 import SavingsInfo from '../components/savings/SavingsInfo.vue';
+import VaultForm from '../components/savings/VaultForm.vue';
 
 export default {
   name: 'Savings',
   data: () => ({}),
   components: {
+    VaultForm,
     VaultGrid,
     SavingsInfo,
   },

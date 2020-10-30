@@ -1,4 +1,4 @@
-/* eslint-disable func-names */
+/* eslint-disable func-names, object-curly-newline */
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
