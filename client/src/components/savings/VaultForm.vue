@@ -2,7 +2,7 @@
   <div class="vault-form">
     <div class="fields">
       <div class="column">
-        <text-field v-model.number="formData.Name" label="Name" wide/>
+        <text-field v-model="formData.Name" label="Name" wide/>
       </div>
       <div class="column row">
         <text-field v-model.number="formData.Goal" label="Goal" type="number"
