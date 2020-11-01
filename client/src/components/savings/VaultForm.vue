@@ -5,8 +5,8 @@
         <text-field v-model.number="formData.Name" label="Name" wide/>
       </div>
       <div class="column row">
-        <text-field v-model.number="formData.Amount" label="Amount" type="number"
-                    :rules="[validateAmount]"/>
+        <text-field v-model.number="formData.Goal" label="Goal" type="number"
+                    :rules="[validateGoal]"/>
         <div class="color-picker">
           <!--TODO: Replace with color select once component is created-->
           <span>Soon</span>
@@ -52,14 +52,14 @@ export default {
         this.clearForm();
       }
     },
-    validateAmount() {
-      const amount = this.formData.Amount;
+    validateGoal() {
+      const goal = this.formData.Goal;
 
-      return ((!!Number.parseFloat(amount) && amount > 0) || !amount)
-        || 'Must be a positive number!';
+      return (!!Number.parseFloat(goal) && goal > 0) || this.formData === {};
     },
     validateForm() {
-      // TODO: Validate data with JOI
+      // TODO: Validate data
+      return this.formData !== {} && this.validateGoal();
     },
     clearForm() {
       this.selectVault({});

@@ -11,6 +11,8 @@
           <span class="goal">€ {{vault.Balance}} / {{vault.Goal}}</span>
         </div>
         <div class="controls">
+          <img class="icon" src="@/assets/ToEdit.svg" alt="edit"
+               @click="selectVault(vault)"/>
           <span class="fund">Fund</span>
           <span class="withdraw">Withdraw</span>
         </div>

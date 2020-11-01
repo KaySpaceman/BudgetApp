@@ -10,17 +10,9 @@ import Vault from './Vault.vue';
 
 export default {
   name: 'VaultGrid',
-  data: () => ({
-    vaultList: [{
-      Name: 'Test Goal',
-      Goal: 2000,
-      Balance: 1500,
-      Parent: null,
-      Children: [],
-    }],
-  }),
+  data: () => ({}),
   computed: {
-    ...mapState({ vaultListREAL: (state) => state.vaults.vaultList }),
+    ...mapState({ vaultList: (state) => state.vaults.vaultList }),
   },
   methods: {
     ...mapActions(['fetchVaultList']),
