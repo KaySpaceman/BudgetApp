@@ -1,6 +1,7 @@
 <template>
-  <v-text-field class="text-field" :class="{ 'wide': wide, 'fill-height': fillHeight }"
-                :label="label" :rules="rules" :value="value" v-on="$listeners" placeholder=" "/>
+  <v-text-field class="text-field" :label="label" :rules="rules" :value="value" v-on="$listeners"
+                :class="{ 'wide': wide, 'fill-height': fillHeight, 'no-margin': noMargin }"
+                placeholder=" "/>
 </template>
 
 <script>
@@ -13,6 +14,7 @@ export default {
     rules: Array,
     wide: Boolean,
     fillHeight: Boolean,
+    noMargin: Boolean,
   },
   model: {
     prop: 'value',
@@ -39,6 +41,10 @@ export default {
 
   &.wide {
     width: 125px;
+  }
+
+  &.no-margin {
+    margin-bottom: 0;
   }
 
   &.fill-height {

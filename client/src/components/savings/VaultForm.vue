@@ -6,11 +6,8 @@
       </div>
       <div class="column row">
         <text-field v-model.number="formData.Goal" label="Goal" type="number"
-                    :rules="[validateGoal]"/>
-        <div class="color-picker">
-          <!--TODO: Replace with color select once component is created-->
-          <span>Soon</span>
-        </div>
+                    :rules="[validateGoal]" no-margin/>
+        <color-picker v-model="formData.Color" label="Color" no-margin/>
       </div>
     </div>
     <div class="sub-goals">
@@ -27,11 +24,14 @@
 import { mapActions, mapMutations, mapState } from 'vuex';
 import TextField from '../inputs/TextField.vue';
 import Btn from '../inputs/Btn.vue';
+import ColorPicker from '../inputs/ColorPicker.vue';
 
 export default {
   name: 'VaultForm',
   data: () => ({
-    formData: {},
+    formData: {
+      Color: '#0295FF',
+    },
   }),
   computed: {
     ...mapState({
@@ -40,7 +40,10 @@ export default {
   },
   watch: {
     selectedVault(vault) {
-      this.formData = { ...vault };
+      this.formData = {
+        ...vault,
+        Color: vault.Color || '#0295FF',
+      };
     },
   },
   methods: {
@@ -66,6 +69,7 @@ export default {
     },
   },
   components: {
+    ColorPicker,
     TextField,
     Btn,
   },

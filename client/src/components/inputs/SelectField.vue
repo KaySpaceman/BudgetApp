@@ -22,11 +22,6 @@ export default {
     fillHeight: Boolean,
     noMargin: Boolean,
   },
-  computed: {
-    uniqueSelector() {
-      return `select-${this._uid}`;
-    },
-  },
   model: {
     prop: 'value',
     event: 'input',
