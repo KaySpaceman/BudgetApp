@@ -30,7 +30,18 @@ export default {
 
 <style lang="scss" scoped>
 .vault-grid {
-  max-width: 650px;
+  display: grid;
+  grid-gap: 15px;
+  grid-template-columns: 1fr;
+  grid-template-rows: 100px;
   margin: 30px;
+
+  @media (min-width: 1050px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (min-width: 1350px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 </style>

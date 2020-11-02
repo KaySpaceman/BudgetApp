@@ -1,6 +1,6 @@
 <template>
-  <v-btn class="button action-button" :class="{ 'clear': clear, 'in-row': row , 'square': square }"
-         v-on="$listeners" :outlined="outlined" depressed>
+  <v-btn class="button action-button" v-on="$listeners" :outlined="outlined"
+         :class="{ 'clear': clear, 'in-row': row , 'square': square, 'tiny': tiny }" depressed>
     <slot/>
   </v-btn>
 </template>
@@ -14,6 +14,7 @@ export default {
     clear: Boolean,
     row: Boolean,
     square: Boolean,
+    tiny: Boolean,
   },
 };
 </script>
@@ -42,6 +43,12 @@ export default {
   &.square {
     min-width: 25px;
     width: 25px;
+  }
+
+  &.tiny {
+    height: 12px;
+    padding: 3px;
+    min-width: auto;
   }
 
   .v-btn__content {

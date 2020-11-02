@@ -36,10 +36,11 @@ export default {
 
   .content {
     flex-basis: 60%;
+    flex-grow: 1;
   }
 
   .sidebar {
-    flex-basis: 40%;
+    padding-right: 30px;
   }
 }
 </style>
