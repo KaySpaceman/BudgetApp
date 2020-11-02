@@ -43,4 +43,12 @@ userSchema.virtual('id').set(function (newId) {
   }
 });
 
+userSchema.virtual('FullName').get(function () {
+  if (!this.FirstName || !this.LastName) {
+    return '';
+  }
+
+  return `${this.FirstName} ${this.LastName}`;
+});
+
 export default mongoose.model('User', userSchema, 'Users');

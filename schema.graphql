@@ -129,6 +129,16 @@ input VaultInput {
     IsBuffer: Boolean,
 }
 
+type User {
+    Username: String!
+    FirstName: String,
+    LastName: String,
+    FullName: String,
+    UnassignedSavings: Float!
+    UnassignedInvestments: Float!
+    BufferMonths: Int!
+}
+
 enum TransactionType {
     SPENDING,
     INCOME,
@@ -185,4 +195,5 @@ type Mutation {
     deleteTransaction(transactionId: ID!): Boolean,
     upsertVault(vault: VaultInput!): Vault,
     deleteVault(vaultId: ID!): Boolean,
+    loginUser(email: String!, password: String!): User,
 }

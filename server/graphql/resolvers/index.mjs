@@ -3,6 +3,7 @@ import * as Banks from './Bank.mjs';
 import * as Category from './Category.mjs';
 import * as Transaction from './Transaction.mjs';
 import * as Vault from './Vault.mjs';
+import * as User from './User.mjs';
 import * as Chart from './Chart.mjs';
 
 export default {
@@ -11,5 +12,6 @@ export default {
   ...Category,
   ...Transaction,
   ...Vault,
+  ...User,
   ...Chart,
 };

@@ -6,7 +6,7 @@
     <div class="stats">
       <div class="unassigned">
         <span class="title">Unassigned</span>
-        <span class="value">€ 750</span>
+        <span class="value">€ {{unassigned}}</span>
       </div>
       <div class="stored">
         <span class="title">Stored</span>
@@ -21,9 +21,25 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 export default {
   name: 'SavingsInfo',
   data: () => ({}),
+  computed: {
+    ...mapState({
+      unassigned: (state) => state.user.UnassignedSavings,
+    }),
+  },
+  methods: {
+    ...mapActions(['loginUser']),
+  },
+  created() {
+    // TODO: Remove once authentication is implemented
+    if (!this.unassigned) {
+      this.loginUser({ email: 'test@test.com', password: 'test123' });
+    }
+  },
 };
 </script>
 
