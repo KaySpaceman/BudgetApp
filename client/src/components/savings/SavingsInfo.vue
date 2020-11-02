@@ -6,15 +6,15 @@
     <div class="stats">
       <div class="unassigned">
         <span class="title">Unassigned</span>
-        <span class="value">€ {{unassigned}}</span>
+        <span class="value">€ {{unassignedSavings}}</span>
       </div>
       <div class="stored">
         <span class="title">Stored</span>
-        <span class="value">€ 1500</span>
+        <span class="value">€ {{storedSavings}}</span>
       </div>
       <div class="goal">
         <span class="title">Goal</span>
-        <span class="value">€ 3800</span>
+        <span class="value">€ {{savingsGoal}}</span>
       </div>
     </div>
   </div>
@@ -28,7 +28,9 @@ export default {
   data: () => ({}),
   computed: {
     ...mapState({
-      unassigned: (state) => state.user.UnassignedSavings,
+      unassignedSavings: (state) => state.users.UnassignedSavings,
+      storedSavings: (state) => state.vaults.storedSavings,
+      savingsGoal: (state) => state.vaults.savingsGoal,
     }),
   },
   methods: {

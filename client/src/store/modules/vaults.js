@@ -6,11 +6,24 @@ const graphqlClient = getClient();
 export default {
   state: () => ({
     vaultList: [],
+    storedSavings: 0,
+    savingsGoal: 0,
     selectedVault: {},
   }),
   mutations: {
     setVaultList(state, vaultList) {
+      let goal = 0;
+      let stored = 0;
+
       state.vaultList = vaultList;
+
+      vaultList.forEach((vault) => {
+        stored += vault.Balance;
+        goal += vault.Goal;
+      });
+
+      state.storedSavings = stored;
+      state.savingsGoal = goal;
     },
     addVaultToList(state, vault) {
       const existingIndex = state.vaultList.findIndex((v) => v.id === vault.id);
