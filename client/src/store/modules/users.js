@@ -23,6 +23,9 @@ export default {
       state.UnassignedInvestments = user.UnassignedInvestments;
       state.BufferMonths = user.BufferMonths;
     },
+    setUnassignedSavings(state, amount) {
+      state.UnassignedSavings = amount;
+    },
   },
   actions: {
     async loginUser({ commit }, { email, password }) {
@@ -48,6 +51,18 @@ export default {
       });
 
       commit('setUserInfo', response.data.loginUser);
+    },
+    async fetchUnassignedSavings({ commit }) {
+      const response = await graphqlClient.query({
+        query: gql`
+          query UnassignedSavings {
+            unassignedSavings
+          },
+        `,
+        fetchPolicy: 'network-only',
+      });
+
+      commit('setUnassignedSavings', response.data.unassignedSavings);
     },
   },
 };

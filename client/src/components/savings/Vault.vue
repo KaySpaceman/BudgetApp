@@ -11,8 +11,12 @@
           <span class="goal">€ {{vault.Balance}} / {{vault.Goal}}</span>
         </div>
         <div class="controls">
-          <img class="icon" src="@/assets/Minus.svg" alt="withdraw" @click="deFundVault(vault)"/>
-          <img class="icon" src="@/assets/Plus.svg" alt="fund" @click="fundVault(vault)"/>
+          <vault-transfer-popout :id="vault.id" :balance="vault.Balance" withdrawal v-slot="slot">
+            <img class="icon" src="@/assets/Minus.svg" alt="withdraw" v-on="slot.on"/>
+          </vault-transfer-popout>
+          <vault-transfer-popout :id="vault.id" v-slot="slot">
+            <img class="icon" src="@/assets/Plus.svg" alt="fund" v-on="slot.on"/>
+          </vault-transfer-popout>
           <img class="icon" src="@/assets/Checkmark.svg" alt="close" @click="closeVault(vault)"/>
           <img class="icon" src="@/assets/ToEdit.svg" alt="edit" @click="selectVault(vault)"/>
           <img class="icon sub-goal-toggle" @click="showSubGoals = !showSubGoals"
@@ -28,9 +32,11 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import VaultTransferPopout from './VaultTransferPopout.vue';
 
 export default {
   name: 'Vault',
+  components: { VaultTransferPopout },
   data: () => ({
     showSubGoals: false,
   }),

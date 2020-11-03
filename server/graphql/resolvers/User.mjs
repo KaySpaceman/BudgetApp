@@ -23,3 +23,15 @@ export async function loginUser({ email, password }) {
     BufferMonths: user.Vaults.BufferMonths,
   };
 }
+
+export async function unassignedSavings() {
+  // TODO: Implement proper authentication
+  const userId = process.env.DEV_USER_ID;
+  const user = await getUserById(userId);
+
+  if (!user) {
+    throw new GraphQLError('User doesn\'t exist');
+  }
+
+  return user.Vaults.UnassignedBalances.Savings;
+}

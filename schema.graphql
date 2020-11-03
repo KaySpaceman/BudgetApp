@@ -160,6 +160,11 @@ enum TimePeriod {
     LAST_YEAR,
 }
 
+enum TransferDirection {
+    INCOMING,
+    OUTGOING,
+}
+
 type ChartDataPoint {
     x: String,
     y: Float,
@@ -181,6 +186,7 @@ type Query {
     vaults: [Vault]!
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
+    unassignedSavings: Float!,
 }
 
 type Mutation {
@@ -194,6 +200,7 @@ type Mutation {
     createTransferTransaction(transaction: TransactionInput!, destination: ID!, createCopy: Boolean!): [Transaction],
     deleteTransaction(transactionId: ID!): Boolean,
     upsertVault(vault: VaultInput!): Vault,
+    createVaultTransfer(id: ID!, amount: Float!, direction: TransferDirection!): Vault,
     deleteVault(vaultId: ID!): Boolean,
     loginUser(email: String!, password: String!): User,
 }

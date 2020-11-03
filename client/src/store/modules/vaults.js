@@ -12,12 +12,13 @@ export default {
   }),
   mutations: {
     setVaultList(state, vaultList) {
+      state.vaultList = vaultList;
+    },
+    refreshStats(state) {
       let goal = 0;
       let stored = 0;
 
-      state.vaultList = vaultList;
-
-      vaultList.forEach((vault) => {
+      state.vaultList.forEach((vault) => {
         stored += vault.Balance;
         goal += vault.Goal;
       });
@@ -73,6 +74,7 @@ export default {
       });
 
       commit('setVaultList', response.data.vaults);
+      commit('refreshStats');
     },
     async upsertVault({ commit }, formData) {
       // eslint-disable-next-line no-param-reassign
@@ -90,7 +92,6 @@ export default {
               IsBuffer
               Parent {
                 id
-                Name
               }
               Children {
                 id
@@ -107,6 +108,41 @@ export default {
       });
 
       commit('addVaultToList', response.data.upsertVault);
+      commit('refreshStats');
+    },
+    async createVaultTransfer({ commit, dispatch }, { id, amount, direction }) {
+      const response = await graphqlClient.mutate({
+        mutation: gql`
+          mutation CreateVaultTransfer($id: ID!, $amount: Float!, $direction: TransferDirection!) {
+            createVaultTransfer(id: $id, amount: $amount, direction: $direction) {
+              id
+              Name
+              Goal
+              Balance
+              Color
+              IsBuffer
+              Parent {
+                id
+              }
+              Children {
+                id
+                Name
+                Goal
+                Balance
+              }
+            }
+          },
+        `,
+        variables: {
+          id,
+          amount,
+          direction,
+        },
+      });
+
+      dispatch('fetchUnassignedSavings');
+      commit('addVaultToList', response.data.createVaultTransfer);
+      commit('refreshStats');
     },
     async deleteVault({ commit }, id) {
       const response = await graphqlClient.mutate({
