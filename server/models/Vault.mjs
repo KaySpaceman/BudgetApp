@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 const vaultSchema = new mongoose.Schema({
   _id: { type: mongoose.ObjectId },
   Name: { type: String },
-  Goal: { type: Number, required: true },
-  Balance: { type: Number, default: 0, min: 0, required: true },
+  Goal: { type: Number, required: true, get: intToFloat, set: floatToInt },
+  Balance: { type: Number, default: 0, min: 0, required: true, get: intToFloat, set: floatToInt },
   Color: { type: String },
   Parent: { type: mongoose.ObjectId, ref: 'Vault' },
   Children: { type: Array },
@@ -32,5 +32,13 @@ vaultSchema.virtual('id').set(function (newId) {
     // New id was invalid. Don't change model's _id
   }
 });
+
+function intToFloat(value) {
+  return Number.parseFloat((value / 100).toFixed(2));
+}
+
+function floatToInt(value) {
+  return Number.parseInt((value * 100).toFixed(0), 10);
+}
 
 export default mongoose.model('Vault', vaultSchema, 'Vaults');

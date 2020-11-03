@@ -7,30 +7,19 @@ export async function getVaults() {
 }
 
 export async function getVaultById(vaultId) {
-  let id = vaultId;
+  const id = vaultId instanceof mongoose.Types.ObjectId
+    ? vaultId : new mongoose.Types.ObjectId(vaultId);
 
-  if (!(vaultId instanceof mongoose.Types.ObjectId)) {
-    try {
-      id = new mongoose.Types.ObjectId(vaultId);
-    } catch (e) {
-      throw new Error('Invalid vault id value');
-    }
-  }
+  if (!id) throw new Error('Invalid vault id value');
 
   return Vault.findOne({ _id: id })
     .exec();
 }
 
 export async function createVault(vault) {
-  let vaultModel = vault;
+  const vaultModel = vault instanceof Vault ? vault : new Vault(vault);
 
-  if (!(vault instanceof Vault)) {
-    vaultModel = new Vault(vault);
-
-    if (!vaultModel) {
-      throw new Error('Invalid vault data');
-    }
-  }
+  if (!vaultModel) throw new Error('Invalid vault data');
 
   const newVaultModel = await vaultModel.set({ _id: new mongoose.Types.ObjectId() })
     .save();
@@ -41,14 +30,16 @@ export async function createVault(vault) {
 }
 
 export async function updateVault(vault) {
-  const vaultModel = await getVaultById(vault.id);
+  let vaultModel = vault;
 
-  if (!vaultModel) {
-    throw new Error('Vault doesn\'t exists');
+  if (!(vaultModel instanceof Vault)) {
+    vaultModel = await getVaultById(vault.id);
+    vaultModel.set(vault);
   }
 
-  const updatedVault = await vaultModel.set(vault)
-    .save();
+  if (!vaultModel) throw new Error('Vault doesn\'t exists');
+
+  const updatedVault = await vaultModel.save();
 
   if (!updatedVault) throw new Error('Failed to update vault data');
 
@@ -56,15 +47,10 @@ export async function updateVault(vault) {
 }
 
 export async function deleteVaultById(vaultId) {
-  let id = vaultId;
+  const id = vaultId instanceof mongoose.Types.ObjectId
+    ? vaultId : new mongoose.Types.ObjectId(vaultId);
 
-  if (!(vaultId instanceof mongoose.Types.ObjectId)) {
-    id = new mongoose.Types.ObjectId(vaultId);
-
-    if (!id) {
-      throw new Error('Invalid vault id value');
-    }
-  }
+  if (!id) throw new Error('Invalid vault id value');
 
   return Vault.deleteOne({ _id: id })
     .exec();

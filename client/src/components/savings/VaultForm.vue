@@ -40,9 +40,10 @@ export default {
   },
   watch: {
     selectedVault(vault) {
+      const { Balance, Children, ...formData } = vault;
       this.formData = {
-        ...vault,
-        Color: vault.Color || '#0295FF',
+        ...formData,
+        Color: formData.Color || '#0295FF',
       };
     },
   },
@@ -61,7 +62,6 @@ export default {
       return (!!Number.parseFloat(goal) && goal > 0) || this.formData === {};
     },
     validateForm() {
-      // TODO: Validate data
       return this.formData !== {} && this.validateGoal();
     },
     clearForm() {

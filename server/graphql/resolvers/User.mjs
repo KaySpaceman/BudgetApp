@@ -18,8 +18,8 @@ export async function loginUser({ email, password }) {
     FirstName: user.FirstName,
     LastName: user.LastName,
     FullName: user.FullName,
-    UnassignedSavings: user.Vaults.UnassignedBalances.Savings,
-    UnassignedInvestments: user.Vaults.UnassignedBalances.Buffer,
+    UnassignedSavings: user.UnassignedSavings,
+    UnassignedInvestments: user.UnassignedInvestments,
     BufferMonths: user.Vaults.BufferMonths,
   };
 }
@@ -33,5 +33,5 @@ export async function unassignedSavings() {
     throw new GraphQLError('User doesn\'t exist');
   }
 
-  return user.Vaults.UnassignedBalances.Savings;
+  return user.UnassignedSavings;
 }

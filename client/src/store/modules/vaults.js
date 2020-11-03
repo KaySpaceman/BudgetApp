@@ -60,7 +60,6 @@ export default {
               IsBuffer
               Parent {
                 id
-                Name
               }
               Children {
                 id

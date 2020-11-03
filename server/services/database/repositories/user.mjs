@@ -7,30 +7,19 @@ export async function getUsers() {
 }
 
 export async function getUserById(userId) {
-  let id = userId;
+  const id = userId instanceof mongoose.Types.ObjectId
+    ? userId : new mongoose.Types.ObjectId(userId);
 
-  if (!(userId instanceof mongoose.Types.ObjectId)) {
-    try {
-      id = new mongoose.Types.ObjectId(userId);
-    } catch (e) {
-      throw new Error('Invalid user id value');
-    }
-  }
+  if (!id) throw new Error('Invalid user id value');
 
   return User.findOne({ _id: id })
     .exec();
 }
 
 export async function createUser(user) {
-  let userModel = user;
+  const userModel = user instanceof User ? user : new User(user);
 
-  if (!(user instanceof User)) {
-    userModel = new User(user);
-
-    if (!userModel) {
-      throw new Error('Invalid user data');
-    }
-  }
+  if (!userModel) throw new Error('Invalid user data');
 
   const newUserModel = await userModel.set({ _id: new mongoose.Types.ObjectId() })
     .save();
@@ -41,30 +30,27 @@ export async function createUser(user) {
 }
 
 export async function updateUser(user) {
-  const userModel = await getUserById(user.id);
+  let userModel = user;
 
-  if (!userModel) {
-    throw new Error('User doesn\'t exists');
+  if (!(userModel instanceof User)) {
+    userModel = await getUserById(user.id);
+    userModel.set(user);
   }
 
-  const updatedVault = await userModel.set(user)
-    .save();
+  if (!userModel) throw new Error('User doesn\'t exists');
 
-  if (!updatedVault) throw new Error('Failed to update user data');
+  const updatedUser = await userModel.save();
 
-  return updatedVault;
+  if (!updatedUser) throw new Error('Failed to update user data');
+
+  return updatedUser;
 }
 
 export async function deleteUserById(userId) {
-  let id = userId;
+  const id = userId instanceof mongoose.Types.ObjectId
+    ? userId : new mongoose.Types.ObjectId(userId);
 
-  if (!(userId instanceof mongoose.Types.ObjectId)) {
-    id = new mongoose.Types.ObjectId(userId);
-
-    if (!id) {
-      throw new Error('Invalid user id value');
-    }
-  }
+  if (!id) throw new Error('Invalid user id value');
 
   return User.deleteOne({ _id: id })
     .exec();

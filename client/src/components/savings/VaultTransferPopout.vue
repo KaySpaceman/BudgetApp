@@ -48,7 +48,7 @@ export default {
     },
     validateAmount() {
       return !!Number.parseFloat(this.amount) && this.amount > 0
-      && this.withdrawal ? this.amount <= this.balance : this.amount <= this.unassignedSavings;
+      && (this.withdrawal ? this.amount <= this.balance : this.amount <= this.unassignedSavings);
     },
     validateForm() {
       return this.id && this.validateAmount();
