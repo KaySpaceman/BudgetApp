@@ -98,7 +98,7 @@ export async function createVaultTransfer({ id, amount, direction }) {
 
 export async function deleteVault({ vaultId }) {
   if (typeof vaultId !== 'string') {
-    throw new GraphQLError('Received invalid account deletion request data');
+    throw new GraphQLError('Received invalid vault deletion request data');
   }
 
   const { deletedCount } = await deleteVaultById(vaultId);
