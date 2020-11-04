@@ -2,32 +2,28 @@ import mongoose from 'mongoose';
 import Category from '../../../models/Category.mjs';
 import Transaction from '../../../models/Transaction.mjs';
 
-export async function getCategories() {
-  return Category.find({})
-    .exec();
-}
-
-export async function getCategoryById(categoryId) {
-  return Category.findOne({ _id: categoryId })
-    .exec();
-}
-
 export async function regenerateTree() {
   return Category.regenerateTree();
 }
 
-export async function getCategoriesUpToLevel(maxLevel = 1) {
-  const categories = Category.find({ Level: { $lte: maxLevel } })
+export async function getCategories(filters = []) {
+  const filterObject = filters.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+  const categories = await Category.find(filterObject)
     .exec();
 
   if (categories.length === 0) {
     await regenerateTree();
 
-    return Category.find({ Level: { $lte: maxLevel } })
+    return Category.find(filterObject)
       .exec();
   }
 
   return categories;
+}
+
+export async function getCategoryById(categoryId) {
+  return Category.findOne({ _id: categoryId })
+    .exec();
 }
 
 export async function getSystemCategoryIds() {
@@ -43,12 +39,26 @@ export async function getSystemCategoryIds() {
   return systemCategories.map((category) => category._id.toString());
 }
 
+async function determineCategoryType(category) {
+  const { Type, Parent } = category;
+
+  if (Type) {
+    return Type;
+  }
+
+  if (!Parent) {
+    return 'SPENDING';
+  }
+
+  return determineCategoryType(await getCategoryById(Parent));
+}
+
 export async function createCategory(data) {
-  // TODO: Add data validation
   // TODO: Prevent same name on one level
   const newCategory = new Category({
     ...data,
     _id: new mongoose.Types.ObjectId(),
+    Type: await determineCategoryType(data),
   });
 
   const savedCategory = await newCategory.save();
@@ -64,7 +74,6 @@ export async function createCategory(data) {
 }
 
 export async function updateCategory(data) {
-  // TODO: Add data validation
   // TODO: Prevent same name on one level
   const id = data._id || data.id;
   const category = await Category.findOne({ _id: id });

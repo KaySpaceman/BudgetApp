@@ -6,7 +6,7 @@ import { createApolloClient, restartWebsockets } from 'vue-cli-plugin-apollo/gra
 Vue.use(VueApollo);
 
 const AUTH_TOKEN = 'apollo-token';
-const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'http://localhost:8080/graphql';
+const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'http://localhost:4000/graphql';
 const defaultOptions = {
   httpEndpoint,
   wsEndpoint: null,
@@ -34,6 +34,10 @@ export function createProvider(options = {}) {
       console.log('%cError', 'background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;', error.message);
     },
   });
+}
+
+export function getClient(options = {}) {
+  return createProvider(options).defaultClient;
 }
 
 export async function onLogin(apolloClient, token) {

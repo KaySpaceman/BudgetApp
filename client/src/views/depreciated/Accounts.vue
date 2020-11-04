@@ -18,8 +18,8 @@
 
 <script>
 import { mapState } from 'vuex';
-import Account from '../components/account/Account.vue';
-import AccountForm from '../components/account/AccountForm.vue';
+import Account from '../../components/depreciated/account/Account.vue';
+import AccountForm from '../../components/depreciated/account/AccountForm.vue';
 
 export default {
   name: 'Accounts',

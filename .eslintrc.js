@@ -18,8 +18,8 @@ module.exports = {
       'error',
       'ignorePackages',
       {
-        'mjs': 'always',
-        'vue': 'always',
+        mjs: 'always',
+        vue: 'always',
       },
     ],
   },

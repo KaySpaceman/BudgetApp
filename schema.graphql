@@ -74,6 +74,7 @@ type Category {
     id: ID!,
     Name: String!,
     Parent: Category,
+    Type: String,
     Children: [Category]!,
     Level: Int!,
     IsSystem: Boolean,
@@ -83,12 +84,14 @@ input CategoryInput {
     id: ID,
     Name: String!,
     Parent: ID,
+    Type: String,
 }
 
 type Transaction {
     id: ID!,
     Date: String!,
     Direction: String!,
+    Type: TransactionType,
     Note: String!
     Amount: Float!,
     Hash: String!,
@@ -99,11 +102,49 @@ type Transaction {
 input TransactionInput {
     id: ID,
     Date: String!,
-    Direction: String,
+    Type: TransactionType!,
     Note: String!,
     Amount: Float!,
     Category: ID,
     Account: ID!,
+}
+
+type Vault {
+    id: ID!,
+    Name: String!,
+    Goal: Float!,
+    Balance: Float!,
+    Color: String,
+    Parent: Vault,
+    Children: [Vault]!,
+    IsBuffer: Boolean,
+}
+
+input VaultInput {
+    id: ID,
+    Name: String!,
+    Goal: Float!,
+    Color: String,
+    Parent: ID,
+    IsBuffer: Boolean,
+}
+
+type User {
+    Username: String!
+    FirstName: String,
+    LastName: String,
+    FullName: String,
+    UnassignedSavings: Float!
+    UnassignedInvestments: Float!
+    BufferMonths: Int!
+}
+
+enum TransactionType {
+    SPENDING,
+    INCOME,
+    TRANSFER,
+    SAVINGS,
+    INVESTMENT,
 }
 
 enum TimeUnit {
@@ -117,6 +158,11 @@ enum TimePeriod {
     LAST_QUARTER,
     LAST_HALF_YEAR,
     LAST_YEAR,
+}
+
+enum TransferDirection {
+    INCOMING,
+    OUTGOING,
 }
 
 type ChartDataPoint {
@@ -134,10 +180,13 @@ type Query {
     accounts: [Account!]!,
     banks: [Bank!]!,
     bankDateFormats: [BankDateFormat!]!,
-    categories(maxLevel: Int): [Category!]!,
-    transactions: [Transaction!]!,
+    categories(maxLevel: Int, type: String): [Category!]!,
+    transactions(page: Int, perPage: Int): [Transaction!]!,
+    transactionCount: Int!,
+    vaults: [Vault]!
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
+    unassignedSavings: Float!,
 }
 
 type Mutation {
@@ -148,5 +197,10 @@ type Mutation {
     upsertCategory(category: CategoryInput!): Category,
     deleteCategory(categoryId: ID!): Boolean,
     upsertTransaction(transaction: TransactionInput!): Transaction,
+    createTransferTransaction(transaction: TransactionInput!, destination: ID!, createCopy: Boolean!): [Transaction],
     deleteTransaction(transactionId: ID!): Boolean,
+    upsertVault(vault: VaultInput!): Vault,
+    createVaultTransfer(id: ID!, amount: Float!, direction: TransferDirection!): Vault,
+    deleteVault(vaultId: ID!): Boolean,
+    loginUser(email: String!, password: String!): User,
 }

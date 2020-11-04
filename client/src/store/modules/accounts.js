@@ -1,28 +1,31 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import gql from 'graphql-tag';
+import { getClient } from '../../vue-apollo.js';
 
-Vue.use(Vuex);
+const graphqlClient = getClient();
 
-export default new Vuex.Store({
-  state: {
-    accounts: [],
-    totals: {},
-  },
+export default {
+  state: () => ({
+    accountsList: [],
+  }),
   mutations: {
-    addAccount() {
-      this.$store.commit('increment');
-      console.log(this.$store.state.count);
+    setAccountList(state, accounts) {
+      state.accountsList = accounts;
     },
   },
   actions: {
-    createAccount() {
+    async fetchAccountList({ commit }) {
+      const response = await graphqlClient.query({
+        query: gql`
+          query AccountList {
+            accounts {
+              id
+              Name
+            }
+          },
+        `,
+      });
 
-    },
-    reloadAccounts() {
-
-    },
-    reloadTotals() {
-
+      commit('setAccountList', response.data.accounts);
     },
   },
-});
+};

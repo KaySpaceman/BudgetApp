@@ -1,11 +1,20 @@
+/* eslint-disable no-param-reassign */
 import mongoose from 'mongoose';
 import Transaction from '../../../models/Transaction.mjs';
 import generateHash from '../../utility/checksum.mjs';
 
-export async function getTransactions() {
-  // TODO: Add Pagination
-  // TODO: Sort by date and move uncategorized to top
-  return Transaction.find({})
+export async function getTransactions(page = 1, perPage = 10) {
+  return Transaction.aggregate([
+    { $set: { HasCategory: { $or: ['$Category', { $eq: ['$Type', 'TRANSFER'] }] } } },
+    {
+      $sort: {
+        HasCategory: 1,
+        Date: -1,
+      },
+    },
+    { $skip: (page - 1) * perPage },
+    { $limit: perPage },
+  ])
     .exec();
 }
 
@@ -13,6 +22,10 @@ export async function createTransaction(data) {
   // TODO: Add data validation
   data._id = new mongoose.Types.ObjectId();
   data.Hash = generateHash(data);
+
+  if (data.Type && !data.Direction) {
+    data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
+  }
 
   const createdTransaction = await new Transaction(data).save();
 
@@ -29,29 +42,39 @@ export async function upsertTransactions(transactions) {
   }
 
   const promises = transactions
-    .map((entry) => Transaction.update(
-      { Hash: entry.Hash },
-      { $setOnInsert: entry },
-      { upsert: true },
-    )
-      .exec());
+    .map((entry) => {
+      if (entry.Type && !entry.Direction) {
+        entry.Direction = entry.Type === 'INCOME' ? 'IN' : 'OUT';
+      }
+
+      return Transaction.update(
+        { Hash: entry.Hash },
+        { $setOnInsert: entry },
+        { upsert: true },
+      )
+        .exec();
+    });
 
   const response = await Promise.all(promises);
 
-  return response.reduce((acc, cur) => acc + cur.nModified);
+  return response.reduce((acc, cur) => acc + !!cur.upserted, 0);
 }
 
 export async function updateTransaction(data) {
   // TODO: Add data validation
-  const id = data._id || data.id;
-
+  const id = new mongoose.Types.ObjectId(data._id || data.id);
   const transaction = await Transaction.findOne({ _id: id });
 
   if (!transaction) {
-    throw new Error('Account doesn\'t exists');
+    throw new Error('Transaction doesn\'t exists');
   }
 
   data.Hash = generateHash(data);
+
+  if (data.Type && !data.Direction) {
+    data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
+  }
+
   const editedTransaction = await transaction.set(data)
     .save();
 
@@ -66,5 +89,10 @@ export async function deleteTransactionById(transactionId) {
   return Transaction.deleteOne({
     _id: { $eq: new mongoose.Types.ObjectId(transactionId) },
   })
+    .exec();
+}
+
+export async function getTransactionCount() {
+  return Transaction.countDocuments({})
     .exec();
 }
