@@ -17,7 +17,8 @@
           <vault-transfer-popout :id="vault.id" v-slot="slot">
             <img class="icon" src="@/assets/Plus.svg" alt="fund" v-on="slot.on"/>
           </vault-transfer-popout>
-          <img class="icon" src="@/assets/Checkmark.svg" alt="close" @click="closeVault(vault)"/>
+          <img class="icon" src="@/assets/Checkmark.svg" alt="close"
+               @click="deleteVault(vault.id)"/>
           <img class="icon" src="@/assets/ToEdit.svg" alt="edit" @click="selectVault(vault)"/>
           <img class="icon sub-goal-toggle" @click="showSubGoals = !showSubGoals"
                src="@/assets/ToEdit.svg" alt="toggle sub-goals">
@@ -31,7 +32,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapActions } from 'vuex';
 import VaultTransferPopout from './VaultTransferPopout.vue';
 
 export default {
@@ -50,6 +51,7 @@ export default {
   },
   methods: {
     ...mapMutations(['selectVault']),
+    ...mapActions(['deleteVault']),
   },
 };
 </script>

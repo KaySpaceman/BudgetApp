@@ -51,7 +51,7 @@ export default {
       const response = await graphqlClient.query({
         query: gql`
           query VaultList {
-            vaults {
+            vaults(onlyTopLevel: true) {
               id
               Name
               Goal
@@ -143,7 +143,7 @@ export default {
       commit('addVaultToList', response.data.createVaultTransfer);
       commit('refreshStats');
     },
-    async deleteVault({ commit }, id) {
+    async deleteVault({ commit, dispatch }, id) {
       const response = await graphqlClient.mutate({
         mutation: gql`
           mutation DeleteVault($id: ID!) {
@@ -157,6 +157,8 @@ export default {
 
       if (response.data.deleteVault) {
         commit('removeVault', id);
+        commit('refreshStats');
+        dispatch('fetchUnassignedSavings');
       }
     },
   },

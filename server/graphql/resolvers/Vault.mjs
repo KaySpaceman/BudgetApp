@@ -29,8 +29,14 @@ async function formatVault(vault) {
   };
 }
 
-export async function vaults() {
-  const vaultArray = await getVaults();
+export async function vaults({ onlyTopLevel }) {
+  const filters = [];
+
+  if (onlyTopLevel) {
+    filters.push({ Parent: null });
+  }
+
+  const vaultArray = await getVaults(filters);
 
   return vaultArray.map((vault) => formatVault(vault));
 }
@@ -97,11 +103,21 @@ export async function createVaultTransfer({ id, amount, direction }) {
 }
 
 export async function deleteVault({ vaultId }) {
-  if (typeof vaultId !== 'string') {
-    throw new GraphQLError('Received invalid vault deletion request data');
-  }
+  // TODO: Replace later with proper user auth!!!!
+  const [user, vault] = await Promise.all(
+    [getUserById(process.env.DEV_USER_ID), getVaultById(vaultId)],
+  );
 
+  if (!vault) throw new GraphQLError('Vault doesn\'t exist');
+
+  const { Balance } = vault;
   const { deletedCount } = await deleteVaultById(vaultId);
+
+  if (!deletedCount) throw new GraphQLError('Vault deletion failed');
+
+  user.set({ UnassignedSavings: user.UnassignedSavings + Balance });
+
+  await updateUser(user);
 
   return !!deletedCount;
 }

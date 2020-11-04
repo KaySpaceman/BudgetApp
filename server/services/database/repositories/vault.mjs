@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import Vault from '../../../models/Vault.mjs';
 
-export async function getVaults() {
-  return Vault.find({})
+export async function getVaults(filters = []) {
+  const filterObject = filters.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+
+  return Vault.find(filterObject)
     .exec();
 }
 
@@ -52,6 +54,10 @@ export async function deleteVaultById(vaultId) {
 
   if (!id) throw new Error('Invalid vault id value');
 
-  return Vault.deleteOne({ _id: id })
+  const vault = await getVaultById(vaultId);
+
+  if (!vault) throw new Error('Vault doesn\'t exist');
+
+  return Vault.deleteMany({ _id: { $in: [vaultId, ...vault.Children] } })
     .exec();
 }

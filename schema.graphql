@@ -183,7 +183,7 @@ type Query {
     categories(maxLevel: Int, type: String): [Category!]!,
     transactions(page: Int, perPage: Int): [Transaction!]!,
     transactionCount: Int!,
-    vaults: [Vault]!
+    vaults(onlyTopLevel: Boolean): [Vault]!
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
     unassignedSavings: Float!,
