@@ -1,10 +1,10 @@
 import graphql from 'graphql';
 import {
-  getVaults,
+  getVaultsByFilter,
   getVaultById,
   updateVault,
   createVault,
-  deleteVaultById,
+  deleteVaultById, refreshValues, getVaultsByIds,
 } from '../../services/database/repositories/vault.mjs';
 import { getUserById, updateUser } from '../../services/database/repositories/user.mjs';
 
@@ -36,7 +36,7 @@ export async function vaults({ onlyTopLevel }) {
     filters.push({ Parent: null });
   }
 
-  const vaultArray = await getVaults(filters);
+  const vaultArray = await getVaultsByFilter(filters);
 
   return vaultArray.map((vault) => formatVault(vault));
 }
@@ -83,11 +83,9 @@ async function fundVault(vault, amount) {
   const appliedAmount = amount > (Goal - Balance) ? Goal - Balance : amount;
 
   if (vault.Children && vault.Children.length > 0) {
-    let newGoal = 0;
-    let newBalance = 0;
     let remainder = appliedAmount;
 
-    const childVaults = await Promise.all(vault.Children.map((childId) => getVaultById(childId)));
+    const childVaults = await getVaultsByIds(vault.Children);
 
     const childUpdates = childVaults.map((child) => {
       const { Goal: childGoal, Balance: childBalance } = child;
@@ -100,13 +98,7 @@ async function fundVault(vault, amount) {
       return fundVault(child, change);
     });
 
-    const updatedChildren = await Promise.all(childUpdates);
-    updatedChildren.forEach((child) => {
-      newGoal += child.Goal;
-      newBalance += child.Balance;
-    });
-
-    vault.set({ Balance: newBalance, Goal: newGoal });
+    await Promise.all(childUpdates);
   } else {
     vault.set({ Balance: Balance + appliedAmount });
   }
@@ -120,7 +112,7 @@ async function withdrawFromVault(vault, amount) {
   if (vault.Children && vault.Children.length > 0) {
     let remainder = amount;
 
-    const childVaults = await Promise.all(vault.Children.map((childId) => getVaultById(childId)));
+    const childVaults = await getVaultsByIds(vault.Children);
 
     const childUpdates = childVaults.map((child) => {
       const { Balance: childBalance } = child;
@@ -134,9 +126,9 @@ async function withdrawFromVault(vault, amount) {
     });
 
     await Promise.all(childUpdates);
+  } else {
+    vault.set({ Balance: Balance - amount });
   }
-
-  vault.set({ Balance: Balance - amount });
 
   return updateVault(vault);
 }
@@ -151,9 +143,9 @@ async function handleVaultFunding(user, vault, amount) {
   const fundedVault = await fundVault(vault, appliedAmount);
 
   user.set({ UnassignedSavings: UnassignedSavings - appliedAmount });
-  await updateUser(user);
+  const [refreshedVault] = await Promise.all([refreshValues(fundedVault), updateUser(user)]);
 
-  return fundedVault;
+  return refreshedVault;
 }
 
 async function handleVaultWithdrawal(user, vault, amount) {
@@ -165,9 +157,9 @@ async function handleVaultWithdrawal(user, vault, amount) {
   const updatedVault = await withdrawFromVault(vault, amount);
 
   user.set({ UnassignedSavings: UnassignedSavings + amount });
-  await updateUser(user);
+  const [refreshedVault] = await Promise.all([refreshValues(updatedVault), updateUser(user)]);
 
-  return updatedVault;
+  return refreshedVault;
 }
 
 export async function createVaultTransfer({ id, amount, direction }) {

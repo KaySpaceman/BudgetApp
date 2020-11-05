@@ -1,13 +1,6 @@
 import mongoose from 'mongoose';
 import Vault from '../../../models/Vault.mjs';
 
-export async function getVaults(filters = []) {
-  const filterObject = filters.reduce((acc, cur) => ({ ...acc, ...cur }), {});
-
-  return Vault.find(filterObject)
-    .exec();
-}
-
 export async function getVaultById(vaultId) {
   const id = vaultId instanceof mongoose.Types.ObjectId
     ? vaultId : new mongoose.Types.ObjectId(vaultId);
@@ -15,6 +8,27 @@ export async function getVaultById(vaultId) {
   if (!id) throw new Error('Invalid vault id value');
 
   return Vault.findOne({ _id: id })
+    .exec();
+}
+
+export async function getVaultsByIds(vaultIds) {
+  const ids = vaultIds.map((stringId) => {
+    const id = stringId instanceof mongoose.Types.ObjectId ? stringId
+      : new mongoose.Types.ObjectId(stringId);
+
+    if (!id) throw new Error('Invalid vault id value');
+
+    return id;
+  });
+
+  return Vault.find({ _id: { $in: ids } })
+    .exec();
+}
+
+export async function getVaultsByFilter(filters = []) {
+  const filterObject = filters.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+
+  return Vault.find(filterObject)
     .exec();
 }
 
@@ -54,6 +68,25 @@ export async function updateVault(data) {
   if (!updatedVault) throw new Error('Failed to update vault data');
 
   return updatedVault;
+}
+
+export async function refreshValues(subject) {
+  const vault = subject instanceof Vault ? subject : await getVaultById(subject);
+
+  if (!vault.Children || vault.Children.length <= 0) return vault;
+
+  let newGoal = 0;
+  let newBalance = 0;
+  const childVaults = await getVaultsByIds(vault.Children);
+
+  childVaults.forEach((child) => {
+    newGoal += child.Goal;
+    newBalance += child.Balance;
+  });
+
+  vault.set({ Balance: newBalance, Goal: newGoal });
+
+  return updateVault(vault);
 }
 
 export async function deleteVaultById(vaultId) {
