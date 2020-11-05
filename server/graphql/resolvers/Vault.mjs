@@ -114,6 +114,33 @@ async function fundVault(vault, amount) {
   return updateVault(vault);
 }
 
+async function withdrawFromVault(vault, amount) {
+  const { Balance } = vault;
+
+  if (vault.Children && vault.Children.length > 0) {
+    let remainder = amount;
+
+    const childVaults = await Promise.all(vault.Children.map((childId) => getVaultById(childId)));
+
+    const childUpdates = childVaults.map((child) => {
+      const { Balance: childBalance } = child;
+      const change = remainder > childBalance ? childBalance : remainder;
+
+      if (remainder <= 0 || (childBalance === 0)) return child;
+
+      remainder -= change;
+
+      return withdrawFromVault(child, change);
+    });
+
+    await Promise.all(childUpdates);
+  }
+
+  vault.set({ Balance: Balance - amount });
+
+  return updateVault(vault);
+}
+
 async function handleVaultFunding(user, vault, amount) {
   const { Goal, Balance } = vault;
   const { UnassignedSavings } = user;
@@ -124,7 +151,6 @@ async function handleVaultFunding(user, vault, amount) {
   const fundedVault = await fundVault(vault, appliedAmount);
 
   user.set({ UnassignedSavings: UnassignedSavings - appliedAmount });
-
   await updateUser(user);
 
   return fundedVault;
@@ -134,16 +160,14 @@ async function handleVaultWithdrawal(user, vault, amount) {
   const { Balance } = vault;
   const { UnassignedSavings } = user;
 
-  if (amount > Balance) {
-    throw new GraphQLError('Insufficient vault balance');
-  }
+  if (amount > Balance) throw new GraphQLError('Insufficient vault balance');
 
-  vault.set({ Balance: Balance - amount });
+  const updatedVault = await withdrawFromVault(vault, amount);
+
   user.set({ UnassignedSavings: UnassignedSavings + amount });
-
   await updateUser(user);
 
-  return updateVault(vault);
+  return updatedVault;
 }
 
 export async function createVaultTransfer({ id, amount, direction }) {
