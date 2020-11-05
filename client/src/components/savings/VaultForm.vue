@@ -11,7 +11,8 @@
       </div>
     </div>
     <div class="sub-goals">
-      <!--TODO: List sub-goals with edit/position functions-->
+      <sub-goal v-for="subGoal in selectedVault.Children" :key="subGoal.id" :sub-goal="subGoal"/>
+      <img class="icon" src="@/assets/Plus.svg" alt="add sub-goal"/>
     </div>
     <div class="controls">
       <btn row @click="submitForm">Save</btn>
@@ -25,6 +26,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 import TextField from '../inputs/TextField.vue';
 import Btn from '../inputs/Btn.vue';
 import ColorPicker from '../inputs/ColorPicker.vue';
+import SubGoal from './SubGoal.vue';
 
 export default {
   name: 'VaultForm',
@@ -40,7 +42,7 @@ export default {
   },
   watch: {
     selectedVault(vault) {
-      const { Balance, Children, ...formData } = vault;
+      const { Balance, ...formData } = vault;
       this.formData = {
         ...formData,
         Color: formData.Color || '#0295FF',
@@ -69,6 +71,7 @@ export default {
     },
   },
   components: {
+    SubGoal,
     ColorPicker,
     TextField,
     Btn,
@@ -107,6 +110,13 @@ export default {
       &:last-of-type {
         margin-left: 10px;
       }
+    }
+  }
+
+  .sub-goals {
+    .icon {
+      display: block;
+      margin: auto;
     }
   }
 

@@ -89,9 +89,6 @@ export default {
               Balance
               Color
               IsBuffer
-              Parent {
-                id
-              }
               Children {
                 id
                 Name

@@ -18,30 +18,38 @@ export async function getVaultById(vaultId) {
     .exec();
 }
 
-export async function createVault(vault) {
-  const vaultModel = vault instanceof Vault ? vault : new Vault(vault);
+export async function createVault(data) {
+  const vault = data instanceof Vault ? data : new Vault(data);
 
-  if (!vaultModel) throw new Error('Invalid vault data');
+  if (!vault) throw new Error('Invalid vault data');
 
-  const newVaultModel = await vaultModel.set({ _id: new mongoose.Types.ObjectId() })
-    .save();
-
-  if (!newVaultModel) throw new Error('Failed to create new vault');
-
-  return newVaultModel;
-}
-
-export async function updateVault(vault) {
-  let vaultModel = vault;
-
-  if (!(vaultModel instanceof Vault)) {
-    vaultModel = await getVaultById(vault.id);
-    vaultModel.set(vault);
+  if (data.Children && data.Children.length > 0) {
+    if (vault.Parent) throw new Error('A child vault can\'t have its own children');
   }
 
-  if (!vaultModel) throw new Error('Vault doesn\'t exists');
+  const newVault = await vault.set({ _id: new mongoose.Types.ObjectId() })
+    .save();
 
-  const updatedVault = await vaultModel.save();
+  if (!newVault) throw new Error('Failed to create new vault');
+
+  return newVault;
+}
+
+export async function updateVault(data) {
+  let vault = data;
+
+  if (!(vault instanceof Vault)) {
+    vault = await getVaultById(data.id);
+    vault.set(data);
+  }
+
+  if (!vault) throw new Error('Vault doesn\'t exists');
+
+  if (vault.Parent && data.Children && data.Children.length > 0) {
+    throw new Error('A child vault can\'t have its own children');
+  }
+
+  const updatedVault = await vault.save();
 
   if (!updatedVault) throw new Error('Failed to update vault data');
 
