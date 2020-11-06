@@ -11,7 +11,8 @@
       </div>
     </div>
     <div class="sub-goals">
-      <sub-goal v-for="subGoal in selectedVault.Children" :key="subGoal.id" :sub-goal="subGoal"/>
+      <sub-goal v-for="(subGoal, index) in formData.Children" :key="subGoal.id"
+                v-model="formData.Children[index]"/>
       <img class="icon" src="@/assets/Plus.svg" alt="add sub-goal"/>
     </div>
     <div class="controls">
@@ -46,6 +47,7 @@ export default {
       this.formData = {
         ...formData,
         Color: formData.Color || '#0295FF',
+        Children: Array.isArray(formData.Children) ? [...formData.Children] : [],
       };
     },
   },
@@ -54,7 +56,16 @@ export default {
     ...mapActions(['upsertVault']),
     submitForm() {
       if (this.validateForm()) {
-        this.upsertVault(this.formData);
+        const cleanData = {
+          ...this.formData,
+          Children: this.formData.Children.map((child) => ({
+            id: child.id,
+            Name: child.Name,
+            Goal: child.Goal,
+          })),
+        };
+
+        this.upsertVault(cleanData);
         this.clearForm();
       }
     },

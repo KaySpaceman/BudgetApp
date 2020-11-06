@@ -1,30 +1,32 @@
 <template>
   <div class="sub-goal">
-      <div class="details">
-        <div class="properties">
-          <span class="name">{{subGoal.Name}} - {{goalPercentage}}</span>
-          <div class="progress">
-            <span class="balance" v-text="subGoal.Balance" v-if="subGoal.Balance < subGoal.Goal"/>
-            <span class="divider" v-if="subGoal.Balance < subGoal.Goal"> / </span>
-            <span class="goal" v-text="subGoal.Goal"/>
-          </div>
-        </div>
-        <div class="progress-bar">
-          <div class="fill" :style="{ width: `${goalPercentage}%` }"/>
-          <div class="background"/>
+    <div class="details">
+      <div class="properties">
+        <span class="name">{{ subGoal.Name }} - {{ goalPercentage }}</span>
+        <div class="progress">
+          <span class="balance" v-text="subGoal.Balance" v-if="subGoal.Balance < subGoal.Goal"/>
+          <span class="divider" v-if="subGoal.Balance < subGoal.Goal"> / </span>
+          <span class="goal" v-text="subGoal.Goal"/>
         </div>
       </div>
-      <div class="actions">
-        <img class="icon" src="@/assets/Pencil.svg" alt="edit"/>
-        <img class="icon" src="@/assets/Delete.svg" alt="delete"/>
-        <img class="icon up" src="@/assets/ToEdit.svg" alt="up"/>
-        <img class="icon down" src="@/assets/ToEdit.svg" alt="down"/>
+      <div class="progress-bar">
+        <div class="fill" :style="{ width: `${goalPercentage}%` }"/>
+        <div class="background"/>
       </div>
+    </div>
+    <div class="actions">
+      <sub-goal-edit-popout v-model="subGoalMeta" v-slot="slot">
+        <img class="icon" src="@/assets/Pencil.svg" alt="edit" v-on="slot.on"/>
+      </sub-goal-edit-popout>
+      <img class="icon" src="@/assets/Delete.svg" alt="delete"/>
+      <img class="icon up" src="@/assets/ToEdit.svg" alt="up"/>
+      <img class="icon down" src="@/assets/ToEdit.svg" alt="down"/>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import SubGoalEditPopout from './SubGoalEditPopout.vue';
 
 export default {
   name: 'SubGoal',
@@ -36,9 +38,26 @@ export default {
     goalPercentage() {
       return Number.parseInt(((this.subGoal.Balance / this.subGoal.Goal) * 100).toFixed(0), 10);
     },
+    subGoalMeta: {
+      get() {
+        const { Name, Goal } = this.subGoal;
+
+        return {
+          Name,
+          Goal,
+        };
+      },
+      set(newValues) {
+        this.$emit('change', { ...this.subGoal, ...newValues });
+      },
+    },
   },
-  methods: {
-    ...mapMutations(['selectVault']),
+  model: {
+    prop: 'subGoal',
+    event: 'change',
+  },
+  components: {
+    SubGoalEditPopout,
   },
 };
 </script>

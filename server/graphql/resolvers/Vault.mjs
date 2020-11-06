@@ -49,28 +49,31 @@ export async function upsertVault({ vault }) {
   if (vault.Children && vault.Children.length > 0) {
     if (vault.Parent) throw new Error('A child vault can\'t have its own children');
 
-    let newGoal = 0;
-    let newBalance = 0;
-
     const parent = vault.id ? await getVaultById(vault.id)
       : await createVault({ ...vault, Children: [] });
+
     const childUpdates = vault.Children.map((child) => {
-      const childVault = { ...child, Parent: parent._id };
+      const childVault = {
+        ...child,
+        Parent: parent._id,
+      };
 
       return childVault.id ? updateVault(childVault) : createVault(childVault);
     });
 
     const childVaults = await Promise.all(childUpdates);
-    const childIds = childVaults.map((child) => {
-      newGoal += child.Goal;
-      newBalance += child.Balance;
+    const parentChildIdStrings = parent.Children.map((id) => id.toString());
+    const childIds = childVaults.reduce((acc, cur) => {
+      if (parentChildIdStrings.includes(cur.id)) {
+        return acc;
+      }
 
-      return child._id;
-    });
+      return [...acc, cur];
+    }, []);
 
-    parent.set({ Balance: newBalance, Goal: newGoal, Children: [...parent.Children, ...childIds] });
+    parent.set({ Children: [...parent.Children, ...childIds] });
 
-    return formatVault(await updateVault(parent));
+    return formatVault(await refreshValues(parent));
   }
 
   const newVault = vault.id ? await updateVault(vault) : await createVault(vault);
