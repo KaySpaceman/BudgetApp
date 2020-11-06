@@ -7,14 +7,14 @@
       <div class="column row">
         <text-field v-model.number="formData.Goal" label="Goal" type="number"
                     :rules="[validateGoal]" no-margin
-                    :disabled="formData.Children && formData.Children.length > 0"/>
+                    :disabled="formData.Children.length > 0"/>
         <color-picker v-model="formData.Color" label="Color" no-margin/>
       </div>
     </div>
     <div class="sub-goals">
       <sub-goal v-for="(subGoal, index) in formData.Children" :key="subGoal.id"
                 v-model="formData.Children[index]" @delete="setDeletedSubGoal(index)"/>
-      <img class="icon" src="@/assets/Plus.svg" alt="add sub-goal"/>
+      <img class="icon" src="@/assets/Plus.svg" alt="add sub-goal" @click="addNewSubGoal()"/>
     </div>
     <div class="controls">
       <btn row @click="submitForm">Save</btn>
@@ -35,13 +35,12 @@ export default {
   data: () => ({
     formData: {
       Color: '#0295FF',
+      Children: [],
     },
     deletedSubGoals: [],
   }),
   computed: {
-    ...mapState({
-      selectedVault: (state) => state.vaults.selectedVault,
-    }),
+    ...mapState({ selectedVault: (state) => state.vaults.selectedVault }),
   },
   watch: {
     selectedVault(vault) {
@@ -68,12 +67,21 @@ export default {
         };
 
         this.deletedSubGoals.forEach((id) => this.deleteVault(id));
-        this.upsertVault(cleanData);
-        this.clearForm();
+        this.upsertVault({ formData: cleanData, selectResult: true });
+        this.deletedSubGoals = [];
       }
     },
+    addNewSubGoal() {
+      this.formData.Children.push({
+        Name: 'New Sub-Goal',
+        Goal: 100,
+        Balance: 0,
+      });
+    },
     setDeletedSubGoal(index) {
-      this.deletedSubGoals.push(this.formData.Children[index].id);
+      const { id } = this.formData.Children[index];
+
+      if (id) this.deletedSubGoals.push(id);
       this.formData.Children.splice(index, 1);
     },
     validateGoal() {
@@ -132,9 +140,12 @@ export default {
   }
 
   .sub-goals {
+    margin-bottom: 10px;
+
     .icon {
       display: block;
       margin: auto;
+      cursor: pointer;
     }
   }
 

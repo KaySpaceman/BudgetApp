@@ -126,6 +126,10 @@ export default {
           height: 10px;
           width: 10px;
 
+          &:hover {
+            filter: brightness(0%);
+          }
+
           &:last-child {
             margin-right: 0;
           }

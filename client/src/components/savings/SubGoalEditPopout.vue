@@ -69,9 +69,19 @@ export default {
   display: flex;
   flex-direction: row;
   padding: 10px;
+  overflow: hidden;
 
+  .v-input,
   .controls {
-    margin: auto auto auto 15px;
+    margin: auto 5px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
 }
 </style>

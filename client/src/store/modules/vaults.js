@@ -75,7 +75,7 @@ export default {
       commit('setVaultList', response.data.vaults);
       commit('refreshStats');
     },
-    async upsertVault({ commit }, formData) {
+    async upsertVault({ commit }, { formData, selectResult = false }) {
       // eslint-disable-next-line no-param-reassign
       delete formData.__typename;
 
@@ -105,8 +105,11 @@ export default {
 
       commit('addVaultToList', response.data.upsertVault);
       commit('refreshStats');
+      if (selectResult) commit('selectVault', response.data.upsertVault);
     },
-    async createVaultTransfer({ commit, dispatch }, { id, amount, direction }) {
+    async createVaultTransfer(
+      { commit, dispatch }, { formData: { id, amount, direction }, selectResult = false },
+    ) {
       const response = await graphqlClient.mutate({
         mutation: gql`
           mutation CreateVaultTransfer($id: ID!, $amount: Float!, $direction: TransferDirection!) {
@@ -139,6 +142,7 @@ export default {
       dispatch('fetchUnassignedSavings');
       commit('addVaultToList', response.data.createVaultTransfer);
       commit('refreshStats');
+      if (selectResult) commit('selectVault', response.data.createVaultTransfer);
     },
     async deleteVault({ commit, dispatch }, id) {
       const response = await graphqlClient.mutate({
