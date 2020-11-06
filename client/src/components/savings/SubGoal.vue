@@ -18,9 +18,7 @@
       <sub-goal-edit-popout v-model="subGoalMeta" v-slot="slot">
         <img class="icon" src="@/assets/Pencil.svg" alt="edit" v-on="slot.on"/>
       </sub-goal-edit-popout>
-      <img class="icon" src="@/assets/Delete.svg" alt="delete"/>
-      <img class="icon up" src="@/assets/ToEdit.svg" alt="up"/>
-      <img class="icon down" src="@/assets/ToEdit.svg" alt="down"/>
+      <img class="icon" src="@/assets/Delete.svg" alt="delete" @click="$emit('delete')"/>
     </div>
   </div>
 </template>

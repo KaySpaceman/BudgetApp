@@ -1,7 +1,7 @@
 <template>
   <v-text-field class="text-field" :label="label" :rules="rules" :value="value" v-on="$listeners"
                 :class="{ 'wide': wide, 'fill-height': fillHeight, 'no-margin': noMargin }"
-                placeholder=" "/>
+                :disabled="disabled" placeholder=" "/>
 </template>
 
 <script>
@@ -15,6 +15,7 @@ export default {
     wide: Boolean,
     fillHeight: Boolean,
     noMargin: Boolean,
+    disabled: Boolean,
   },
   model: {
     prop: 'value',

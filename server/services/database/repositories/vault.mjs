@@ -92,11 +92,9 @@ export async function refreshValues(subject) {
 export async function deleteVaultById(vaultId) {
   const id = vaultId instanceof mongoose.Types.ObjectId
     ? vaultId : new mongoose.Types.ObjectId(vaultId);
-
   if (!id) throw new Error('Invalid vault id value');
 
   const vault = await getVaultById(vaultId);
-
   if (!vault) throw new Error('Vault doesn\'t exist');
 
   return Vault.deleteMany({ _id: { $in: [vaultId, ...vault.Children] } })

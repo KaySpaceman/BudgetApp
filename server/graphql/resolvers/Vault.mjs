@@ -62,16 +62,7 @@ export async function upsertVault({ vault }) {
     });
 
     const childVaults = await Promise.all(childUpdates);
-    const parentChildIdStrings = parent.Children.map((id) => id.toString());
-    const childIds = childVaults.reduce((acc, cur) => {
-      if (parentChildIdStrings.includes(cur.id)) {
-        return acc;
-      }
-
-      return [...acc, cur];
-    }, []);
-
-    parent.set({ Children: [...parent.Children, ...childIds] });
+    parent.set({ Children: childVaults.map((child) => child._id) });
 
     return formatVault(await refreshValues(parent));
   }
@@ -197,7 +188,6 @@ export async function deleteVault({ vaultId }) {
   if (!deletedCount) throw new GraphQLError('Vault deletion failed');
 
   user.set({ UnassignedSavings: user.UnassignedSavings + Balance });
-
   await updateUser(user);
 
   return !!deletedCount;
