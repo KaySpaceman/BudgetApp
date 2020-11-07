@@ -2,8 +2,7 @@
   <div class="vault" :class="{ 'expanded': showSubGoals }">
     <div class="top-details">
       <div class="progress">
-        <!--TODO: Add percentage wheel-->
-        <span class="percentage" v-text="goalPercentage"/>
+        <doughnut-chart :percent="goalPercentage" :color-hex="vault.Color"/>
       </div>
       <div class="details">
         <div class="properties">
@@ -35,10 +34,10 @@
 import { mapMutations, mapActions } from 'vuex';
 import VaultTransferPopout from './VaultTransferPopout.vue';
 import SubGoal from './SubGoal.vue';
+import DoughnutChart from '../charts/Doughnut.vue';
 
 export default {
   name: 'Vault',
-  components: { SubGoal, VaultTransferPopout },
   data: () => ({
     showSubGoals: false,
   }),
@@ -53,6 +52,11 @@ export default {
   methods: {
     ...mapMutations(['selectVault']),
     ...mapActions(['deleteVault']),
+  },
+  components: {
+    DoughnutChart,
+    SubGoal,
+    VaultTransferPopout,
   },
 };
 </script>
@@ -86,13 +90,6 @@ export default {
       margin: auto;
       height: 72px;
       width: 72px;
-
-      .percentage {
-        font-weight: $fw-extra-bold;
-        font-size: 16px;
-        line-height: 22px;
-        color: $c-charcoal;
-      }
     }
 
     .details {

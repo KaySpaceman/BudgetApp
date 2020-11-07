@@ -1,8 +1,7 @@
 <template>
   <div class="savings-info">
     <div class="progress">
-      <!--TODO: Add progress wheel-->
-      <span class="percentage" v-text="goalPercentage"/>
+      <doughnut-chart :percent="goalPercentage" :width="50" :height="50"/>
     </div>
     <div class="stats">
       <div class="metric unassigned">
@@ -23,6 +22,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import DoughnutChart from '../charts/Doughnut.vue';
 
 export default {
   name: 'SavingsInfo',
@@ -42,12 +42,15 @@ export default {
   },
   created() {
     // TODO: Remove once authentication is implemented
-    if (!this.unassigned) {
+    if (!this.unassignedSavings) {
       this.loginUser({
         email: 'test@test.com',
         password: 'test123',
       });
     }
+  },
+  components: {
+    DoughnutChart,
   },
 };
 </script>
@@ -69,13 +72,6 @@ export default {
     margin: auto 15px;
     height: 50px;
     width: 50px;
-
-    .percentage {
-      font-weight: $fw-extra-bold;
-      font-size: 16px;
-      line-height: 22px;
-      color: $c-charcoal;
-    }
   }
 
   .stats {
