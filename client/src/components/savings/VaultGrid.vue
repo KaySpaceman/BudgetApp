@@ -34,6 +34,8 @@ export default {
   grid-gap: 15px;
   grid-template-columns: 1fr;
   grid-template-rows: 100px;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 100px;
   margin: 30px;
 
   @media (min-width: 1050px) {

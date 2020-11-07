@@ -14,7 +14,7 @@
         <div class="background"/>
       </div>
     </div>
-    <div class="actions">
+    <div class="actions" v-if="!noActions">
       <sub-goal-edit-popout v-model="subGoalMeta" v-slot="slot">
         <img class="icon" src="@/assets/Pencil.svg" alt="edit" v-on="slot.on"/>
       </sub-goal-edit-popout>
@@ -31,6 +31,7 @@ export default {
   data: () => ({}),
   props: {
     subGoal: Object,
+    noActions: Boolean,
   },
   computed: {
     goalPercentage() {

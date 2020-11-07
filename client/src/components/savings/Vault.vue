@@ -21,12 +21,12 @@
                @click="deleteVault(vault.id)"/>
           <img class="icon" src="@/assets/ToEdit.svg" alt="edit" @click="selectVault(vault)"/>
           <img class="icon sub-goal-toggle" @click="showSubGoals = !showSubGoals"
-               src="@/assets/ToEdit.svg" alt="toggle sub-goals">
+               src="@/assets/ToEdit.svg" alt="toggle sub-goals" v-if="vault.Children.length > 0">
         </div>
       </div>
     </div>
-    <div class="sub-goals" v-if="vault.Children && vault.Children.length > 0">
-      <!--TODO: List sub-goals and open/close-->
+    <div class="sub-goals" v-if="showSubGoals">
+      <sub-goal v-for="subGoal in vault.Children" :key="subGoal.id" :sub-goal="subGoal" no-actions/>
     </div>
   </div>
 </template>
@@ -34,10 +34,11 @@
 <script>
 import { mapMutations, mapActions } from 'vuex';
 import VaultTransferPopout from './VaultTransferPopout.vue';
+import SubGoal from './SubGoal.vue';
 
 export default {
   name: 'Vault',
-  components: { VaultTransferPopout },
+  components: { SubGoal, VaultTransferPopout },
   data: () => ({
     showSubGoals: false,
   }),
@@ -63,6 +64,8 @@ export default {
   padding: 10px;
   place-self: stretch;
   position: relative;
+  display: flex;
+  flex-flow: column;
 
   &.expanded {
     grid-row-end: span 2;
@@ -147,6 +150,12 @@ export default {
         }
       }
     }
+  }
+
+  .sub-goals {
+    padding: 0 15px 15px;
+    flex-grow: 1;
+    overflow: scroll;
   }
 }
 </style>
