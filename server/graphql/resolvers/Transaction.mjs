@@ -1,4 +1,5 @@
 import graphql from 'graphql';
+import mongoose from 'mongoose';
 import {
   createTransaction,
   getTransactions,
@@ -10,19 +11,26 @@ import { getCategoryById } from '../../services/database/repositories/category.m
 import { getAccountById } from '../../services/database/repositories/account.mjs';
 import Account from '../../models/Account.mjs';
 import { getUserById, updateUser } from '../../services/database/repositories/user.mjs';
+import Transaction from '../../models/Transaction.mjs';
 
 const { GraphQLError } = graphql;
+
+export function formatTransaction(transaction) {
+  const data = transaction instanceof Transaction ? transaction.toJSON() : transaction;
+
+  return {
+    ...data,
+    id: data.id || data._id.toString(),
+    Category: getCategoryById.bind(this, data.Category),
+    Account: getAccountById.bind(this, data.Account),
+    Date: data.Date.toISOString().split('T')[0],
+  };
+}
 
 export async function transactions({ page = 1, perPage = 10 }) {
   const rawTransactions = await getTransactions(page, perPage);
 
-  return rawTransactions.map((data) => ({
-    ...data,
-    id: data._id.toString(),
-    Category: getCategoryById.bind(this, data.Category),
-    Account: getAccountById.bind(this, data.Account),
-    Date: data.Date.toISOString().split('T')[0],
-  }));
+  return rawTransactions.map((t) => formatTransaction(t));
 }
 
 async function handleSavingsUpsert(transaction) {
@@ -30,11 +38,12 @@ async function handleSavingsUpsert(transaction) {
   const amount = transaction.Amount;
 
   const user = await getUserById(userId);
+  const { UnassignedSavings } = user;
 
   if (!user || !user.id) throw new GraphQLError('User doesn\'t exist');
   if (!amount) throw new GraphQLError('Invalid transaction amount value');
 
-  user.Vaults.UnassignedBalances.Savings += amount;
+  user.set({ UnassignedSavings: UnassignedSavings + amount });
   await updateUser(user);
 
   // eslint-disable-next-line no-param-reassign
@@ -57,14 +66,8 @@ export async function upsertTransaction({ transaction: formData }) {
 
   const response = transaction.id ? await updateTransaction(transaction)
     : await createTransaction(transaction);
-  const data = response.toJSON();
 
-  return {
-    ...data,
-    Category: getCategoryById.bind(this, data.Category),
-    Account: getAccountById.bind(this, data.Account),
-    Date: data.Date.toISOString().split('T')[0],
-  };
+  return formatTransaction(response);
 }
 
 export async function createTransferTransaction({ transaction, destination, createCopy }) {
@@ -112,12 +115,7 @@ export async function createTransferTransaction({ transaction, destination, crea
     }
   }
 
-  return returnTransactions.map((data) => ({
-    ...data,
-    Category: getCategoryById.bind(this, data.Category),
-    Account: getAccountById.bind(this, data.Account),
-    Date: data.Date.toISOString().split('T')[0],
-  }));
+  return returnTransactions.map((t) => formatTransaction(t));
 }
 
 export async function deleteTransaction({ transactionId }) {

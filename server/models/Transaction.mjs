@@ -27,4 +27,12 @@ transactionSchema.methods.toJSON = function () {
   };
 };
 
+transactionSchema.virtual('id').set(function (newId) {
+  try {
+    this._id = new mongoose.Types.ObjectId(newId);
+  } catch (e) {
+    // New id was invalid. Don't change model's _id
+  }
+});
+
 export default mongoose.model('Transaction', transactionSchema, 'Transactions');

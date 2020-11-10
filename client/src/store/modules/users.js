@@ -64,5 +64,43 @@ export default {
 
       commit('setUnassignedSavings', response.data.unassignedSavings);
     },
+    async createSavingsTransfer({ commit, dispatch }, { Account, Amount, Type }) {
+      const response = await graphqlClient.mutate({
+        mutation: gql`
+          mutation CreateSavingsTransfer(
+            $accountId: ID!,
+            $amount: Float!,
+            $direction: TransferDirection!
+          ) {
+            createSavingsTransfer(accountId: $accountId, amount: $amount, direction: $direction) {
+              id
+              Date
+              Amount
+              Note
+              Account {
+                id
+              }
+              Type
+              Category {
+                id
+                Name
+              }
+            }
+          },
+        `,
+        variables: {
+          accountId: Account,
+          amount: Amount,
+          direction: Type,
+        },
+      });
+
+      commit('invalidateTransactionCache');
+      commit('toggleAccountCache');
+      commit('addTransactionToList', response.data.createSavingsTransfer);
+      dispatch('fetchTransactionCount');
+      dispatch('fetchAccountList');
+      dispatch('fetchUnassignedSavings');
+    },
   },
 };

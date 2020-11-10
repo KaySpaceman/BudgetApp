@@ -206,4 +206,5 @@ type Mutation {
     createVaultTransfer(id: ID!, amount: Float!, direction: TransferDirection!): Vault,
     deleteVault(vaultId: ID!): Boolean,
     loginUser(email: String!, password: String!): User,
+    createSavingsTransfer(accountId: ID!, amount: Float!, direction: TransferDirection!): Transaction,
 }

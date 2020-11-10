@@ -48,10 +48,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['fetchAccountList']),
+    ...mapActions(['createSavingsTransfer', 'fetchAccountList']),
     submitForm() {
       if (this.validateForm()) {
-        // TODO: Submit
+        this.createSavingsTransfer(this.formData);
+        this.clearForm();
       }
     },
     validateAmount() {

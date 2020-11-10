@@ -91,10 +91,7 @@ export default {
         fetchPolicy: forceRefresh ? 'network-only' : 'cache-first',
       });
 
-      if (forceRefresh) {
-        commit('removeStalePage', page);
-      }
-
+      if (forceRefresh) commit('removeStalePage', page);
       commit('addCachedPage', page);
       commit('setTransactionList', response.data.transactions);
     },

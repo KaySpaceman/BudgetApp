@@ -135,7 +135,10 @@ export async function getAvailableBalance(accountId) {
   return fetchBalance({
     $match: {
       Account: new mongoose.Types.ObjectId(accountId),
-      Category: { $exists: true },
+      $or: [
+        { Category: { $exists: true } },
+        { Type: { $in: ['SAVINGS', 'INVESTMENT'] } },
+      ],
     },
   });
 }
@@ -144,7 +147,6 @@ export async function getSavingsBalance(accountId) {
   const balance = await fetchBalance({
     $match: {
       Account: new mongoose.Types.ObjectId(accountId),
-      Category: { $exists: true },
       Type: { $eq: 'SAVINGS' },
     },
   });
