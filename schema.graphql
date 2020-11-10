@@ -3,7 +3,9 @@ type Account {
     Name: String!,
     Number: String,
     Bank: Bank,
-    Balance: Float,
+    Total: Float,
+    Available: Float,
+    Savings: Float,
 }
 
 input AccountInput {
