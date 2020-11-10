@@ -20,6 +20,9 @@ export default {
             accounts {
               id
               Name
+              Total
+              Available
+              Savings
             }
           },
         `,
