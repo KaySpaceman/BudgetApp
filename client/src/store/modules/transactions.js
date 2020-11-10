@@ -50,7 +50,6 @@ export default {
     invalidateTransactionCache(state) {
       state.stalePages = [...state.stalePages, ...state.cachedPages];
       state.cachedPages = [];
-      state.count = null;
     },
     addCachedPage(state, page) {
       if (!state.cachedPages.includes(page)) {
@@ -129,11 +128,11 @@ export default {
 
       commit('invalidateTransactionCache');
       commit('addTransactionToList', response.data.upsertTransaction);
+      dispatch('fetchTransactionCount');
 
       if (state.page !== 1) {
         commit('setTransactionPage', 1);
         dispatch('fetchTransactionList');
-        dispatch('fetchTransactionCount');
       }
     },
     async createTransferTransaction(
@@ -177,6 +176,7 @@ export default {
       });
 
       commit('invalidateTransactionCache');
+      dispatch('fetchTransactionCount');
       response.data.createTransferTransaction.forEach((responseTransaction) => {
         commit('addTransactionToList', responseTransaction);
       });
@@ -204,7 +204,7 @@ export default {
       }
     },
     async fetchTransactionCount({ commit, state }) {
-      const forceRefresh = state.count === null;
+      const forceRefresh = !!state.stalePages.length;
 
       const response = await graphqlClient.query({
         query: gql`
