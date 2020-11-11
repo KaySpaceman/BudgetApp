@@ -1,11 +1,12 @@
 <template>
   <div id="page">
     <div class="content">
-      <VaultGrid/>
+      <vault-grid/>
     </div>
     <div class="sidebar">
-      <SavingsInfo/>
-      <VaultForm/>
+      <savings-info/>
+      <vault-form/>
+      <savings-transfer-form/>
     </div>
   </div>
 </template>
@@ -14,11 +15,13 @@
 import VaultGrid from '../components/savings/VaultGrid.vue';
 import SavingsInfo from '../components/savings/SavingsInfo.vue';
 import VaultForm from '../components/savings/VaultForm.vue';
+import SavingsTransferForm from '../components/savings/SavingsTransferForm.vue';
 
 export default {
   name: 'Savings',
   data: () => ({}),
   components: {
+    SavingsTransferForm,
     VaultForm,
     VaultGrid,
     SavingsInfo,

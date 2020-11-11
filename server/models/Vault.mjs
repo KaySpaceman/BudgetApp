@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const vaultSchema = new mongoose.Schema({
   _id: { type: mongoose.ObjectId },
   Name: { type: String },
-  Goal: { type: Number, required: true, get: intToFloat, set: floatToInt },
+  Goal: { type: Number, default: 0, min: 0, required: true, get: intToFloat, set: floatToInt },
   Balance: { type: Number, default: 0, min: 0, required: true, get: intToFloat, set: floatToInt },
   Color: { type: String },
   Parent: { type: mongoose.ObjectId, ref: 'Vault' },
@@ -20,7 +20,7 @@ vaultSchema.methods.toJSON = function () {
     Balance: this.Balance,
     Color: this.Color,
     Parent: this.Parent ? this.Parent.toString() : null,
-    Children: this.Children.length ? this.Children : [],
+    Children: this.Children ? this.Children : [],
     IsBuffer: this.IsBuffer,
   };
 };

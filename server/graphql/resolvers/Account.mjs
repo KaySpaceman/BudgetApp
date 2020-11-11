@@ -1,10 +1,12 @@
 import graphql from 'graphql';
 import {
-  getAccounts,
-  updateAccount,
   createAccount,
-  calculateAccountBalance,
   deleteAccountById,
+  getAccounts,
+  getAvailableBalance,
+  getSavingsBalance,
+  getTotalBalance,
+  updateAccount,
 } from '../../services/database/repositories/account.mjs';
 import { getBankById } from '../../services/database/repositories/bank.mjs';
 
@@ -19,7 +21,9 @@ export async function accounts() {
     return {
       ...data,
       Bank: getBankById.bind(this, data.Bank),
-      Balance: calculateAccountBalance.bind(this, data.id),
+      Total: getTotalBalance.bind(this, data.id),
+      Savings: getSavingsBalance.bind(this, data.id),
+      Available: getAvailableBalance.bind(this, data.id),
     };
   });
 }

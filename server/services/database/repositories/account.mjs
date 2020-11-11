@@ -89,10 +89,19 @@ export async function deleteAccountById(accountId) {
     .exec();
 }
 
-export async function calculateAccountBalance(accountId) {
+async function fetchBalance(match) {
   const balance = await Transaction.aggregate([
+    match,
     {
-      $match: { Account: new mongoose.Types.ObjectId(accountId) },
+      $set: {
+        Amount: {
+          $cond: {
+            if: { $eq: ['$Direction', 'OUT'] },
+            then: { $multiply: ['$Amount', -1] },
+            else: '$Amount',
+          },
+        },
+      },
     },
     {
       $group: {
@@ -110,4 +119,37 @@ export async function calculateAccountBalance(accountId) {
     .exec();
 
   return balance[0] ? balance[0].Total : 0;
+}
+
+export async function getTotalBalance(accountId) {
+  return fetchBalance({
+    $match: {
+      Account: new mongoose.Types.ObjectId(accountId),
+      Category: { $exists: true },
+      Type: { $nin: ['SAVINGS', 'INVESTMENT'] },
+    },
+  });
+}
+
+export async function getAvailableBalance(accountId) {
+  return fetchBalance({
+    $match: {
+      Account: new mongoose.Types.ObjectId(accountId),
+      $or: [
+        { Category: { $exists: true } },
+        { Type: { $in: ['SAVINGS', 'INVESTMENT'] } },
+      ],
+    },
+  });
+}
+
+export async function getSavingsBalance(accountId) {
+  const balance = await fetchBalance({
+    $match: {
+      Account: new mongoose.Types.ObjectId(accountId),
+      Type: { $eq: 'SAVINGS' },
+    },
+  });
+
+  return balance * -1;
 }

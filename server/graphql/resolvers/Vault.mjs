@@ -1,10 +1,10 @@
 import graphql from 'graphql';
 import {
-  getVaults,
+  getVaultsByFilter,
   getVaultById,
   updateVault,
   createVault,
-  deleteVaultById,
+  deleteVaultById, refreshValues, getVaultsByIds,
 } from '../../services/database/repositories/vault.mjs';
 import { getUserById, updateUser } from '../../services/database/repositories/user.mjs';
 
@@ -16,21 +16,27 @@ async function vaultChildren(childArray) {
   }
 
   // eslint-disable-next-line no-use-before-define
-  return childArray.map((model) => formatVault(model));
+  return childArray.map(async (id) => formatVault(await getVaultById(id)));
 }
 
-async function formatVault(vault) {
+function formatVault(vault) {
   const data = vault.toJSON();
 
   return {
     ...data,
     Parent: data.Parent ? getVaultById.bind(this, data.Parent) : null,
-    Children: data.Children.length ? vaultChildren.bind(this, data.id) : [],
+    Children: data.Children.length ? vaultChildren.bind(this, data.Children) : [],
   };
 }
 
-export async function vaults() {
-  const vaultArray = await getVaults();
+export async function vaults({ onlyTopLevel }) {
+  const filters = [];
+
+  if (onlyTopLevel) {
+    filters.push({ Parent: null });
+  }
+
+  const vaultArray = await getVaultsByFilter(filters);
 
   return vaultArray.map((vault) => formatVault(vault));
 }
@@ -40,9 +46,85 @@ export async function upsertVault({ vault }) {
     throw new GraphQLError('Received invalid vault upsert request data');
   }
 
+  if (vault.Children && vault.Children.length > 0) {
+    if (vault.Parent) throw new Error('A child vault can\'t have its own children');
+
+    const parent = vault.id ? await getVaultById(vault.id)
+      : await createVault({ ...vault, Children: [] });
+
+    const childUpdates = vault.Children.map((child) => {
+      const childVault = {
+        ...child,
+        Parent: parent._id,
+      };
+
+      return childVault.id ? updateVault(childVault) : createVault(childVault);
+    });
+
+    const childVaults = await Promise.all(childUpdates);
+    parent.set({ Children: childVaults.map((child) => child._id) });
+
+    return formatVault(await refreshValues(parent));
+  }
+
   const newVault = vault.id ? await updateVault(vault) : await createVault(vault);
 
   return formatVault(newVault);
+}
+
+async function fundVault(vault, amount) {
+  const { Goal, Balance } = vault;
+  const appliedAmount = amount > (Goal - Balance) ? Goal - Balance : amount;
+
+  if (vault.Children && vault.Children.length > 0) {
+    let remainder = appliedAmount;
+
+    const childVaults = await getVaultsByIds(vault.Children);
+
+    const childUpdates = childVaults.map((child) => {
+      const { Goal: childGoal, Balance: childBalance } = child;
+      const change = remainder > (childGoal - childBalance) ? childGoal - childBalance : remainder;
+
+      if (remainder <= 0 || (childBalance >= childGoal)) return child;
+
+      remainder -= change;
+
+      return fundVault(child, change);
+    });
+
+    await Promise.all(childUpdates);
+  } else {
+    vault.set({ Balance: Balance + appliedAmount });
+  }
+
+  return updateVault(vault);
+}
+
+async function withdrawFromVault(vault, amount) {
+  const { Balance } = vault;
+
+  if (vault.Children && vault.Children.length > 0) {
+    let remainder = amount;
+
+    const childVaults = await getVaultsByIds(vault.Children);
+
+    const childUpdates = childVaults.map((child) => {
+      const { Balance: childBalance } = child;
+      const change = remainder > childBalance ? childBalance : remainder;
+
+      if (remainder <= 0 || (childBalance === 0)) return child;
+
+      remainder -= change;
+
+      return withdrawFromVault(child, change);
+    });
+
+    await Promise.all(childUpdates);
+  } else {
+    vault.set({ Balance: Balance - amount });
+  }
+
+  return updateVault(vault);
 }
 
 async function handleVaultFunding(user, vault, amount) {
@@ -50,32 +132,28 @@ async function handleVaultFunding(user, vault, amount) {
   const { UnassignedSavings } = user;
   const appliedAmount = amount > (Goal - Balance) ? Goal - Balance : amount;
 
-  if (appliedAmount > UnassignedSavings) {
-    throw new GraphQLError('Insufficient unassigned funds');
-  }
+  if (appliedAmount > UnassignedSavings) throw new GraphQLError('Insufficient unassigned funds');
 
-  vault.set({ Balance: Balance + appliedAmount });
+  const fundedVault = await fundVault(vault, appliedAmount);
+
   user.set({ UnassignedSavings: UnassignedSavings - appliedAmount });
+  const [refreshedVault] = await Promise.all([refreshValues(fundedVault), updateUser(user)]);
 
-  await updateUser(user);
-
-  return updateVault(vault);
+  return refreshedVault;
 }
 
 async function handleVaultWithdrawal(user, vault, amount) {
   const { Balance } = vault;
   const { UnassignedSavings } = user;
 
-  if (amount > Balance) {
-    throw new GraphQLError('Insufficient vault balance');
-  }
+  if (amount > Balance) throw new GraphQLError('Insufficient vault balance');
 
-  vault.set({ Balance: Balance - amount });
+  const updatedVault = await withdrawFromVault(vault, amount);
+
   user.set({ UnassignedSavings: UnassignedSavings + amount });
+  const [refreshedVault] = await Promise.all([refreshValues(updatedVault), updateUser(user)]);
 
-  await updateUser(user);
-
-  return updateVault(vault);
+  return refreshedVault;
 }
 
 export async function createVaultTransfer({ id, amount, direction }) {
@@ -97,11 +175,20 @@ export async function createVaultTransfer({ id, amount, direction }) {
 }
 
 export async function deleteVault({ vaultId }) {
-  if (typeof vaultId !== 'string') {
-    throw new GraphQLError('Received invalid vault deletion request data');
-  }
+  // TODO: Replace later with proper user auth!!!!
+  const [user, vault] = await Promise.all(
+    [getUserById(process.env.DEV_USER_ID), getVaultById(vaultId)],
+  );
 
+  if (!vault) throw new GraphQLError('Vault doesn\'t exist');
+
+  const { Balance } = vault;
   const { deletedCount } = await deleteVaultById(vaultId);
+
+  if (!deletedCount) throw new GraphQLError('Vault deletion failed');
+
+  user.set({ UnassignedSavings: user.UnassignedSavings + Balance });
+  await updateUser(user);
 
   return !!deletedCount;
 }

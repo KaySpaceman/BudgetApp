@@ -1,5 +1,6 @@
 <template>
-  <v-menu class="vault-transfer-popout" v-on="$listeners" :close-on-content-click="false" offset-y>
+  <v-menu class="vault-transfer-popout" v-on="$listeners" v-model="isOpen"
+          :close-on-content-click="false" offset-y>
     <template v-slot:activator="{ on, attrs }">
       <slot :on="on" :attrs="attrs"/>
     </template>
@@ -22,6 +23,7 @@ export default {
   name: 'VaultTransferPopout',
   data: () => ({
     amount: 0,
+    isOpen: false,
   }),
   props: {
     id: String,
@@ -42,8 +44,9 @@ export default {
     ...mapActions(['createVaultTransfer']),
     submitForm() {
       if (this.validateForm()) {
-        this.createVaultTransfer(this.formData);
+        this.createVaultTransfer({ formData: this.formData, selectResult: true });
         this.amount = 0;
+        this.isOpen = false;
       }
     },
     validateAmount() {

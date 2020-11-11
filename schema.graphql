@@ -3,7 +3,9 @@ type Account {
     Name: String!,
     Number: String,
     Bank: Bank,
-    Balance: Float,
+    Total: Float,
+    Available: Float,
+    Savings: Float,
 }
 
 input AccountInput {
@@ -123,9 +125,10 @@ type Vault {
 input VaultInput {
     id: ID,
     Name: String!,
-    Goal: Float!,
+    Goal: Float,
     Color: String,
     Parent: ID,
+    Children: [VaultInput],
     IsBuffer: Boolean,
 }
 
@@ -183,7 +186,7 @@ type Query {
     categories(maxLevel: Int, type: String): [Category!]!,
     transactions(page: Int, perPage: Int): [Transaction!]!,
     transactionCount: Int!,
-    vaults: [Vault]!
+    vaults(onlyTopLevel: Boolean): [Vault]!
     totalSpendingChart(timeUnit: TimeUnit): [ChartDataPoint!]!,
     categorizedSpendingChart(timePeriod: TimePeriod): SunburstDataPoint!,
     unassignedSavings: Float!,
@@ -203,4 +206,5 @@ type Mutation {
     createVaultTransfer(id: ID!, amount: Float!, direction: TransferDirection!): Vault,
     deleteVault(vaultId: ID!): Boolean,
     loginUser(email: String!, password: String!): User,
+    createSavingsTransfer(accountId: ID!, amount: Float!, direction: TransferDirection!): Transaction,
 }

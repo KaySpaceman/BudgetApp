@@ -2,8 +2,7 @@
   <div class="vault" :class="{ 'expanded': showSubGoals }">
     <div class="top-details">
       <div class="progress">
-        <!--TODO: Add percentage wheel-->
-        <span class="percentage" v-text="goalPercentage"/>
+        <doughnut-chart :percent="goalPercentage" :color-hex="vault.Color"/>
       </div>
       <div class="details">
         <div class="properties">
@@ -17,26 +16,28 @@
           <vault-transfer-popout :id="vault.id" v-slot="slot">
             <img class="icon" src="@/assets/Plus.svg" alt="fund" v-on="slot.on"/>
           </vault-transfer-popout>
-          <img class="icon" src="@/assets/Checkmark.svg" alt="close" @click="closeVault(vault)"/>
+          <img class="icon" src="@/assets/Checkmark.svg" alt="close"
+               @click="deleteVault(vault.id)"/>
           <img class="icon" src="@/assets/ToEdit.svg" alt="edit" @click="selectVault(vault)"/>
           <img class="icon sub-goal-toggle" @click="showSubGoals = !showSubGoals"
-               src="@/assets/ToEdit.svg" alt="toggle sub-goals">
+               src="@/assets/ToEdit.svg" alt="toggle sub-goals" v-if="vault.Children.length > 0">
         </div>
       </div>
     </div>
-    <div class="sub-goals" v-if="vault.Children && vault.Children.length > 0">
-      <!--TODO: List sub-goals and open/close-->
+    <div class="sub-goals" v-if="showSubGoals">
+      <sub-goal v-for="subGoal in vault.Children" :key="subGoal.id" :sub-goal="subGoal" no-actions/>
     </div>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapActions } from 'vuex';
 import VaultTransferPopout from './VaultTransferPopout.vue';
+import SubGoal from './SubGoal.vue';
+import DoughnutChart from '../charts/Doughnut.vue';
 
 export default {
   name: 'Vault',
-  components: { VaultTransferPopout },
   data: () => ({
     showSubGoals: false,
   }),
@@ -50,6 +51,12 @@ export default {
   },
   methods: {
     ...mapMutations(['selectVault']),
+    ...mapActions(['deleteVault']),
+  },
+  components: {
+    DoughnutChart,
+    SubGoal,
+    VaultTransferPopout,
   },
 };
 </script>
@@ -61,6 +68,8 @@ export default {
   padding: 10px;
   place-self: stretch;
   position: relative;
+  display: flex;
+  flex-flow: column;
 
   &.expanded {
     grid-row-end: span 2;
@@ -81,13 +90,6 @@ export default {
       margin: auto;
       height: 72px;
       width: 72px;
-
-      .percentage {
-        font-weight: $fw-extra-bold;
-        font-size: 16px;
-        line-height: 22px;
-        color: $c-charcoal;
-      }
     }
 
     .details {
@@ -124,6 +126,10 @@ export default {
           height: 10px;
           width: 10px;
 
+          &:hover {
+            filter: brightness(0%);
+          }
+
           &:last-child {
             margin-right: 0;
           }
@@ -141,6 +147,12 @@ export default {
         }
       }
     }
+  }
+
+  .sub-goals {
+    padding: 0 15px 15px;
+    flex-grow: 1;
+    overflow: scroll;
   }
 }
 </style>
