@@ -10,9 +10,7 @@ router.post('/', formParser.single('statementFile'), async (req, res) => {
   const { path } = req.file;
   const { account } = req.body;
 
-  if (!path || !account) {
-    res.status(500).send('Invalid request');
-  }
+  if (!path || !account) res.status(500).send('Invalid request');
 
   const transactions = await parseTransactionData(path, account);
 

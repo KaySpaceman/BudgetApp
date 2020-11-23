@@ -1,11 +1,13 @@
 <template>
-  <v-menu class="transfer-popout" v-on="$listeners" :close-on-content-click="false" offset-y>
+  <v-menu content-class="transfer-popout" v-on="$listeners" :close-on-content-click="false"
+          offset-y>
     <template v-slot:activator="{ on, attrs }">
       <slot :on="on" :attrs="attrs"/>
     </template>
     <div class="transfer-form">
-      <select-field v-model="destination" label="Transfer To" text-property="Name"
+      <select-field v-model="destination" label="Account" text-property="Name"
                     :options="accountsList" value-property="id" no-margin/>
+      <toggle-switch v-model="incoming" label="Incoming"/>
       <toggle-switch v-model="createCopy" label="Create Copy"/>
       <div class="controls">
         <btn row @click="submitForm">Save</btn>
@@ -24,7 +26,8 @@ export default {
   name: 'TransferPopout',
   data: () => ({
     destination: null,
-    createCopy: true,
+    createCopy: false,
+    incoming: false,
   }),
   props: {
     transaction: Object,
@@ -32,14 +35,16 @@ export default {
   computed: {
     ...mapState({ accountsList: (state) => state.accounts.accountsList }),
     formData() {
+      const { Direction, __typename, ...transaction } = this.transaction;
       return {
         transaction: {
-          ...this.transaction,
+          ...transaction,
           Type: 'TRANSFER',
           Account: this.transaction.Account.id,
         },
         destination: this.destination ?? null,
         createCopy: !!this.createCopy,
+        direction: this.incoming ? 'INCOMING' : 'OUTGOING',
       };
     },
   },
@@ -70,16 +75,21 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.transfer-form {
-  background: $c-white;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
+<style lang="scss">
+.transfer-popout {
+  contain: none;
+  overflow: visible;
 
-  .controls {
-    margin: auto;
+  .transfer-form {
+    background: $c-white;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+
+    .controls {
+      margin: auto;
+    }
   }
 }
 </style>

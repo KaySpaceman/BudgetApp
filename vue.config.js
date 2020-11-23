@@ -16,6 +16,9 @@ module.exports = {
       lintGQL: false,
     },
   },
+  devServer: {
+    progress: false,
+  },
   transpileDependencies: [
     'vuetify',
   ],

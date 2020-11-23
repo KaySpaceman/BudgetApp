@@ -92,7 +92,7 @@ input CategoryInput {
 type Transaction {
     id: ID!,
     Date: String!,
-    Direction: String!,
+    Direction: TransferDirection!,
     Type: TransactionType,
     Note: String!
     Amount: Float!,
@@ -107,6 +107,7 @@ input TransactionInput {
     Type: TransactionType!,
     Note: String!,
     Amount: Float!,
+    Direction: TransferDirection,
     Category: ID,
     Account: ID!,
 }
@@ -200,7 +201,7 @@ type Mutation {
     upsertCategory(category: CategoryInput!): Category,
     deleteCategory(categoryId: ID!): Boolean,
     upsertTransaction(transaction: TransactionInput!): Transaction,
-    createTransferTransaction(transaction: TransactionInput!, destination: ID!, createCopy: Boolean!): [Transaction],
+    createTransferTransaction(transaction: TransactionInput!, destination: ID!, createCopy: Boolean!, direction: TransferDirection!): [Transaction],
     deleteTransaction(transactionId: ID!): Boolean,
     upsertVault(vault: VaultInput!): Vault,
     createVaultTransfer(id: ID!, amount: Float!, direction: TransferDirection!): Vault,

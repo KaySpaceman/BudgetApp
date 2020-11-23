@@ -17,7 +17,8 @@
       <btn row @click="submitForm">Save</btn>
       <btn row clear outlined @click="clearForm">Clear</btn>
     </div>
-    <category-tree class="category-tree" v-if="showTree"/>
+    <category-tree class="category-tree" spending v-if="showTree"/>
+    <category-tree class="category-tree" income v-if="showTree"/>
   </div>
 </template>
 

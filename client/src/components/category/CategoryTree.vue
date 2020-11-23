@@ -1,5 +1,5 @@
 <template>
-  <v-treeview class="category-tree" :items="allCategories" item-text="Name" item-key="id"
+  <v-treeview class="category-tree" :items="shownCategories" item-text="Name" item-key="id"
               item-children="Children" dense>
     <template v-slot:append="{ item }">
       <img class="icon" src="@/assets/Delete.svg" alt="delete"
@@ -11,13 +11,30 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex';
+import {
+  mapActions, mapMutations, mapGetters, mapState,
+} from 'vuex';
 
 export default {
   name: 'CategoryTree',
   data: () => ({}),
+  props: {
+    spending: Boolean,
+    income: Boolean,
+  },
   computed: {
     ...mapGetters(['allCategories']),
+    ...mapState({
+      spendingCategories: (state) => state.categories.spendingCategories,
+      incomeCategories: (state) => state.categories.incomeCategories,
+    }),
+    shownCategories() {
+      if (this.spending || this.income) {
+        return this.spending ? this.spendingCategories : this.incomeCategories;
+      }
+
+      return this.allCategories;
+    },
   },
   methods: {
     ...mapMutations(['selectCategory']),

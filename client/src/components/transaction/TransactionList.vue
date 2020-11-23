@@ -67,7 +67,6 @@ export default {
 .transaction-list {
   display: flex;
   flex-direction: column;
-  max-width: 650px;
   margin: 30px;
 
   .header {

@@ -42,7 +42,7 @@ export async function getOutgoingByDate(timeUnit) {
     {
       $match: {
         Category: { $nin: systemCategories },
-        Direction: { $eq: 'OUT' },
+        Direction: { $eq: 'OUTGOING' },
       },
     },
     {
@@ -93,7 +93,7 @@ export async function getOutgoingByCategory(timePeriod) {
     {
       $match: {
         Category: { $exists: true, $nin: systemCategories },
-        Direction: { $eq: 'OUT' },
+        Direction: { $eq: 'OUTGOING' },
         Date: { $gte: dateFilter },
       },
     },

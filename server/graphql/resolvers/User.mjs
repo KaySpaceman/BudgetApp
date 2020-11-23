@@ -53,7 +53,7 @@ async function handleSavingsDeposit(user, account, amount) {
     Account: account._id,
     Amount: amount,
     Type: 'SAVINGS',
-    Direction: 'OUT',
+    Direction: 'OUTGOING',
     Date: new Date(),
     Note: 'Savings deposit',
   });
@@ -78,7 +78,7 @@ async function handleSavingsWithdrawal(user, account, amount) {
     Account: account._id,
     Amount: amount,
     Type: 'SAVINGS',
-    Direction: 'IN',
+    Direction: 'INCOMING',
     Date: new Date(),
     Note: 'Savings withdrawal',
   });

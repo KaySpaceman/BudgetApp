@@ -96,7 +96,7 @@ async function fetchBalance(match) {
       $set: {
         Amount: {
           $cond: {
-            if: { $eq: ['$Direction', 'OUT'] },
+            if: { $eq: ['$Direction', 'OUTGOING'] },
             then: { $multiply: ['$Amount', -1] },
             else: '$Amount',
           },
@@ -125,7 +125,10 @@ export async function getTotalBalance(accountId) {
   return fetchBalance({
     $match: {
       Account: new mongoose.Types.ObjectId(accountId),
-      Category: { $exists: true },
+      $or: [
+        { Type: { $eq: 'TRANSFER' } },
+        { Category: { $exists: true } },
+      ],
       Type: { $nin: ['SAVINGS', 'INVESTMENT'] },
     },
   });
@@ -137,7 +140,7 @@ export async function getAvailableBalance(accountId) {
       Account: new mongoose.Types.ObjectId(accountId),
       $or: [
         { Category: { $exists: true } },
-        { Type: { $in: ['SAVINGS', 'INVESTMENT'] } },
+        { Type: { $in: ['SAVINGS', 'INVESTMENT', 'TRANSFER'] } },
       ],
     },
   });

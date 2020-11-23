@@ -12,9 +12,12 @@
       </div>
       <div class="column">
         <select-field v-model="formData.Account" label="Account" text-property="Name"
-                      :options="accountsList" value-property="id"
-                      v-if="['SPENDING', 'INCOME'].includes(formData.Type)" wide/>
-        <textarea-field v-model="formData.Note" label="Reason" fill-height wide/>
+                      :options="accountsList" value-property="id" wide
+                      v-if="['SPENDING', 'INCOME'].includes(formData.Type)"/>
+        <textarea-field v-model="formData.Note" label="Reason" fill-height wide
+                        v-if="['SPENDING', 'INCOME'].includes(formData.Type)"/>
+        <select-field v-model="formData.Direction" label="Direction" :options="directions" wide
+                      v-if="['SAVINGS', 'INVESTMENT'].includes(formData.Type)"/>
       </div>
     </div>
     <div class="controls">
@@ -44,6 +47,10 @@ export default {
       { value: 'INCOME', text: 'Income' },
       { value: 'SAVINGS', text: 'Savings' },
       { value: 'INVESTMENT', text: 'Investment' },
+    ],
+    directions: [
+      { value: 'INCOMING', text: 'Withdrawal' },
+      { value: 'OUTGOING', text: 'Deposit' },
     ],
   }),
   computed: {

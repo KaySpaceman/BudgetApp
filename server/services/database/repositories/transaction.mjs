@@ -5,11 +5,21 @@ import generateHash from '../../utility/checksum.mjs';
 
 export async function getTransactions(page = 1, perPage = 10) {
   return Transaction.aggregate([
-    { $set: { HasCategory: { $or: ['$Category', { $eq: ['$Type', 'TRANSFER'] }] } } },
+    {
+      $set: {
+        HasCategory: {
+          $or: [
+            '$Category',
+            { $in: ['$Type', ['TRANSFER', 'SAVINGS', 'INVESTMENT']] },
+          ],
+        },
+      },
+    },
     {
       $sort: {
         HasCategory: 1,
         Date: -1,
+        _id: -1,
       },
     },
     { $skip: (page - 1) * perPage },
@@ -24,7 +34,7 @@ export async function createTransaction(data) {
   data.Hash = generateHash(data);
 
   if (data.Type && !data.Direction) {
-    data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
+    data.Direction = data.Type === 'INCOME' ? 'INCOMING' : 'OUTGOING';
   }
 
   const createdTransaction = await new Transaction(data).save();
@@ -44,7 +54,7 @@ export async function upsertTransactions(transactions) {
   const promises = transactions
     .map((entry) => {
       if (entry.Type && !entry.Direction) {
-        entry.Direction = entry.Type === 'INCOME' ? 'IN' : 'OUT';
+        entry.Direction = entry.Type === 'INCOME' ? 'INCOMING' : 'OUTGOING';
       }
 
       return Transaction.update(
@@ -72,7 +82,7 @@ export async function updateTransaction(data) {
   data.Hash = generateHash(data);
 
   if (data.Type && !data.Direction) {
-    data.Direction = data.Type === 'INCOME' ? 'IN' : 'OUT';
+    data.Direction = data.Type === 'INCOME' ? 'INCOMING' : 'OUTGOING';
   }
 
   const editedTransaction = await transaction.set(data)
