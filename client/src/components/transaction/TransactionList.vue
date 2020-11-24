@@ -11,7 +11,7 @@
                  :key="transaction.id"/>
     <div class="pagination-bar">
       <v-pagination class="pagination" :value="page" @input="changePage" :length="pageCount"
-                    total-visible="7" prev-icon="mdi-menu-left" next-icon="mdi-menu-right"/>
+                    total-visible="10" prev-icon="mdi-menu-left" next-icon="mdi-menu-right"/>
       <div class="x-of-x-counter">
         <span>{{ (page - 1) * perPage + 1 }}-{{ page * perPage }} of {{ count }}</span>
       </div>

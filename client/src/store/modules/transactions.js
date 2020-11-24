@@ -8,7 +8,7 @@ export default {
     transactionList: [],
     selectedTransaction: {},
     page: 1,
-    perPage: 10,
+    perPage: 15,
     count: 20,
     cachedPages: [],
     stalePages: [],
