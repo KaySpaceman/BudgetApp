@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
 import Transactions from '../views/Transactions.vue';
 import Savings from '../views/Savings.vue';
+import Statistics from '../views/depreciated/Statistics.vue';
 
 Vue.use(VueRouter);
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/savings',
     name: 'Savings',
     component: Savings,
+  },
+  {
+    path: '/statistics',
+    name: 'Statistics',
+    component: Statistics,
   },
 ];
 

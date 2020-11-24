@@ -1,10 +1,11 @@
 <template>
-  <div id="app">
+  <div id="page">
     <div id="page-content" class="index-page">
-      <h1>Welcome to The Budget App</h1>
-      <p>Welcome to my spending and budget planing app!</p>
-      <p>Upload a CSV bank statement to add some new transactions</p>
-      <p>Author: Kristers Lielups</p>
+      <p>This project is still in development.</p>
+      <p>The Transactions and Savings pages contain some sample data. The data has been randomized
+        so it might not all make sense.</p>
+      <p>Statistics page generates charts out of the saved data. Keep in mind that the charts are
+        old components from a earlier version of this app and look a bit out of place.</p>
       <p>Repository: <a href="https://github.com/KaySpaceman/BudgetApp">GitHub</a></p>
     </div>
   </div>

@@ -175,9 +175,9 @@ type ChartDataPoint {
 }
 
 type SunburstDataPoint {
-    Name: String!,
-    Value: Float,
-    Children: [SunburstDataPoint!],
+    name: String!,
+    value: Float,
+    children: [SunburstDataPoint!],
 }
 
 type Query {
