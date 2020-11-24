@@ -4,6 +4,7 @@ import Dashboard from '../views/Dashboard.vue';
 import Transactions from '../views/Transactions.vue';
 import Savings from '../views/Savings.vue';
 import Statistics from '../views/depreciated/Statistics.vue';
+import Investments from '../views/Investments.vue';
 
 Vue.use(VueRouter);
 
@@ -22,6 +23,11 @@ const routes = [
     path: '/savings',
     name: 'Savings',
     component: Savings,
+  },
+  {
+    path: '/investments',
+    name: 'Investments',
+    component: Investments,
   },
   {
     path: '/statistics',
