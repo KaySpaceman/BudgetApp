@@ -5,7 +5,7 @@
     <span class="column wide font-small" v-text="transaction.Note"/>
     <span class="column" v-text="formattedDate"/>
     <span class="column font-bold" :class="{ 'income': transaction.Type === 'INCOME' }">
-      EUR {{ transaction.Amount }}
+      EUR {{ transaction.Direction === 'INCOMING' ? '+' : '-' }} {{ transaction.Amount }}
     </span>
     <span class="column" v-text="(
         (transaction.Category && transaction.Category.Name)

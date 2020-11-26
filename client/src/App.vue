@@ -47,5 +47,9 @@ export default {
     min-height: 100%;
     flex-grow: 1;
   }
+
+  #content-wrapper {
+    overflow: scroll;
+  }
 }
 </style>

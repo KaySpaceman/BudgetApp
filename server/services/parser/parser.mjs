@@ -61,10 +61,10 @@ function extractData(value, format) {
 
 function extractDirection(row, amountConfig) {
   if (amountConfig.Combined) {
-    return toDecimal(row[amountConfig.Combined - 1]) > 0 ? 'IN' : 'OUT';
+    return toDecimal(row[amountConfig.Combined - 1]) > 0 ? 'INCOMING' : 'OUTGOING';
   }
 
-  return toDecimal(row[amountConfig.Incoming - 1]) ? 'IN' : 'OUT';
+  return toDecimal(row[amountConfig.Incoming - 1]) ? 'INCOMING' : 'OUTGOING';
 }
 
 function extractAmount(row, amountConfig) {
@@ -90,7 +90,7 @@ function extractAmount(row, amountConfig) {
 }
 
 function extractNote(value) {
-  return value ? value.trim() : null;
+  return value ? value.trim() : '';
 }
 
 function removePadding(transactions, bank) {

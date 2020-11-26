@@ -3,7 +3,8 @@
     <h2 class="chart-heading" v-text="chartConfig.heading"/>
     <svg id="svg-categorized" class="chart chart-sunburst"/>
     <div class="controls">
-      <TimeIntervalSelect :items="availableIntervals" :interval="interval" v-model="interval"/>
+      <select-field v-model="timeInterval" label="Interval" :options="availableIntervals" wide
+                    @change="fetchCategorizedSpending(timeInterval)"/>
     </div>
   </div>
 </template>
@@ -11,37 +12,33 @@
 <script>
 /* eslint-disable */
 import * as d3 from 'd3';
-import TimeIntervalSelect from './TimeIntervalSelect.vue';
+import { mapActions, mapState } from 'vuex';
+import SelectField from '../../inputs/SelectField';
 
 export default {
   data: () => ({
     name: 'ChartCategorized',
-    availableIntervals: {
-      monthly: 'Monthly',
-      quarterly: 'Quarterly',
-      semiannual: 'Semiannual',
-      annual: 'Annual',
-    },
-    interval: 'quarterly',
+    availableIntervals: [
+      { value: 'LAST_MONTH', text: 'Monthly' },
+      { value: 'LAST_QUARTER', text: 'Quarterly' },
+      { value: 'LAST_HALF_YEAR', text: 'Semiannual' },
+      { value: 'LAST_YEAR', text: 'Annual' },
+    ],
+    timeInterval: 'LAST_QUARTER',
   }),
   props: {
-    chartData: Object,
     chartConfig: Object,
   },
   watch: {
-    interval(newInterval) {
-      // TODO: Replace with Axios
-      return newInterval;
-      // $.post('/charts/data/categorized', { timeInterval: newInterval }, (data) => {
-      //   this.$emit('update-data', data);
-      //   this.updateStarburst();
-      // })
-      //   .fail(() => {
-      //     alert('Failed to fetch new chart data');
-      //   });
+    categorizedSpending() {
+      this.updateStarburst();
     },
   },
+  computed: {
+    ...mapState({ categorizedSpending: (state) => state.charts.categorizedSpending }),
+  },
   methods: {
+    ...mapActions(['fetchCategorizedSpending']),
     updateStarburst() {
       d3.select('#svg-categorized')
         .selectAll('g')
@@ -57,19 +54,11 @@ export default {
           .sum((d) => d.value)
           .sort((a, b) => b.value - a.value));
     },
-    color(data) {
-      return d3.scaleOrdinal(
-        d3.quantize(
-          d3.interpolateRainbow,
-          (data.children || []).length + 1,
-        ),
-      )();
-    },
     format(data) {
       return d3.format(',d')(data);
     },
     drawStarburst() {
-      const partitions = this.partition(this.chartData);
+      const partitions = this.partition(this.categorizedSpending);
 
       const arc = d3.arc()
         .startAngle((d) => d.x0)
@@ -83,7 +72,7 @@ export default {
         .attr('width', this.chartConfig.width + this.chartConfig.margin * 2)
         .attr('height', this.chartConfig.height + this.chartConfig.margin * 2)
         .append('g')
-        .attr('fill-opacity', 0.6)
+        .attr('fill-opacity', 1)
         .attr('transform',
           `translate(${this.chartConfig.width / 2}, ${this.chartConfig.height / 2})`);
 
@@ -92,10 +81,7 @@ export default {
           .filter((d) => d.depth))
         .enter()
         .append('path')
-        .attr('fill', (d) => {
-          while (d.depth > 1) d = d.parent;
-          return this.color(d);
-        })
+        .attr('fill', (d) => '#0295FF')
         .attr('d', arc)
         .append('title')
         .text((d) => `${d.ancestors()
@@ -107,6 +93,7 @@ export default {
         .attr('pointer-events', 'none')
         .attr('text-anchor', 'middle')
         .attr('font-size', 10)
+        .attr('font-weight', 600)
         .attr('font-family', 'sans-serif')
         .selectAll('text')
         .data(partitions.descendants()
@@ -122,12 +109,17 @@ export default {
         .text((d) => d.data.name);
     },
   },
+  created() {
+    if (!this.categorizedSpending || this.categorizedSpending.length === 0 ) {
+      this.fetchCategorizedSpending(this.timeInterval);
+    }
+  },
   mounted() {
     this.chartConfig.radius = this.chartConfig.width / 2;
     this.drawStarburst();
   },
   components: {
-    TimeIntervalSelect,
+    SelectField,
   },
 };
 </script>

@@ -36,18 +36,17 @@ export default {
     ...mapActions(['fetchAccountList', 'fetchTransactionList']),
     ...mapMutations(['invalidateTransactionCache', 'setTransactionPage']),
     uploadStatement() {
-      if (!this.validateForm()) {
-        return;
-      }
+      if (!this.validateForm()) return;
 
-      const { href } = window.location;
-      const baseURL = `${href.substring(0, href.lastIndexOf(':'))}:4000`;
       const formData = new FormData();
 
       formData.append('statementFile', this.statementFile);
       formData.append('account', this.account);
 
-      axios.post('/upload', formData, { baseURL })
+      // TODO: Revert back to just /upload once app is split into individual containers
+      // const { hostname, protocol } = window.location;
+      // axios.post('/upload', formData, { baseURL: `${protocol}//${hostname}:9001` })
+      axios.post('/upload', formData)
         .then((res) => {
           this.clearForm();
           this.invalidateTransactionCache();

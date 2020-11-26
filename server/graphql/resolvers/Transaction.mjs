@@ -1,5 +1,4 @@
 import graphql from 'graphql';
-import mongoose from 'mongoose';
 import {
   createTransaction,
   getTransactions,
@@ -43,13 +42,20 @@ async function handleSavingsUpsert(transaction) {
   if (!user || !user.id) throw new GraphQLError('User doesn\'t exist');
   if (!amount) throw new GraphQLError('Invalid transaction amount value');
 
-  user.set({ UnassignedSavings: UnassignedSavings + amount });
+  if (transaction.Direction === 'OUTGOING') {
+    user.set({ UnassignedSavings: UnassignedSavings + amount });
+    // eslint-disable-next-line no-param-reassign
+    transaction.Note = 'Savings deposit';
+  } else {
+    user.set({ UnassignedSavings: UnassignedSavings - amount });
+    // eslint-disable-next-line no-param-reassign
+    transaction.Note = 'Savings withdrawal';
+  }
+
   await updateUser(user);
 
   // eslint-disable-next-line no-param-reassign
-  transaction.Note = 'Savings deposit'; // TODO: Replace with setter when switched to models
-  // eslint-disable-next-line no-param-reassign
-  transaction.Category = null;
+  transaction.Category = null; // TODO: Replace with setter when switched to models
 
   return transaction;
 }
@@ -70,7 +76,15 @@ export async function upsertTransaction({ transaction: formData }) {
   return formatTransaction(response);
 }
 
-export async function createTransferTransaction({ transaction, destination, createCopy }) {
+function createTransferNote(originName, destinationName, direction) {
+  return direction === 'OUTGOING'
+    ? `Outgoing transfer from ${originName} to ${destinationName}`
+    : `Incoming transfer from ${destinationName} to ${originName}`;
+}
+
+export async function createTransferTransaction({
+  transaction, destination, createCopy, direction,
+}) {
   // TODO: Add Validation
   const returnTransactions = [];
   const [originAcc, destinationAcc] = await Promise.all(
@@ -87,8 +101,10 @@ export async function createTransferTransaction({ transaction, destination, crea
 
   const transfer = {
     ...transaction,
+    Direction: direction,
     Type: 'TRANSFER',
-    Note: `Outgoing transfer from ${originAcc.Name} to ${destinationAcc.Name}`,
+    Note: createTransferNote(originAcc.Name, destinationAcc.Name, direction),
+    Category: null,
   };
   delete transfer.Category;
 
@@ -100,11 +116,13 @@ export async function createTransferTransaction({ transaction, destination, crea
   }
 
   if (createCopy) {
+    const copyDirection = direction === 'INCOMING' ? 'OUTGOING' : 'INCOMING';
     const transferCopy = {
       ...updatedTransaction.toJSON(),
       Account: destinationAcc.id,
-      Direction: 'IN',
-      Note: `Incoming transfer from ${destinationAcc.Name} to ${originAcc.Name}`,
+      Direction: copyDirection,
+      Note: createTransferNote(originAcc.Name, destinationAcc.Name, copyDirection),
+      Category: null,
     };
 
     const createdTransferTransaction = await createTransaction(transferCopy);

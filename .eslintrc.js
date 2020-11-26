@@ -14,8 +14,12 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-underscore-dangle': 'off',
-    'import/extensions': [
+    'no-unused-vars': [
       'error',
+      { 'ignoreRestSiblings': true },
+    ],
+    'import/extensions': [
+      'warn',
       'ignorePackages',
       {
         mjs: 'always',

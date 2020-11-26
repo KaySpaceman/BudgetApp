@@ -8,7 +8,7 @@ export default {
     transactionList: [],
     selectedTransaction: {},
     page: 1,
-    perPage: 10,
+    perPage: 15,
     count: 20,
     cachedPages: [],
     stalePages: [],
@@ -36,7 +36,9 @@ export default {
       }
     },
     selectTransaction(state, transaction) {
-      state.selectedTransaction = transaction;
+      const { __typename, ...selectedTransaction } = transaction;
+
+      state.selectedTransaction = selectedTransaction;
     },
     setTransactionCount(state, count) {
       state.count = count;
@@ -72,6 +74,7 @@ export default {
               id
               Date
               Amount
+              Direction
               Note
               Account {
                 id
@@ -106,6 +109,7 @@ export default {
               id
               Date
               Amount
+              Direction
               Note
               Account {
                 id
@@ -133,7 +137,9 @@ export default {
       }
     },
     async createTransferTransaction(
-      { commit, state, dispatch }, { transaction, destination, createCopy },
+      { commit, state, dispatch }, {
+        transaction, destination, createCopy, direction,
+      },
     ) {
       // eslint-disable-next-line no-param-reassign
       delete transaction.__typename;
@@ -143,16 +149,19 @@ export default {
           mutation CreateTransferTransaction(
             $transaction: TransactionInput!,
             $destination: ID!,
-            $createCopy: Boolean!
+            $createCopy: Boolean!,
+            $direction: TransferDirection!
           ) {
             createTransferTransaction(
               transaction: $transaction,
               destination: $destination,
-              createCopy: $createCopy
+              createCopy: $createCopy,
+              direction: $direction,
             ) {
               id
               Date
               Amount
+              Direction
               Note
               Account {
                 id
@@ -169,6 +178,7 @@ export default {
           transaction,
           destination,
           createCopy,
+          direction,
         },
       });
 

@@ -1,18 +1,17 @@
 import Transaction from '../../../models/Transaction.mjs';
-import Category from '../../../models/Category.mjs';
-import { getSystemCategoryIds } from './category.mjs';
+import { getCategories } from './category.mjs';
 
 function combineTotalsWithCategories(categories, totals) {
   return categories.map((category) => {
-    const categoryId = category._id.toString();
-    const dataPoint = { Name: category.Name };
+    const categoryId = category.id || category._id.toString();
+    const dataPoint = { name: category.Name };
 
     if (totals[categoryId]) {
-      dataPoint.Value = totals[categoryId];
+      dataPoint.value = totals[categoryId];
     }
 
     if (category.Children && category.Children.length > 0) {
-      dataPoint.Children = combineTotalsWithCategories(category.Children, totals);
+      dataPoint.children = combineTotalsWithCategories(category.Children, totals);
     }
 
     return dataPoint;
@@ -20,7 +19,6 @@ function combineTotalsWithCategories(categories, totals) {
 }
 
 export async function getOutgoingByDate(timeUnit) {
-  const systemCategories = await getSystemCategoryIds();
   let dateString;
 
   // TODO: Implement quarterly, bi-weekly... grouping
@@ -41,8 +39,9 @@ export async function getOutgoingByDate(timeUnit) {
   return Transaction.aggregate([
     {
       $match: {
-        Category: { $nin: systemCategories },
-        Direction: { $eq: 'OUT' },
+        Category: { $exists: true },
+        Type: { $eq: 'SPENDING' },
+        Direction: { $eq: 'OUTGOING' },
       },
     },
     {
@@ -69,7 +68,6 @@ export async function getOutgoingByDate(timeUnit) {
 }
 
 export async function getOutgoingByCategory(timePeriod) {
-  const systemCategories = await getSystemCategoryIds(false);
   const dateFilter = new Date();
 
   switch (timePeriod) {
@@ -89,11 +87,12 @@ export async function getOutgoingByCategory(timePeriod) {
       dateFilter.setMonth(dateFilter.getMonth() - 3);
   }
 
-  const promiseGroupedTotals = Transaction.aggregate([
+  const groupedTotalPromise = Transaction.aggregate([
     {
       $match: {
-        Category: { $exists: true, $nin: systemCategories },
-        Direction: { $eq: 'OUT' },
+        Category: { $exists: true },
+        Type: { $eq: 'SPENDING' },
+        Direction: { $eq: 'OUTGOING' },
         Date: { $gte: dateFilter },
       },
     },
@@ -106,30 +105,14 @@ export async function getOutgoingByCategory(timePeriod) {
     {
       $project: {
         _id: 1,
-        value: '$value',
+        value: { $round: ['$value', 2] },
       },
     },
   ])
     .exec();
 
-  const promiseTopCategories = Category.aggregate([
-    {
-      $match: { Parent: null },
-    },
-    {
-      $project: {
-        _id: 1,
-        Name: 1,
-        Children: 1,
-      },
-    },
-  ])
-    .exec();
-
-  const [rawTotals, topCategories] = await Promise.all(
-    [promiseGroupedTotals, promiseTopCategories],
-  );
-
+  const topCategoryPromise = getCategories([{ Level: { $lte: 1 } }, { Type: { $eq: 'SPENDING' } }]);
+  const [rawTotals, topCategories] = await Promise.all([groupedTotalPromise, topCategoryPromise]);
   const totals = rawTotals.reduce((acc, cur) => {
     acc[cur._id.toString()] = cur.value;
 
@@ -137,7 +120,7 @@ export async function getOutgoingByCategory(timePeriod) {
   }, {});
 
   return {
-    Name: 'Total',
-    Children: combineTotalsWithCategories(topCategories, totals),
+    name: 'Total',
+    children: combineTotalsWithCategories(topCategories, totals),
   };
 }
