@@ -14,7 +14,7 @@
     "start": "node -r dotenv/config app.mjs & npm run serve"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
