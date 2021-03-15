@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: budget-app-backend-service
+spec:
+  selector:
+    app: budget-app
+    area: backend
+  ports:
+    - name: graphql
+      port: 9000
+      targetPort: graphql-port
+    - name: rest
+      port: 9001
+      targetPort: rest-port
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: budget-app-frontend-service
+spec:
+  selector:
+    app: budget-app
+    area: frontend
+  ports:
+    - name: vue
+      port: 80
+      targetPort: vue-port

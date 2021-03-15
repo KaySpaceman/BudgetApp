@@ -1,0 +1,10 @@
+apiVersion: v2
+name: budget-app-chart
+description: Budget app helm chart
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+dependencies:
+  - name: mongodb
+    repository: https://charts.bitnami.com/bitnami
+    version: ^10.3.0

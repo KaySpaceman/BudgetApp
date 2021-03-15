@@ -1,5 +1,0 @@
-architecture: standalone
-persistence:
-  storageClass: 'standard'
-auth:
-  rootPassword: addMongoDbPassworHere

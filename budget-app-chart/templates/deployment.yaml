@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: budget-app-backend-deployment
+  labels:
+    app: budget-app
+    area: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: budget-app
+      area: backend
+  template:
+    metadata:
+      labels:
+        app: budget-app
+        area: backend
+    spec:
+      imagePullSecrets:
+        - name: container-registry
+      containers:
+        - name: budget-app-backend
+          image: {{ .Values.images.backEnd }}
+          imagePullPolicy: Always
+          ports:
+            - name: graphql-port
+              containerPort: 9000
+            - name: rest-port
+              containerPort: 9001
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: graphql-port
+            initialDelaySeconds: 10
+            periodSeconds: 60
+          env:
+            - name: GRAPHQL_PORT
+              value: "9000"
+            - name: REST_PORT
+              value: "9001"
+            - name: VUE_APP_GRAPHQL_HTTP
+              value: {{ .Values.paths.graphql }}
+            - name: DEV_USER_ID
+              value: {{ .Values.env.devUserID }}
+            - name: MONGO_HOST
+              value: {{ .Release.Name }}-mongodb
+            - name: MONGO_USERNAME
+              value: {{ .Values.mongodb.auth.username }}
+            - name: MONGO_PASSWORD
+              value: {{ .Values.mongodb.auth.password }}
+            - name: MONGO_PORT
+              value: {{ .Values.mongodb.service.port | quote }}
+            - name: MONGO_DATABASE
+              value: {{ .Values.mongodb.auth.database }}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: budget-app-frontend-deployment
+  labels:
+    app: budget-app
+    area: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: budget-app
+      area: frontend
+  template:
+    metadata:
+      labels:
+        app: budget-app
+        area: frontend
+    spec:
+      imagePullSecrets:
+        - name: container-registry
+      containers:
+        - name: budget-app-frontend
+          image: {{ .Values.images.frontEnd }}
+          imagePullPolicy: Always
+          ports:
+            - name: vue-port
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: vue-port
+            initialDelaySeconds: 5
+            failureThreshold: 5
+            periodSeconds: 5
+          env:
+            - name: PORT
+              value: "80"

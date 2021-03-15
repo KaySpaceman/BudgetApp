@@ -1,0 +1,18 @@
+images:
+  frontEnd: registry.gitlab.com/kristerslielups/budgetapp/frontend:latest
+  backEnd: registry.gitlab.com/kristerslielups/budgetapp/backend:latest
+paths:
+  frontEnd: /
+  graphql: /graphql
+  rest: /upload
+env:
+  devUserID: 5f9aa0eb224c86c886f7aaf4
+mongodb:
+  architecture: standalone
+  auth:
+    enabled: true
+    username: BudgetAppUser
+    password: <very secure password>
+    database: BudgetApp
+  persistence:
+    existingClaim: budget-app-mongodb-pvc
